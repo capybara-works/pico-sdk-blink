@@ -1,5 +1,7 @@
 # Pico SDK Blink Project
 
+![Build and test](https://github.com/capybara-works/pico-sdk-blink/actions/workflows/ci.yml/badge.svg)
+
 Raspberry Pi Pico (RP2040) 用のLED点滅サンプルプロジェクトです。
 Wokwiシミュレータでの動作確認、およびGitHub ActionsによるCI/CDパイプラインに対応しています。
 
@@ -21,6 +23,15 @@ Wokwiシミュレータでの動作確認、およびGitHub ActionsによるCI/C
 *   **CMake**: ビルドシステム
 *   **GCC ARM Toolchain**: クロスコンパイラ (`arm-none-eabi-gcc`)
 *   **VS Code**: 推奨エディタ (Wokwi拡張機能利用のため)
+
+## ☁️ クラウド開発 (GitHub Codespaces)
+
+本プロジェクトは **GitHub Codespaces** に対応しています。
+ブラウザ上でVS Code環境を即座に立ち上げ、環境構築なしで開発を開始できます。
+
+1.  GitHubリポジトリの **[<> Code]** ボタンをクリック。
+2.  **[Codespaces]** タブを選択し、**[Create codespace on main]** をクリック。
+3.  自動的にPico SDK等のツールチェーンがセットアップされます。
 
 ## 🛠️ ローカル開発 (Local Development)
 
