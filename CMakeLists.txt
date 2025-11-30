@@ -39,3 +39,11 @@ target_link_libraries(blink
 
 pico_add_extra_outputs(blink)
 
+# テスト機能を有効化
+enable_testing()
+
+# blink.elf が生成されているかを arm-none-eabi-size で確認するテスト
+add_test(
+    NAME size_check
+    COMMAND arm-none-eabi-size ${CMAKE_CURRENT_BINARY_DIR}/blink.elf
+)
