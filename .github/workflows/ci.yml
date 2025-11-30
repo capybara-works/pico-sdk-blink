@@ -61,7 +61,7 @@ jobs:
       # Upload firmware (for later steps or manual download)
       # ---------------------------------------------------------
       - name: Upload firmware artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: firmware
           path: build/blink.*
