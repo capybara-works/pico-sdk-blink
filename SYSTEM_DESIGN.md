@@ -92,5 +92,32 @@ Wokwiシミュレータ上の配線定義 (`diagram.json`) は以下の通りで
     *   **連携**: `wokwi-ci-action` や `wokwi-cli` から参照されます。
 
 
+
+## 5. System Architecture Philosophy
+
+本システムは、**"Single Source of Truth"** と **"AI-Driven CI/CD"** の2つの柱で構成されています。
+
+### 5.1 Single Source of Truth
+システムを構成する全ての要素が、`pico-sdk-blink` フォルダ一つに集約されています。
+
+| レイヤー | 構成要素 | 役割 |
+| :--- | :--- | :--- |
+| **ドキュメント** | `README.md`<br>`SYSTEM_DESIGN.md`<br>`CONTRIBUTING.md` | 「何を作るか」「どう動くか」「どう開発するか」の完全な定義。 |
+| **ハードウェア** | `diagram.json`<br>`wokwi.toml` | 物理的な回路図の代わりとなる、実行可能なハードウェア定義。 |
+| **ソフトウェア** | `blink.cpp`<br>`CMakeLists.txt` | Pico SDKを用いた制御ロジックとビルド定義。 |
+| **パイプライン** | `build_and_test.sh`<br>`.github/workflows/ci.yml` | ローカルとCIで**完全に等価な**検証プロセスを保証する仕組み。 |
+
+### 5.2 AI-Driven CI/CD Workflow
+開発者がコードを書き、Gitにプッシュする裏側で、以下のプロセスが自動的に回っています。
+
+1.  **Push**: 変更をGitHubに送信。
+2.  **CI Trigger**: GitHub Actionsが起動。
+3.  **Reproduce**: クラウド上でクリーンな環境を一から構築。
+4.  **Build & Test**: ローカルと同じスクリプトでビルドし、サイズチェック等のテストを実行。
+5.  **Feedback**: 結果がバッジとしてREADMEに表示される。
+
+この「守られた環境」があるからこそ、AIに大胆なコード修正を指示しても、システムが壊れることを恐れずに開発を進められます。
+
 ---
 *Documented by Antigravity*
+
