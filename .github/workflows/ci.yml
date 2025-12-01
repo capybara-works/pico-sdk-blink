@@ -33,9 +33,14 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y \
             cmake \
-            gcc-arm-none-eabi \
-            libnewlib-arm-none-eabi \
-            build-essential
+            build-essential \
+            wget
+
+          # Install ARM GCC 11.3.rel1 (Same as Devcontainer)
+          wget https://developer.arm.com/-/media/Files/downloads/gnu/11.3.rel1/binrel/arm-gnu-toolchain-11.3.rel1-x86_64-arm-none-eabi.tar.xz
+          tar xf arm-gnu-toolchain-11.3.rel1-x86_64-arm-none-eabi.tar.xz
+          sudo mv arm-gnu-toolchain-11.3.rel1-x86_64-arm-none-eabi /usr/local/arm-none-eabi
+          echo "/usr/local/arm-none-eabi/bin" >> $GITHUB_PATH
 
       # ---------------------------------------------------------
       # Install Pico SDK if cache is missing
@@ -67,24 +72,23 @@ jobs:
           path: build/blink.*
           
   # ========================================================================
-  # (Optional / disabled) — Wokwi CI test
-  # 後で WOKWI_CLI_TOKEN と blink.test.yaml を用意したら有効化可能
+  # Wokwi CI test
   # ========================================================================
-  # test-on-wokwi:
-  #   runs-on: ubuntu-latest
-  #   needs: build-and-test
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - name: Download firmware
-  #       uses: actions/download-artifact@v2
-  #       with:
-  #         name: firmware
-  #         path: build
-  #
-  #     - name: Test on Wokwi
-  #       uses: wokwi/wokwi-ci-action@v1
-  #       with:
-  #         token: ${{ secrets.WOKWI_CLI_TOKEN }}
-  #         path: /
-  #         timeout: 2000
-  #         scenario: 'blink.test.yaml'
+  test-on-wokwi:
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    steps:
+      - uses: actions/checkout@v3
+      - name: Download firmware
+        uses: actions/download-artifact@v4
+        with:
+          name: firmware
+          path: build
+
+      - name: Test on Wokwi
+        uses: wokwi/wokwi-ci-action@v1
+        with:
+          token: ${{ secrets.WOKWI_CLI_TOKEN }}
+          path: .
+          timeout: 5000
+          scenario: 'blink.test.yaml'
