@@ -23,7 +23,7 @@ Wokwiシミュレータでの動作確認、およびGitHub ActionsによるCI/C
 3.  **高速なフィードバック**: 統一されたCI環境により、AIが生成したコードの品質を即座に検証可能。
 
 **🔴 課題 (Cons)**
-1.  **テスト深度**: 現状のCIはビルド確認のみで、Wokwiによる機能テスト（Lチカの挙動確認など）は未有効化。
+1.  **テスト深度**: CIでWokwi機能テスト（Lチカの挙動確認など）は実装済みですが、`WOKWI_CLI_TOKEN` シークレットの設定が必要です。より複雑なシナリオテスト（タイミング検証、複数サイクル確認等）への拡張も検討の余地があります。
 2.  **シミュレータの限界**: 実機特有のノイズやタイミング問題は再現不可。
 3.  **ブラックボックス化**: 環境が便利すぎるため、低レイヤー技術の理解がおろそかになるリスク。
 
@@ -35,6 +35,26 @@ Wokwiシミュレータでの動作確認、およびGitHub ActionsによるCI/C
 *   **CMake**: ビルドシステム
 *   **GCC ARM Toolchain**: クロスコンパイラ (`arm-none-eabi-gcc`)
 *   **VS Code**: 推奨エディタ (Wokwi拡張機能利用のため)
+*   **Node.js**: ローカルでのWokwi自動テスト実行に必要
+
+## 🔑 Wokwi Token Setup
+
+Wokwiの自動テスト（ローカルおよびCI）を実行するには、APIトークンが必要です。
+
+1.  **トークンの取得**:
+    [https://wokwi.com/dashboard/ci](https://wokwi.com/dashboard/ci) にアクセスし、トークンを取得してください。
+
+2.  **ローカル環境での設定**:
+    ターミナルで以下のコマンドを実行します（`.zshrc` 等への追記を推奨）。
+    ```bash
+    export WOKWI_CLI_TOKEN="your_token_here"
+    ```
+
+3.  **CI環境 (GitHub Actions) での設定**:
+    1.  リポジトリの **Settings** > **Secrets and variables** > **Actions** に移動。
+    2.  **New repository secret** をクリック。
+    3.  **Name**: `WOKWI_CLI_TOKEN`
+    4.  **Value**: 取得したトークンを入力。
 
 ## ☁️ クラウド開発 (GitHub Codespaces)
 
@@ -78,6 +98,7 @@ GitHub Actions (`.github/workflows/ci.yml`) により、以下のプロセスが
 1.  **環境構築**: 必要なツールチェーンとPico SDK (v2.0.0) のセットアップ。
 2.  **ビルド & テスト**: ローカルと同じ `build_and_test.sh` を使用して実行。
 3.  **アーティファクト保存**: ビルド成果物 (`blink.uf2`, `blink.elf`) を保存。
+4.  **Wokwi統合テスト**: シミュレータ環境でLEDの点滅動作を自動検証 (要 `WOKWI_CLI_TOKEN` シークレット設定)。
 
 ## 💻 Wokwi シミュレーション
 
