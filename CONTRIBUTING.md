@@ -42,7 +42,7 @@ AIは以下の順序で変更を行います。
       steps:
         - press: "button1"  # ボタンを押す
         - wait: 100         # 100ms待つ
-        - expect-pin: 2:1   # GP2(LED)がHighであることを期待
+        - expect-pin: 25:1   # GP25(内部LED)がHighであることを期待 (実機のみ)
     ```
 
 2.  **ローカル実行**:

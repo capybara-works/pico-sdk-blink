@@ -109,6 +109,60 @@ GitHub Actions (`.github/workflows/ci.yml`) により、以下のプロセスが
 2.  `diagram.json` を開くか、コマンドパレット (F1) から **"Wokwi: Start Simulator"** を選択。
 3.  LEDが点滅することを確認。
 
+## 🔧 実機テスト (Hardware-in-the-Loop)
+
+Debug Probeを使用した実機での自動テストが可能です (Phase 0完了)。
+
+### 必要なハードウェア
+*   **Raspberry Pi Debug Probe** (CMSIS-DAPv2対応)
+*   **Raspberry Pi Pico** (テスト対象)
+*   **接続ケーブル**: SWD (3-pin) + UART (3-pin)
+
+### セットアップ
+
+#### 1. ツールのインストール
+
+**macOS:**
+```bash
+brew install open-ocd
+pip3 install pyserial pyyaml
+```
+
+**Linux:**
+```bash
+sudo apt install openocd python3-pip
+pip3 install pyserial pyyaml
+```
+
+#### 2. ハードウェア接続
+1.  PC ↔ Debug Probe (USB接続)
+2.  Debug Probe ↔ Target Pico (SWD + UART接続)
+
+詳細な配線情報は `docs/HIL_RESEARCH_REPORT.md` を参照。
+
+### 実行方法
+
+```bash
+# UARTポートを確認
+ls /dev/cu.usbmodem*  # macOS
+ls /dev/ttyACM*       # Linux
+
+# テスト実行
+python3 hil_runner.py \
+  --test blink.test.yaml \
+  --elf build/blink.elf \
+  --uart /dev/cu.usbmodem14402  # 実際のポートに置き換え
+```
+
+### 利用可能なツール
+
+*   **`hil_runner.py`**: 完全自動E2Eテスト (推奨)
+*   **`uart_monitor.py`**: UART出力のリアルタイム監視
+*   **`gpio_test.py`**: GPIO状態の検証
+
+**詳細:** `docs/HARDWARE_INTEGRATION_TEST_REPORT.md` および `docs/HIL_RESEARCH_REPORT.md` を参照。
+
+
 ## 🤖 AIアシスタント活用ガイド
 
 このプロジェクトの開発において、AIアシスタント（Antigravity等）は以下の場面で活用できます。
