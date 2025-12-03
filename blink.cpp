@@ -7,7 +7,7 @@
 #include "pico/stdlib.h"
 #include <stdio.h>
 
-const uint LED_PIN = 2;
+const uint LED_PIN = PICO_DEFAULT_LED_PIN;
 
 int main() {
   stdio_init_all();

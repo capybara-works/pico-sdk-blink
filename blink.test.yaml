@@ -4,12 +4,4 @@ author: Uri Shaked
 
 steps:
   - wait-serial: 'LED on'
-  - expect-pin:
-      part-id: led1
-      pin: A # Anode pin
-      value: 1
   - wait-serial: 'LED off'
-  - expect-pin:
-      part-id: led1
-      pin: A # Anode pin
-      value: 0

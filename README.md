@@ -3,6 +3,7 @@
 ![Build and test](https://github.com/capybara-works/pico-sdk-blink/actions/workflows/ci.yml/badge.svg)
 
 Raspberry Pi Pico (RP2040) 用のLED点滅サンプルプロジェクトです。
+デフォルトでオンボードLED (GP25) を点滅させます。
 Wokwiシミュレータでの動作確認、およびGitHub ActionsによるCI/CDパイプラインに対応しています。
 
 ## 💡 コンセプト (Concept)
