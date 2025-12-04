@@ -39,6 +39,12 @@ target_link_libraries(blink
 
 pico_add_extra_outputs(blink)
 
+# objdump -S を使用してソースコード付きの逆アセンブルを生成するカスタムコマンドを追加
+add_custom_command(TARGET blink POST_BUILD
+    COMMAND arm-none-eabi-objdump -S $<TARGET_FILE:blink> > ${CMAKE_CURRENT_BINARY_DIR}/blink.S.dis
+    COMMENT "Generating source-interleaved disassembly (blink.S.dis)"
+)
+
 # テスト機能を有効化
 enable_testing()
 

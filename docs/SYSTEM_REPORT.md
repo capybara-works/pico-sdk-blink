@@ -23,6 +23,7 @@
 *   **特徴**:
     *   **Containerized**: VS Code Dev Containers により、OS・ツールチェーンを完全固定。
     *   **Unified Pipeline**: ローカル(`build_and_test.sh`)とCI(`ci.yml`)で同一の検証プロセスを実行。
+    *   **Advanced Analysis**: ビルド時にソースコード付き逆アセンブル(`blink.S.dis`)を自動生成し、[デバッグ・解析ガイド](DEBUGGING_AND_ANALYSIS.md)に基づく詳細な検証が可能。
 *   **改善点**: CI環境におけるコンパイラバージョンの不確定性を排除し、Devcontainerと完全に同一の `ARM GCC 11.3.rel1` を使用するように修正完了。
 
 ## 3. ドキュメント整備状況 (V-Model)
