@@ -19,11 +19,30 @@ AIは以下の順序で変更を行います。
 3.  **Build & Test**: `scripts/build.sh` (または `scripts/verify_all.sh`) を実行し、動作を検証。
 
 ### Step 3: Verification (検証)
-*   **Evidence**: `evidence/latest/verification.md` と各結果JSONを確認。
-    成功判定は必ず証拠に基づく (`docs/operations/AGENT_OPERATION.md`, `docs/operations/TEST_EVIDENCE_POLICY.md`)。
-*   **Wokwi**: VS Code上でシミュレータを起動し、視覚的に動作確認。
-*   **実機**: 接続されていれば `scripts/run_hil.sh` でE2E確認 (なければ自動skip)。
-*   **CI**: GitHub Actionsがパスすることを確認。
+
+標準の検証手順:
+
+1.  変更目的と影響範囲を確認する
+2.  変更後に `scripts/build.sh` を実行する
+3.  必要に応じて `scripts/verify_all.sh` を実行する(実機なしでも安全)
+4.  実機検証が必要な場合のみ `PICO_HARDWARE=1` を付ける
+5.  ロジックアナライザ実測が必要な場合のみ `PICO_LOGIC_ANALYZER=1` を付ける
+6.  `evidence/latest/verification.md` を確認する
+7.  必要に応じて一次証拠 (`build.log`, `*_result.json` 等) も確認する
+8.  pass / fail / partial / skipped を**証拠に基づいて**判断する
+9.  **skip / stub を成功扱いしない**
+10. 変更内容・検証結果・残課題をコミットまたはPRに明記する
+
+あわせて Wokwi (視覚確認) と GitHub Actions (CI) も活用してください。
+判定基準の詳細: `docs/operations/AGENT_OPERATION.md`, `docs/operations/TEST_EVIDENCE_POLICY.md`
+
+### AIエージェント向け注意
+
+*   証拠なしに「成功」と書かない
+*   生成スクリーンショットを証拠扱いしない
+*   任意シェル実行を前提にしない(`scripts/` の固定入口を使う)
+*   実機操作は `PICO_HARDWARE=1` で明示的に有効化された場合のみ行う
+*   `verification.md` は要約であり、必要に応じて一次証拠ログも確認する
 
 ---
 

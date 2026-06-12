@@ -15,13 +15,15 @@ AI生成コードをビルド → シミュレーション → 実機 → 観測
 ## 主要コマンド
 
 ```bash
-scripts/verify_all.sh                  # 検証ループ一括 (build→flash→HIL→UART→GDB→ロジアナ→summary)
+scripts/verify_all.sh                  # 検証ループ一括 (実機には触れない: 実機系はskip)
+PICO_HARDWARE=1 scripts/verify_all.sh  # 実機操作を明示的に有効化 (人間の許可が前提)
 scripts/build.sh                       # ビルド + ctest + 任意Wokwi
-scripts/run_hil.sh                     # 実機E2E (実機なしなら自動skip)
 python3 scripts/summarize_evidence.py  # evidence/latest/verification.md 生成
 ```
 
-実機ステップは未設定環境では明示的に skip を返す(偽装してはいけない)。
+**実機操作は `PICO_HARDWARE=1`、ロジアナ実測は `PICO_LOGIC_ANALYZER=1` が
+明示された場合のみ実行される。AIがゲートを勝手に有効化・回避してはいけない。**
+未設定時の skip / stub は偽装せずそのまま報告する。
 
 ## 構成の要点
 

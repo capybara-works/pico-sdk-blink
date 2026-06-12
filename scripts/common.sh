@@ -45,6 +45,19 @@ print(default if "${" in expanded else expanded)
 PYEOF
 }
 
+# hardware_gate <step> <result_json_path> <log_path>
+# Safety gate: hardware-touching steps run only when PICO_HARDWARE=1 is set
+# explicitly. Otherwise writes a skip result and exits 0. AI agents must not
+# work around this gate (see docs/operations/AGENT_OPERATION.md).
+hardware_gate() {
+    if [ "${PICO_HARDWARE:-0}" != "1" ]; then
+        local reason="hardware not enabled. Set PICO_HARDWARE=1 to enable hardware operations."
+        echo "SKIP: ${reason}" | tee "$3"
+        write_result_json "$2" "$1" "skip" "${reason}" "evidence/latest/$(basename "$3")"
+        exit 0
+    fi
+}
+
 # write_result_json <outfile> <step> <status> [reason] [log_relpath]
 # status: pass | fail | skip | stub
 write_result_json() {

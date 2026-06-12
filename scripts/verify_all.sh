@@ -2,11 +2,17 @@
 # One-shot evidence loop: runs every verification entry point in order and
 # generates evidence/latest/verification.md at the end.
 #
-# Hardware steps skip cleanly when no hardware is configured, so this is
-# always safe to run. If the build fails, hardware steps are not attempted
+# Safe by default: hardware steps (flash/HIL/UART/GDB) run only when
+# PICO_HARDWARE=1 is set, and logic analyzer capture only when
+# PICO_LOGIC_ANALYZER=1 is set; otherwise they record explicit skip/stub
+# results. If the build fails, hardware steps are not attempted
 # (flashing a stale ELF would produce misleading evidence).
 #
-# Usage: scripts/verify_all.sh [uart_duration_seconds]   (default: 5)
+# Usage:
+#   scripts/verify_all.sh                        # no hardware touched
+#   PICO_HARDWARE=1 scripts/verify_all.sh        # real flash/HIL/UART/GDB
+#   PICO_HARDWARE=1 PICO_LOGIC_ANALYZER=1 scripts/verify_all.sh
+# Optional arg: [uart_duration_seconds] (default: 5)
 # Exit code: 0 = no step failed (pass/skip/stub), 1 = at least one failure
 
 set -u

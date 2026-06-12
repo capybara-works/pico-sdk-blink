@@ -16,6 +16,8 @@ source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/common.sh"
 FLASH_LOG="${EVIDENCE_DIR}/flash.log"
 RESULT_JSON="${EVIDENCE_DIR}/flash_result.json"
 
+hardware_gate "flash" "${RESULT_JSON}" "${FLASH_LOG}"
+
 ELF_PATH="${REPO_ROOT}/$(cfg_get target.elf build/blink.elf)"
 INTERFACE_CFG="$(cfg_get debug.openocd_interface_cfg interface/cmsis-dap.cfg)"
 TARGET_CFG="$(cfg_get debug.openocd_target_cfg target/rp2040.cfg)"

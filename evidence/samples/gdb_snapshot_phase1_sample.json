@@ -1,0 +1,29 @@
+{
+  "step": "gdb",
+  "status": "pass",
+  "timestamp": "2026-06-12T14:53:54Z",
+  "registers": {
+    "pc": "0x10000d92",
+    "lr": "0x10000d83",
+    "sp": "0x20041fc8",
+    "xpsr": "0x21000000"
+  },
+  "pc_region": "flash",
+  "fault": {
+    "exception_number": 0,
+    "in_handler": false,
+    "hard_fault": false
+  },
+  "backtrace": [
+    "#0  timer_time_reached (timer=0x40054000, t=<optimized out>) at /Users/mitokouki/pico-sdk/src/rp2_common/hardware_timer/include/hardware/timer.h:323",
+    "#1  time_reached (t=<optimized out>) at /Users/mitokouki/pico-sdk/src/rp2_common/hardware_timer/include/hardware/timer.h:335",
+    "#2  sleep_until (t=17801914) at /Users/mitokouki/pico-sdk/src/common/pico_time/time.c:408",
+    "#3  sleep_us (us=<optimized out>) at /Users/mitokouki/pico-sdk/src/common/pico_time/time.c:424",
+    "#4  sleep_ms (ms=<optimized out>) at /Users/mitokouki/pico-sdk/src/common/pico_time/time.c:440",
+    "#5  0x100002fc in main () at /Users/mitokouki/pico-sdk-blink/blink.cpp:19"
+  ],
+  "target_resumed": true,
+  "recovered_by_reset": false,
+  "log": "evidence/latest/gdb_snapshot.log",
+  "_note": "Representative sample captured on real hardware (2026-06-12), not a latest run. Registers/backtrace are measured values from a live blink firmware on core0."
+}

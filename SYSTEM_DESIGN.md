@@ -79,6 +79,54 @@
 
 この「守られた環境」があるからこそ、AIに大胆なコード修正を指示しても、システムが壊れることを恐れずに開発を進められます。
 
+### 2.3 Evidence-Based Verification (Phase 1: Embedded AI Agent Lab)
+
+本リポジトリは単なるPico Blinkサンプルではなく、**Embedded AI Agent Lab** です。
+目的は、AI生成コードを「ビルド → シミュレーション → 実機 → 観測 → 証拠保存 → 裁可」
+という証拠ベース検証ループに載せ、**人間とAIが同じ証拠を見て成否を判断できる**ようにすることです。
+
+```text
+VS Code / AI Agent
+  ↓
+scripts/ (固定された操作入口)  ※将来は MCP tools がこの薄いラッパーになる
+  ↓
+build / flash / HIL / UART / GDB / Logic Analyzer
+  ↓
+evidence/latest/  (ログ + 結果JSON)
+  ↓
+verification.md  (自動生成の最終要約)
+  ↓
+AI / human review (証拠に基づく裁可)
+```
+
+構成要素の役割:
+
+| 要素 | 役割 |
+| :--- | :--- |
+| `scripts/` | AIと人間が使う**固定操作入口**。任意シェル実行の代替であり、各入口が成功/失敗を終了コードと結果JSONで返す |
+| `evidence/latest/` | 実行ごとの生成証拠置き場。**Git管理しない**(`.gitkeep`のみ) |
+| `evidence/samples/` | 教材・再現・発表用の代表証拠(来歴を `samples/README.md` に明記) |
+| `config/hardware.example.yaml` | 設定テンプレート(Git管理)。コピーして作る `hardware.local.yaml` にローカル環境値を書く(Git管理外) |
+| `tools/hil/` | 実機テストの実装本体(`scripts/` がこれをラップする) |
+| `tools/mcp_server/` | 将来のMCP化の入口。**MCPは本体ではなく、scriptsを安全に呼ぶ薄いラッパー**。任意シェル実行ツールは公開しない |
+
+安全ゲート(明示的な許可なしに実機を触らない):
+
+| 環境変数 | 有効化される操作 |
+| :--- | :--- |
+| `PICO_HARDWARE=1` | flash / HIL / UART / GDB の実機操作 |
+| `PICO_LOGIC_ANALYZER=1` | ロジックアナライザの実測キャプチャ |
+
+結果ステータスの定義(詳細: `docs/operations/TEST_EVIDENCE_POLICY.md`):
+
+- `pass` — 実際に実行され検証が通った / `fail` — 実際に実行され失敗した
+- `skip` — **未実行**(成功ではない) / `stub` — サンプルによる仮実行(**実測ではない**)
+- `partial` — (Overall) 一部のみpass
+
+なお、ロジックアナライザは**観測手段の一つでありオシロスコープではありません**。
+デジタルタイミングのみ観測可能で、アナログ波形・電圧・ノイズの測定はできません
+(`docs/guides/LOGIC_ANALYZER_SETUP.md`)。
+
 ## 3. Core Philosophy: The Agentic Embedded Platform
 
 本システムは、単なる開発テンプレートではなく、**「AIエージェントが物理世界（Embedded System）を自律的にハックするためのプラットフォーム」**として設計されています。

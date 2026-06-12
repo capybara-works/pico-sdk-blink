@@ -17,6 +17,8 @@ UART_LOG="${EVIDENCE_DIR}/uart.log"
 RESULT_JSON="${EVIDENCE_DIR}/uart_result.json"
 DURATION="${1:-5}"
 
+hardware_gate "uart" "${RESULT_JSON}" "${UART_LOG}"
+
 UART_PORT="${PICO_UART_PORT:-$(cfg_get serial.port "")}"
 
 if [ -z "${UART_PORT}" ]; then

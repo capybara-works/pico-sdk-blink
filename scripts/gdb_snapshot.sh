@@ -39,6 +39,7 @@ skip() {
     exit 0
 }
 
+[ "${PICO_HARDWARE:-0}" = "1" ] || skip "hardware not enabled. Set PICO_HARDWARE=1 to enable hardware operations."
 command -v openocd >/dev/null 2>&1 || skip "openocd not installed"
 command -v arm-none-eabi-gdb >/dev/null 2>&1 || skip "arm-none-eabi-gdb not installed"
 [ -f "${ELF_PATH}" ] || skip "ELF not found: ${ELF_PATH} (run scripts/build.sh first)"

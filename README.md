@@ -31,19 +31,38 @@ AIが証拠を読んで成功/失敗/原因候補を判断する
 # ローカル環境依存値の設定(初回のみ、実機がある場合)
 cp config/hardware.example.yaml config/hardware.local.yaml
 
-# 検証ループ全体を1コマンドで実行 (推奨)
-scripts/verify_all.sh                  # build→flash→HIL→UART→GDB→ロジアナ→verification.md
+# 実機なし (安全: ハードウェアには一切触れない)
+scripts/verify_all.sh
 
-# または個別に
+# 実機あり (明示的に有効化した場合のみ flash/HIL/UART/GDB を実行)
+PICO_HARDWARE=1 scripts/verify_all.sh
+
+# ロジックアナライザあり (実測を明示的に有効化)
+PICO_HARDWARE=1 PICO_LOGIC_ANALYZER=1 scripts/verify_all.sh
+
+# 個別実行も可能 (実機系は同じく PICO_HARDWARE=1 が必要)
 scripts/build.sh                       # → evidence/latest/build.log, build_result.json
-scripts/run_hil.sh                     # → evidence/latest/hil_result.json (実機なしならskip)
-scripts/gdb_snapshot.sh                # → evidence/latest/gdb_snapshot.json (実機のレジスタ+バックトレース)
+PICO_HARDWARE=1 scripts/run_hil.sh     # → evidence/latest/hil_result.json
 python3 scripts/summarize_evidence.py  # → evidence/latest/verification.md
 ```
 
-実機やツールが無い環境では、各スクリプトは偽の成功ではなく明示的な
-`skip` / `stub` を返します。`evidence/latest/` はGit管理外の作業領域で、
-代表サンプルは `evidence/samples/` にあります。
+**安全ゲート:** 実機操作(flash/HIL/UART/GDB)は `PICO_HARDWARE=1`、
+ロジックアナライザ実測は `PICO_LOGIC_ANALYZER=1` が明示された場合のみ実行されます。
+未指定なら各ステップは `skip` / `stub` を証拠として記録します(偽の成功にはなりません)。
+
+**結果の読み方:** `verification.md` は最終要約であり、一次証拠は
+`build.log` や `*_result.json` などの個別ファイルです。
+
+| status | 意味 |
+|---|---|
+| `pass` | 実際に実行され、検証が通った |
+| `fail` | 実際に実行され、失敗した(ログに理由が残る) |
+| `skip` | **未実行**(実機・ツール・許可がない) — 成功ではない |
+| `stub` | サンプル・代替データによる仮実行 — **実測ではない** |
+| `partial` | (Overall) 一部のみpass。skip/stub/未実施が混在 |
+
+`evidence/latest/` はGit管理外の作業領域で、代表サンプルは
+[evidence/samples/](evidence/samples/) にあります(実測/合成の来歴つき)。
 
 ## 💡 コンセプト (Concept)
 

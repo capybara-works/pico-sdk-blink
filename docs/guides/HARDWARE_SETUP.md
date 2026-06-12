@@ -56,13 +56,13 @@ export PICO_UART_PORT=/dev/cu.usbmodem14402
 ## 動作確認
 
 ```bash
-scripts/verify_all.sh   # 検証ループ全体(推奨)
+PICO_HARDWARE=1 scripts/verify_all.sh  # 検証ループ全体(推奨。実機操作の明示的有効化が必要)
 # または個別に
 scripts/build.sh        # ビルド
-scripts/flash.sh        # OpenOCD経由で書き込み
-scripts/capture_uart.sh # UARTログ取得 → evidence/latest/uart.log
-scripts/run_hil.sh      # E2E HILテスト → evidence/latest/hil_result.json
-scripts/gdb_snapshot.sh # レジスタ+バックトレース → evidence/latest/gdb_snapshot.json
+PICO_HARDWARE=1 scripts/flash.sh        # OpenOCD経由で書き込み
+PICO_HARDWARE=1 scripts/capture_uart.sh # UARTログ取得 → evidence/latest/uart.log
+PICO_HARDWARE=1 scripts/run_hil.sh      # E2E HILテスト → evidence/latest/hil_result.json
+PICO_HARDWARE=1 scripts/gdb_snapshot.sh # レジスタ+バックトレース → evidence/latest/gdb_snapshot.json
 ```
 
 実機未接続の場合、これらは明示的に fail または skip を返します(偽の成功にはなりません)。

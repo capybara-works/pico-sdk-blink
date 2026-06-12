@@ -17,6 +17,8 @@ source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/common.sh"
 HIL_LOG="${EVIDENCE_DIR}/hil.log"
 RESULT_JSON="${EVIDENCE_DIR}/hil_result.json"
 
+hardware_gate "hil" "${RESULT_JSON}" "${HIL_LOG}"
+
 UART_PORT="${PICO_UART_PORT:-$(cfg_get serial.port "")}"
 ELF_PATH="$(cfg_get target.elf build/blink.elf)"
 TEST_FILE="$(cfg_get target.test_scenario blink.test.yaml)"
