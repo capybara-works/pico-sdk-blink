@@ -1,0 +1,19 @@
+Connected to /dev/cu.usbmodem14402 @ 115200 baud
+Monitoring for 5.0 seconds...
+----------------------------------------
+[ 0.213s] LED on
+[ 0.463s] LED off
+[ 0.713s] LED on
+[ 0.963s] LED off
+[ 1.213s] LED on
+[ 1.463s] LED off
+[ 1.713s] LED on
+[ 1.963s] LED off
+----------------------------------------
+Captured 8 lines
+
+Pattern Analysis:
+  'LED on' found:  True
+  'LED off' found: True
+
+✅ UART test PASSED - Expected patterns detected

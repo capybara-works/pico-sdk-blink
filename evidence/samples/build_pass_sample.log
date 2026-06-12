@@ -1,0 +1,25 @@
+== Configure (cmake) ==
+-- The C compiler identification is GNU 14.2.1
+-- The CXX compiler identification is GNU 14.2.1
+-- Build type:
+-- Using PICO_SDK_PATH from environment ('/Users/example/pico-sdk')
+PICO_SDK_PATH is /Users/example/pico-sdk
+Target board (PICO_BOARD) is 'pico'.
+-- Configuring done (2.1s)
+-- Generating done (0.1s)
+-- Build files have been written to: /Users/example/pico-sdk-blink/build
+== Build ==
+[  1%] Building ASM object pico-sdk/src/rp2_common/boot_stage2/CMakeFiles/bs2_default.dir/compile_time_choice.S.obj
+[ 50%] Building CXX object CMakeFiles/blink.dir/blink.cpp.obj
+[100%] Linking CXX executable blink.elf
+Generating source-interleaved disassembly (blink.S.dis)
+[100%] Built target blink
+== Run tests (ctest) ==
+Test project /Users/example/pico-sdk-blink/build
+    Start 1: size_check
+1/1 Test #1: size_check .......................   Passed    0.02 sec
+
+100% tests passed, 0 tests failed out of 1
+== Run Wokwi Test (Optional) ==
+SKIP: WOKWI_CLI_TOKEN is not set.
+To run Wokwi tests locally, set WOKWI_CLI_TOKEN and install @wokwi/cli.

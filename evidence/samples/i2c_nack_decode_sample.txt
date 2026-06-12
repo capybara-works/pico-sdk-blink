@@ -1,0 +1,15 @@
+# sigrok-cli i2c protocol decode (sample)
+# driver=fx2lafw samplerate=1MHz channels: D0=SCL D1=SDA
+# Scenario: master writes to address 0x3C, device does not respond (NACK).
+i2c-1: Start
+i2c-1: Address write: 3C
+i2c-1: NACK
+i2c-1: Stop
+i2c-1: Start
+i2c-1: Address write: 3C
+i2c-1: NACK
+i2c-1: Stop
+# Interpretation hints:
+# - Repeated "Address write -> NACK" means no device ACKed at 0x3C.
+# - Typical causes: wrong address, missing pull-ups, device unpowered,
+#   SDA/SCL swapped, or bus speed too high for the device.

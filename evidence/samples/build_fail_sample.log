@@ -1,0 +1,14 @@
+== Configure (cmake) ==
+-- Using PICO_SDK_PATH from environment ('/Users/example/pico-sdk')
+-- Configuring done (2.0s)
+-- Generating done (0.1s)
+== Build ==
+[ 50%] Building CXX object CMakeFiles/blink.dir/blink.cpp.obj
+/Users/example/pico-sdk-blink/blink.cpp: In function 'int main()':
+/Users/example/pico-sdk-blink/blink.cpp:12:5: error: 'gpio_initt' was not declared in this scope; did you mean 'gpio_init'?
+   12 |     gpio_initt(LED_PIN);
+      |     ^~~~~~~~~~
+      |     gpio_init
+make[2]: *** [CMakeFiles/blink.dir/build.make:76: CMakeFiles/blink.dir/blink.cpp.obj] Error 1
+make[1]: *** [CMakeFiles/Makefile2:1761: CMakeFiles/blink.dir/all] Error 2
+make: *** [Makefile:91: all] Error 2

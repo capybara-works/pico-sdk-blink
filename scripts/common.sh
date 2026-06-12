@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+# Shared helpers for the evidence-based verification scripts.
+# Source this from scripts/*.sh:  source "$(dirname "${BASH_SOURCE[0]}")/common.sh"
+
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+EVIDENCE_DIR="${REPO_ROOT}/evidence/latest"
+CONFIG_LOCAL="${REPO_ROOT}/config/hardware.local.yaml"
+CONFIG_EXAMPLE="${REPO_ROOT}/config/hardware.example.yaml"
+
+mkdir -p "${EVIDENCE_DIR}"
+
+timestamp_utc() {
+    date -u +"%Y-%m-%dT%H:%M:%SZ"
+}
+
+# cfg_get <dot.separated.key> [default]
+# Reads config/hardware.local.yaml if present, else config/hardware.example.yaml.
+# Values like "${PICO_UART_PORT}" are expanded from the environment; if the
+# variable is unset the default is returned, so nothing local ever gets baked in.
+cfg_get() {
+    python3 - "$1" "${2:-}" "${CONFIG_LOCAL}" "${CONFIG_EXAMPLE}" <<'PYEOF'
+import os, sys
+
+key, default, local_path, example_path = sys.argv[1:5]
+path = local_path if os.path.exists(local_path) else example_path
+
+value = None
+try:
+    import yaml
+    with open(path) as f:
+        node = yaml.safe_load(f) or {}
+    for part in key.split("."):
+        node = node[part]
+    value = node
+except Exception:
+    value = None
+
+if value is None:
+    print(default)
+    sys.exit(0)
+
+expanded = os.path.expandvars(str(value))
+# Unresolved ${VAR} means the env var is not set locally -> fall back.
+print(default if "${" in expanded else expanded)
+PYEOF
+}
+
+# write_result_json <outfile> <step> <status> [reason] [log_relpath]
+# status: pass | fail | skip | stub
+write_result_json() {
+    python3 - "$@" <<'PYEOF'
+import json, sys
+from datetime import datetime, timezone
+
+argv = sys.argv[1:]
+out, step, status = argv[0], argv[1], argv[2]
+result = {
+    "step": step,
+    "status": status,
+    "timestamp": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+}
+if len(argv) > 3 and argv[3]:
+    result["reason"] = argv[3]
+if len(argv) > 4 and argv[4]:
+    result["log"] = argv[4]
+with open(out, "w") as f:
+    json.dump(result, f, indent=2)
+    f.write("\n")
+PYEOF
+}

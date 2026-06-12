@@ -33,3 +33,30 @@
 
 build/**
 .vscode/.cortex-debug.*
+
+# local hardware settings
+config/hardware.local.yaml
+.env
+.env.*
+
+# generated evidence
+evidence/latest/*
+!evidence/latest/.gitkeep
+
+# generated captures
+captures/latest/*
+!captures/latest/.gitkeep
+
+# build outputs
+build/
+*.elf
+*.uf2
+*.bin
+*.map
+
+# large raw captures
+*.sr
+*.csv
+
+# macOS
+.DS_Store

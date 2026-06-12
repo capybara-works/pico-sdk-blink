@@ -1,0 +1,36 @@
+# Hardware configuration template.
+#
+# Copy this file to config/hardware.local.yaml and edit it for your machine.
+# hardware.local.yaml is gitignored; never commit local ports or paths.
+# Values like "${PICO_UART_PORT}" are expanded from environment variables;
+# if the variable is unset, scripts treat the value as "not configured"
+# and skip hardware steps cleanly.
+
+target:
+  board: "raspberry-pi-pico"
+  mcu: "rp2040"
+  elf: "build/blink.elf"
+  uf2: "build/blink.uf2"
+  test_scenario: "blink.test.yaml"
+
+debug:
+  interface: "cmsis-dap"
+  openocd_interface_cfg: "interface/cmsis-dap.cfg"
+  openocd_target_cfg: "target/rp2040.cfg"
+
+serial:
+  # e.g. "/dev/cu.usbmodem14402" (macOS) or "/dev/ttyACM0" (Linux).
+  # Either set PICO_UART_PORT in your environment, or replace this with
+  # the literal port path in hardware.local.yaml.
+  port: "${PICO_UART_PORT}"
+  baudrate: 115200
+
+logic_analyzer:
+  driver: "sigrok"
+  device: "fx2lafw"
+  sample_rate: "1 MHz"
+  channels:
+    scl: 0
+    sda: 1
+    uart_tx: 2
+    uart_rx: 3
