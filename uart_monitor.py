@@ -42,8 +42,10 @@ if __name__ == "__main__":
         port = sys.argv[1]
     else:
         port = "/dev/cu.usbmodem14201"  # Default for macOS
-    
-    lines = monitor_uart(port)
+
+    duration = float(sys.argv[2]) if len(sys.argv) > 2 else 5.0
+
+    lines = monitor_uart(port, duration=duration)
     
     if lines:
         # Check for expected patterns
@@ -60,3 +62,7 @@ if __name__ == "__main__":
         else:
             print("\n❌ UART test FAILED - Expected patterns not found")
             sys.exit(1)
+    else:
+        # No output at all (port error or silent target) must not pass.
+        print("\n❌ UART test FAILED - No output captured")
+        sys.exit(1)
