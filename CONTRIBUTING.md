@@ -16,10 +16,13 @@ AIアシスタントと協調し、効率的に開発を進めるためのガイ
 AIは以下の順序で変更を行います。
 1.  **Hardware**: `diagram.json` を修正し、配線を変更。
 2.  **Software**: `blink.cpp` 等のソースコードを修正。
-3.  **Build & Test**: `build_and_test.sh` を実行し、動作を検証。
+3.  **Build & Test**: `scripts/build.sh` (または `scripts/verify_all.sh`) を実行し、動作を検証。
 
 ### Step 3: Verification (検証)
+*   **Evidence**: `evidence/latest/verification.md` と各結果JSONを確認。
+    成功判定は必ず証拠に基づく (`docs/AGENT_OPERATION.md`, `docs/TEST_EVIDENCE_POLICY.md`)。
 *   **Wokwi**: VS Code上でシミュレータを起動し、視覚的に動作確認。
+*   **実機**: 接続されていれば `scripts/run_hil.sh` でE2E確認 (なければ自動skip)。
 *   **CI**: GitHub Actionsがパスすることを確認。
 
 ---

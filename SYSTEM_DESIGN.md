@@ -10,12 +10,26 @@
 │   └── ci.yml              # GitHub Actions CIワークフロー定義 (Build & Test)
 ├── .vscode/                # VS Code用設定ファイル (Extensions, Settings)
 ├── build/                  # ビルド成果物出力ディレクトリ (Git除外)
-├── docs/                   # [Doc] V字モデルドキュメント群
+├── config/
+│   └── hardware.example.yaml # [Config] ハードウェア設定テンプレート (local版はGit除外)
+├── docs/                   # [Doc] V字モデルドキュメント群・運用ルール・レポート
 │   ├── v_model/            # [Product] アプリケーション仕様書
-│   └── v_model_environment/# [Factory] 環境仕様書
+│   ├── v_model_environment/# [Factory] 環境仕様書
+│   ├── AGENT_OPERATION.md  # [Rule] AIエージェント運用ルール
+│   └── TEST_EVIDENCE_POLICY.md # [Rule] 合格証拠の定義
+├── evidence/
+│   ├── latest/             # [Evidence] 実行ごとの証拠 (ログ+JSON, Git除外)
+│   └── samples/            # [Evidence] 学習・解析用の代表サンプル (Git管理)
+├── scripts/                # [Script] 証拠ベース検証の入口 (build/flash/HIL/UART/GDB/ロジアナ)
+│   └── verify_all.sh       # [Script] 検証ループ一括実行 → verification.md 生成
+├── tools/
+│   └── mcp_server/         # [Future] MCPサーバー設計メモ (実装は将来フェーズ)
 ├── blink.cpp               # [Main] アプリケーションのエントリーポイント (Sample)
-├── blink.test.yaml         # [Test] Wokwiオートメーション用テストシナリオ定義
+├── blink.test.yaml         # [Test] Wokwi/HIL共用テストシナリオ定義
 ├── build_and_test.sh       # [Script] ローカル/CI兼用の統合ビルド・テストスクリプト
+├── hil_runner.py           # [HIL] 実機E2Eテストランナー (OpenOCD + UART)
+├── uart_monitor.py         # [HIL] UART監視・パターン検証
+├── gpio_test.py            # [HIL] OpenOCD経由のGPIO状態検証
 ├── CMakeLists.txt          # [Build] CMakeビルド設定ファイル
 ├── diagram.json            # [Wokwi] ハードウェア構成定義
 ├── pico_sdk_import.cmake   # [SDK] Pico SDKインポート用ヘルパースクリプト
@@ -51,6 +65,7 @@
 | **ハードウェア** | `diagram.json`<br>`wokwi.toml` | 物理的な回路図の代わりとなる、実行可能なハードウェア定義。 |
 | **ソフトウェア** | `*.cpp`<br>`CMakeLists.txt` | Pico SDKを用いた制御ロジックとビルド定義。 |
 | **パイプライン** | `build_and_test.sh`<br>`.github/workflows/ci.yml` | ローカルとCIで**完全に等価な**検証プロセスを保証する仕組み。 |
+| **検証証拠** | `scripts/`<br>`evidence/` | 実機・シミュレーションの観測結果をログ+JSONとして保存し、AI/人間が証拠に基づいて成否判定する仕組み (`docs/TEST_EVIDENCE_POLICY.md`)。 |
 
 ### 2.2 AI-Driven CI/CD Workflow
 開発者がコードを書き、Gitにプッシュする裏側で、以下のプロセスが自動的に回っています。

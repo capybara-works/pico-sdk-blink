@@ -1,10 +1,49 @@
-# Pico SDK Blink Project
+# Embedded AI Agent Lab (Raspberry Pi Pico)
 
 ![Build and test](https://github.com/capybara-works/pico-sdk-blink/actions/workflows/ci.yml/badge.svg)
 
-Raspberry Pi Pico (RP2040) 用のLED点滅サンプルプロジェクトです。
-デフォルトでオンボードLED (GP25) を点滅させます。
-Wokwiシミュレータでの動作確認、およびGitHub ActionsによるCI/CDパイプラインに対応しています。
+Raspberry Pi Pico (RP2040) を題材にした、**個人用 Embedded AI Agent Lab** です。
+題材ファームウェアはオンボードLED (GP25) を点滅させる最小構成ですが、
+本リポジトリの主目的はLチカそのものではなく、AI生成コードを
+**ビルド → シミュレーション(Wokwi/CI) → 実機書き込み → 観測(UART/GPIO/GDB/ロジックアナライザ) → 証拠保存 → AIによる判定**
+という閉ループで検証できる、最小で再現性のあるPoC基盤を作ることです。
+
+```text
+AIがコードを変更する
+  ↓ scripts/build.sh           (ビルド + ctest + 任意Wokwi)
+  ↓ scripts/flash.sh           (実機書き込み)
+  ↓ scripts/run_hil.sh         (実機HILテスト)
+  ↓ scripts/capture_uart.sh    (UART観測)
+  ↓ scripts/gdb_snapshot.sh    (GDBレジスタ+バックトレース取得)
+  ↓ scripts/capture_logic_i2c.sh (ロジックアナライザ: スタブ)
+  ↓ evidence/latest/           (ログ + JSON として証拠を保存)
+  ↓ scripts/summarize_evidence.py → evidence/latest/verification.md
+AIが証拠を読んで成功/失敗/原因候補を判断する
+```
+
+成功判定は必ず証拠(ログ・JSON・実測結果)に基づきます。詳細は
+[docs/AGENT_OPERATION.md](docs/AGENT_OPERATION.md) と
+[docs/TEST_EVIDENCE_POLICY.md](docs/TEST_EVIDENCE_POLICY.md) を参照してください。
+
+## 🔁 証拠ベース検証 (Evidence-Based Verification)
+
+```bash
+# ローカル環境依存値の設定(初回のみ、実機がある場合)
+cp config/hardware.example.yaml config/hardware.local.yaml
+
+# 検証ループ全体を1コマンドで実行 (推奨)
+scripts/verify_all.sh                  # build→flash→HIL→UART→GDB→ロジアナ→verification.md
+
+# または個別に
+scripts/build.sh                       # → evidence/latest/build.log, build_result.json
+scripts/run_hil.sh                     # → evidence/latest/hil_result.json (実機なしならskip)
+scripts/gdb_snapshot.sh                # → evidence/latest/gdb_snapshot.json (実機のレジスタ+バックトレース)
+python3 scripts/summarize_evidence.py  # → evidence/latest/verification.md
+```
+
+実機やツールが無い環境では、各スクリプトは偽の成功ではなく明示的な
+`skip` / `stub` を返します。`evidence/latest/` はGit管理外の作業領域で、
+代表サンプルは `evidence/samples/` にあります。
 
 ## 💡 コンセプト (Concept)
 
@@ -160,7 +199,18 @@ python3 hil_runner.py \
 *   **`uart_monitor.py`**: UART出力のリアルタイム監視
 *   **`gpio_test.py`**: GPIO状態の検証
 
-**詳細:** `docs/HARDWARE_INTEGRATION_TEST_REPORT.md` および `docs/HIL_RESEARCH_REPORT.md` を参照。
+**詳細:** `docs/HARDWARE_SETUP.md`、`docs/HARDWARE_INTEGRATION_TEST_REPORT.md` および `docs/HIL_RESEARCH_REPORT.md` を参照。
+
+## 📚 ドキュメント (Docs)
+
+| ドキュメント | 内容 |
+|---|---|
+| [docs/AGENT_OPERATION.md](docs/AGENT_OPERATION.md) | AIエージェントの運用ルール |
+| [docs/TEST_EVIDENCE_POLICY.md](docs/TEST_EVIDENCE_POLICY.md) | 何を合格証拠と認めるか |
+| [docs/HARDWARE_SETUP.md](docs/HARDWARE_SETUP.md) | Pico / Debug Probe / UART / SWD 接続 |
+| [docs/LOGIC_ANALYZER_SETUP.md](docs/LOGIC_ANALYZER_SETUP.md) | FX2LP系ロジックアナライザ + sigrok (将来) |
+| [docs/MCP_SETUP.md](docs/MCP_SETUP.md) | MCPサーバー化の設計メモ (将来) |
+| [docs/AGENT_LAB_PHASE1_REPORT.md](docs/AGENT_LAB_PHASE1_REPORT.md) | Phase 1 実装・検証レポート (実測結果・調査記録) |
 
 
 ## 🤖 AIアシスタント活用ガイド

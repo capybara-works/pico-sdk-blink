@@ -45,7 +45,29 @@ gpio_init(LED_PIN);
 ```
 このように、`gpio_init` 関数を呼び出すために、レジスタ `r0` に `25` (LED_PIN) をセットし、分岐命令 `bl` を実行していることが一目で分かります。
 
-## 3. その他の解析ツール
+## 3. 実行時解析 (Runtime Analysis)
 
-### 3.1 セクションヘッダ情報の確認
+### 3.1 GDBスナップショット
+実機が接続されている場合、`scripts/gdb_snapshot.sh` で動作中のターゲットから
+PC/LR/SP/xPSR とシンボル解決済みバックトレースを取得できます
+（結果: `evidence/latest/gdb_snapshot.json`）。
+
+`pc_region` フィールドが一次診断材料になります:
+*   `bootrom` (< 0x10000000): クラッシュ、未起動、またはデバッガ起因の停止
+    （`docs/HARDWARE_SETUP.md` の「既知の落とし穴」参照）
+*   `flash`: 通常のコード実行中
+*   `sram`: RAM実行コード
+
+### 3.2 静的解析との連携 (Crash/Hang Analysis Workflow)
+PCアドレスしか分からない場合でも、`blink.S.dis` と組み合わせて原因を特定できます。
+
+実例（2026-06-12, `docs/AGENT_LAB_PHASE1_REPORT.md`）:
+ターゲットのUARTが沈黙 → スナップショットで PC=0x10000d92 を取得 →
+`grep "10000d92:" build/blink.S.dis` で `sleep_ms` 内のタイマーポーリングと特定 →
+PCが時間をおいても不動であることから「タイマーが進んでいない」と推定 →
+RP2040 の DBGPAUSE によるタイマー凍結（core1がhaltしたまま）を突き止めた。
+
+## 4. その他の解析ツール
+
+### 4.1 セクションヘッダ情報の確認
 `blink.elf` に対して `objdump -h` を実行することで、メモリレイアウト（各セクションの配置アドレスとサイズ）を確認できます。これは、スタックオーバーフローやメモリ不足の調査に役立ちます。
