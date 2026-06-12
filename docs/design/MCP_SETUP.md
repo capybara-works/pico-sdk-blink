@@ -2,7 +2,7 @@
 
 MCP(Model Context Protocol)化は**将来フェーズ**です。本書は設計メモであり、
 現時点でMCPサーバーの実装はありません。スタブの置き場所は
-[tools/mcp_server/README.md](../tools/mcp_server/README.md) を参照してください。
+[tools/mcp_server/README.md](../../tools/mcp_server/README.md) を参照してください。
 
 ## 方針
 

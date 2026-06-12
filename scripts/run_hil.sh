@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # HIL test entry point.
-# Wraps the existing hil_runner.py (OpenOCD flash + UART pattern test).
+# Wraps the existing tools/hil/hil_runner.py (OpenOCD flash + UART pattern test).
 # Skips cleanly when no hardware is configured, so this is always safe to run.
 #
 # The UART port comes from PICO_UART_PORT or config/hardware.local.yaml
@@ -34,7 +34,7 @@ if ! command -v openocd >/dev/null 2>&1; then
 fi
 
 echo "== scripts/run_hil.sh: running hil_runner.py (uart: ${UART_PORT}) =="
-if python3 "${REPO_ROOT}/hil_runner.py" \
+if python3 "${REPO_ROOT}/tools/hil/hil_runner.py" \
     --test "${REPO_ROOT}/${TEST_FILE}" \
     --elf "${REPO_ROOT}/${ELF_PATH}" \
     --uart "${UART_PORT}" 2>&1 | tee "${HIL_LOG}"; then

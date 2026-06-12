@@ -28,11 +28,11 @@
 
 ### 1.2 ドキュメント・設定
 
-- `docs/AGENT_OPERATION.md` — AI運用ルール(証拠なし成功判定の禁止)
-- `docs/TEST_EVIDENCE_POLICY.md` — 合格証拠の定義
-- `docs/HARDWARE_SETUP.md` — 接続・ツール・既知の落とし穴
-- `docs/MCP_SETUP.md` / `tools/mcp_server/README.md` — 将来のMCP化設計メモ
-- `docs/LOGIC_ANALYZER_SETUP.md` — 将来のロジアナ運用方針
+- `docs/operations/AGENT_OPERATION.md` — AI運用ルール(証拠なし成功判定の禁止)
+- `docs/operations/TEST_EVIDENCE_POLICY.md` — 合格証拠の定義
+- `docs/guides/HARDWARE_SETUP.md` — 接続・ツール・既知の落とし穴
+- `docs/design/MCP_SETUP.md` / `tools/mcp_server/README.md` — 将来のMCP化設計メモ
+- `docs/guides/LOGIC_ANALYZER_SETUP.md` — 将来のロジアナ運用方針
 - `config/hardware.example.yaml` — 設定テンプレート
 - `.gitignore` — local設定・証拠・ビルド成果物の除外
 
@@ -105,7 +105,7 @@ openocd -f interface/cmsis-dap.cfg \
   -c "init" -c "targets rp2040.core1" -c "resume" -c "shutdown"
 ```
 
-詳細は `docs/HARDWARE_SETUP.md` の「RP2040デバッグの既知の落とし穴」を参照。
+詳細は `docs/guides/HARDWARE_SETUP.md` の「RP2040デバッグの既知の落とし穴」を参照。
 
 ## 4. 既存バグの修正
 
@@ -120,7 +120,7 @@ openocd -f interface/cmsis-dap.cfg \
 1. **ロジックアナライザ実機連携** — FX2LP系機材の準備待ち。
    `capture_logic_i2c.sh` の実行パスは実装済みで、sigrok-cli インストールと
    配線のみで stub → 実測に切り替わる
-2. **MCPサーバー化** — `scripts/` 安定後(`docs/MCP_SETUP.md`)
+2. **MCPサーバー化** — `scripts/` 安定後(`docs/design/MCP_SETUP.md`)
 3. **HILシナリオの拡充** — `expect-pin` の実機検証(`gpio_test.py` 統合)、
    複数サイクル・タイミング検証
 4. **`hil_runner.py` の evidence 直接出力** — 現状はラッパー経由のログのみ

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # UART capture entry point.
-# Wraps the existing uart_monitor.py and saves the captured output as evidence.
+# Wraps the existing tools/hil/uart_monitor.py and saves the captured output as evidence.
 # Skips cleanly when no hardware is configured.
 #
 # Usage: scripts/capture_uart.sh [duration_seconds]   (default: 5)
@@ -26,7 +26,7 @@ if [ -z "${UART_PORT}" ]; then
 fi
 
 echo "== scripts/capture_uart.sh: capturing ${DURATION}s from ${UART_PORT} =="
-if python3 "${REPO_ROOT}/uart_monitor.py" "${UART_PORT}" "${DURATION}" 2>&1 | tee "${UART_LOG}"; then
+if python3 "${REPO_ROOT}/tools/hil/uart_monitor.py" "${UART_PORT}" "${DURATION}" 2>&1 | tee "${UART_LOG}"; then
     STATUS="pass"
     REASON=""
 else

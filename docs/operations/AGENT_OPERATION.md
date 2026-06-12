@@ -43,7 +43,7 @@ skip / stub / fail をそのまま報告すること。skipを「成功」と言
 
 - 検証フローは `scripts/` 配下の固定された入口スクリプトで完結させる。
 - 将来のMCP化でも `run_shell(command)` のような任意コマンド実行ツールは
-  提供しない([MCP_SETUP.md](MCP_SETUP.md) 参照)。
+  提供しない([MCP_SETUP.md](../design/MCP_SETUP.md) 参照)。
 
 ## ローカル環境差分の扱い
 

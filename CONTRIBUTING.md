@@ -20,7 +20,7 @@ AIは以下の順序で変更を行います。
 
 ### Step 3: Verification (検証)
 *   **Evidence**: `evidence/latest/verification.md` と各結果JSONを確認。
-    成功判定は必ず証拠に基づく (`docs/AGENT_OPERATION.md`, `docs/TEST_EVIDENCE_POLICY.md`)。
+    成功判定は必ず証拠に基づく (`docs/operations/AGENT_OPERATION.md`, `docs/operations/TEST_EVIDENCE_POLICY.md`)。
 *   **Wokwi**: VS Code上でシミュレータを起動し、視覚的に動作確認。
 *   **実機**: 接続されていれば `scripts/run_hil.sh` でE2E確認 (なければ自動skip)。
 *   **CI**: GitHub Actionsがパスすることを確認。

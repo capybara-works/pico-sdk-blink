@@ -1,7 +1,7 @@
 # MCP Server (Future Phase — Placeholder)
 
 ここには将来、`scripts/` 配下の検証スクリプトを包む小さなSTDIO型MCPサーバーを置きます。
-**現時点で実装はありません。** 設計方針は [docs/MCP_SETUP.md](../../docs/MCP_SETUP.md) を参照してください。
+**現時点で実装はありません。** 設計方針は [docs/design/MCP_SETUP.md](../../docs/design/MCP_SETUP.md) を参照してください。
 
 ## 提供予定ツール
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Flash entry point.
 # Flashes the firmware ELF to a Pico via OpenOCD + Debug Probe (CMSIS-DAP),
-# matching the method already used by hil_runner.py.
+# matching the method already used by tools/hil/hil_runner.py.
 #
 # Configuration comes from config/hardware.local.yaml (see hardware.example.yaml).
 #

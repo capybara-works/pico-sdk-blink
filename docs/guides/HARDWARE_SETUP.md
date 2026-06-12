@@ -1,8 +1,8 @@
 # ハードウェアセットアップ (Hardware Setup)
 
 実機HILテストに必要な接続をまとめます。詳細な調査経緯は
-[HIL_RESEARCH_REPORT.md](HIL_RESEARCH_REPORT.md) と
-[HARDWARE_INTEGRATION_TEST_REPORT.md](HARDWARE_INTEGRATION_TEST_REPORT.md) を参照してください。
+[HIL_RESEARCH_REPORT.md](../reports/HIL_RESEARCH_REPORT.md) と
+[HARDWARE_INTEGRATION_TEST_REPORT.md](../reports/HARDWARE_INTEGRATION_TEST_REPORT.md) を参照してください。
 
 ## 構成要素
 

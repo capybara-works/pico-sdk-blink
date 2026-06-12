@@ -135,8 +135,8 @@ chmod +x build_and_test.sh
 
 1.  **ハードウェア**: Raspberry Pi Debug Probe + Raspberry Pi Pico.
 2.  **ソフトウェア**: OpenOCD (v0.12.0以上).
-3.  **配線**: `docs/HIL_RESEARCH_REPORT.md` の記述に従い、SWDとUARTを接続します。
+3.  **配線**: `docs/reports/HIL_RESEARCH_REPORT.md` の記述に従い、SWDとUARTを接続します。
 4.  **テスト実行**:
     ```bash
-    python3 hil_runner.py --test blink.test.yaml --elf build/blink.elf
+    python3 tools/hil/hil_runner.py --test blink.test.yaml --elf build/blink.elf
     ```

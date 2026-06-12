@@ -22,8 +22,8 @@ AIが証拠を読んで成功/失敗/原因候補を判断する
 ```
 
 成功判定は必ず証拠(ログ・JSON・実測結果)に基づきます。詳細は
-[docs/AGENT_OPERATION.md](docs/AGENT_OPERATION.md) と
-[docs/TEST_EVIDENCE_POLICY.md](docs/TEST_EVIDENCE_POLICY.md) を参照してください。
+[docs/operations/AGENT_OPERATION.md](docs/operations/AGENT_OPERATION.md) と
+[docs/operations/TEST_EVIDENCE_POLICY.md](docs/operations/TEST_EVIDENCE_POLICY.md) を参照してください。
 
 ## 🔁 証拠ベース検証 (Evidence-Based Verification)
 
@@ -177,7 +177,7 @@ pip3 install pyserial pyyaml
 1.  PC ↔ Debug Probe (USB接続)
 2.  Debug Probe ↔ Target Pico (SWD + UART接続)
 
-詳細な配線情報は `docs/HIL_RESEARCH_REPORT.md` を参照。
+詳細な配線情報は `docs/reports/HIL_RESEARCH_REPORT.md` を参照。
 
 ### 実行方法
 
@@ -186,31 +186,38 @@ pip3 install pyserial pyyaml
 ls /dev/cu.usbmodem*  # macOS
 ls /dev/ttyACM*       # Linux
 
-# テスト実行
-python3 hil_runner.py \
+# テスト実行 (推奨: scripts/run_hil.sh 経由)
+PICO_UART_PORT=/dev/cu.usbmodem14402 scripts/run_hil.sh  # 実際のポートに置き換え
+
+# または直接
+python3 tools/hil/hil_runner.py \
   --test blink.test.yaml \
   --elf build/blink.elf \
-  --uart /dev/cu.usbmodem14402  # 実際のポートに置き換え
+  --uart /dev/cu.usbmodem14402
 ```
 
-### 利用可能なツール
+### 利用可能なツール (`tools/hil/`)
 
-*   **`hil_runner.py`**: 完全自動E2Eテスト (推奨)
-*   **`uart_monitor.py`**: UART出力のリアルタイム監視
+*   **`hil_runner.py`**: 完全自動E2Eテスト (入口: `scripts/run_hil.sh`)
+*   **`uart_monitor.py`**: UART出力の監視・パターン検証 (入口: `scripts/capture_uart.sh`)
 *   **`gpio_test.py`**: GPIO状態の検証
 
-**詳細:** `docs/HARDWARE_SETUP.md`、`docs/HARDWARE_INTEGRATION_TEST_REPORT.md` および `docs/HIL_RESEARCH_REPORT.md` を参照。
+**詳細:** `docs/guides/HARDWARE_SETUP.md`、`docs/reports/HARDWARE_INTEGRATION_TEST_REPORT.md` および `docs/reports/HIL_RESEARCH_REPORT.md` を参照。
 
 ## 📚 ドキュメント (Docs)
 
+文書の全体像と管理ポリシーは **[docs/README.md](docs/README.md)** を参照してください。
+規程は `docs/operations/`、手順書は `docs/guides/`、設計メモは `docs/design/`、
+調査レポート(Record)は `docs/reports/` にあります。主要な文書:
+
 | ドキュメント | 内容 |
 |---|---|
-| [docs/AGENT_OPERATION.md](docs/AGENT_OPERATION.md) | AIエージェントの運用ルール |
-| [docs/TEST_EVIDENCE_POLICY.md](docs/TEST_EVIDENCE_POLICY.md) | 何を合格証拠と認めるか |
-| [docs/HARDWARE_SETUP.md](docs/HARDWARE_SETUP.md) | Pico / Debug Probe / UART / SWD 接続 |
-| [docs/LOGIC_ANALYZER_SETUP.md](docs/LOGIC_ANALYZER_SETUP.md) | FX2LP系ロジックアナライザ + sigrok (将来) |
-| [docs/MCP_SETUP.md](docs/MCP_SETUP.md) | MCPサーバー化の設計メモ (将来) |
-| [docs/AGENT_LAB_PHASE1_REPORT.md](docs/AGENT_LAB_PHASE1_REPORT.md) | Phase 1 実装・検証レポート (実測結果・調査記録) |
+| [docs/operations/AGENT_OPERATION.md](docs/operations/AGENT_OPERATION.md) | AIエージェントの運用ルール |
+| [docs/operations/TEST_EVIDENCE_POLICY.md](docs/operations/TEST_EVIDENCE_POLICY.md) | 何を合格証拠と認めるか |
+| [docs/guides/HARDWARE_SETUP.md](docs/guides/HARDWARE_SETUP.md) | Pico / Debug Probe / UART / SWD 接続・既知の落とし穴 |
+| [docs/guides/LOGIC_ANALYZER_SETUP.md](docs/guides/LOGIC_ANALYZER_SETUP.md) | FX2LP系ロジックアナライザ + sigrok (将来) |
+| [docs/design/MCP_SETUP.md](docs/design/MCP_SETUP.md) | MCPサーバー化の設計メモ (将来) |
+| [docs/reports/AGENT_LAB_PHASE1_REPORT.md](docs/reports/AGENT_LAB_PHASE1_REPORT.md) | Phase 1 実装・検証レポート (実測結果・調査記録) |
 
 
 ## 🤖 AIアシスタント活用ガイド

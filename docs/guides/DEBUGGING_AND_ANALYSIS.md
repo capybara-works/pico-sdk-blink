@@ -54,14 +54,14 @@ PC/LR/SP/xPSR とシンボル解決済みバックトレースを取得できま
 
 `pc_region` フィールドが一次診断材料になります:
 *   `bootrom` (< 0x10000000): クラッシュ、未起動、またはデバッガ起因の停止
-    （`docs/HARDWARE_SETUP.md` の「既知の落とし穴」参照）
+    （`docs/guides/HARDWARE_SETUP.md` の「既知の落とし穴」参照）
 *   `flash`: 通常のコード実行中
 *   `sram`: RAM実行コード
 
 ### 3.2 静的解析との連携 (Crash/Hang Analysis Workflow)
 PCアドレスしか分からない場合でも、`blink.S.dis` と組み合わせて原因を特定できます。
 
-実例（2026-06-12, `docs/AGENT_LAB_PHASE1_REPORT.md`）:
+実例（2026-06-12, `docs/reports/AGENT_LAB_PHASE1_REPORT.md`）:
 ターゲットのUARTが沈黙 → スナップショットで PC=0x10000d92 を取得 →
 `grep "10000d92:" build/blink.S.dis` で `sleep_ms` 内のタイマーポーリングと特定 →
 PCが時間をおいても不動であることから「タイマーが進んでいない」と推定 →
