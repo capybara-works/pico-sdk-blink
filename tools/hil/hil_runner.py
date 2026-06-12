@@ -5,7 +5,7 @@ Executes blink.test.yaml test scenarios on real hardware
 
 Compatible with Wokwi test format:
 - wait-serial: Wait for serial output pattern
-- (expect-pin: Skipped for now, future enhancement)
+- expect-pin: Not supported by this runner yet; fails explicitly
 """
 
 import yaml
@@ -20,41 +20,54 @@ from typing import Optional, Dict, Any, List
 class OpenOCDController:
     """Controls OpenOCD for firmware flashing and GPIO verification"""
     
-    def __init__(self, host="localhost", port=4444):
+    def __init__(
+        self,
+        interface_cfg: str = "interface/cmsis-dap.cfg",
+        target_cfg: str = "target/rp2040.cfg",
+        host="localhost",
+        port=4444,
+    ):
+        self.interface_cfg = interface_cfg
+        self.target_cfg = target_cfg
         self.host = host
         self.port = port
         self.process = None
     
-    def start(self):
+    def start(self) -> bool:
         """Start OpenOCD in background"""
         cmd = [
             "openocd",
-            "-f", "interface/cmsis-dap.cfg",
+            "-f", self.interface_cfg,
             "-c", "transport select swd; adapter speed 1000",
-            "-f", "target/rp2040.cfg"
+            "-f", self.target_cfg
         ]
-        self.process = subprocess.Popen(
-            cmd,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE
-        )
+        self.process = subprocess.Popen(cmd)
         time.sleep(2)  # Wait for OpenOCD to start
+        if self.process.poll() is not None:
+            print("✗ OpenOCD exited during startup")
+            return False
         print("✓ OpenOCD started")
+        return True
     
     def stop(self):
         """Stop OpenOCD"""
         if self.process:
             self.process.terminate()
-            self.process.wait()
+            try:
+                self.process.wait(timeout=5)
+            except subprocess.TimeoutExpired:
+                self.process.kill()
+                self.process.wait()
             print("✓ OpenOCD stopped")
+            self.process = None
     
     def flash_firmware(self, elf_path: str) -> bool:
         """Flash firmware via OpenOCD"""
         cmd = [
             "openocd",
-            "-f", "interface/cmsis-dap.cfg",
+            "-f", self.interface_cfg,
             "-c", "transport select swd; adapter speed 1000",
-            "-f", "target/rp2040.cfg",
+            "-f", self.target_cfg,
             "-c", f"program {elf_path} verify reset exit"
         ]
         result = subprocess.run(cmd, capture_output=True, text=True)
@@ -147,11 +160,21 @@ class UARTMonitor:
 class HILTestRunner:
     """Main test runner"""
     
-    def __init__(self, test_file: str, elf_file: str, uart_port: str):
+    def __init__(
+        self,
+        test_file: str,
+        elf_file: str,
+        uart_port: str,
+        openocd_interface_cfg: str,
+        openocd_target_cfg: str,
+    ):
         self.test_file = test_file
         self.elf_file = elf_file
         self.uart_port = uart_port
-        self.openocd = OpenOCDController()
+        self.openocd = OpenOCDController(
+            interface_cfg=openocd_interface_cfg,
+            target_cfg=openocd_target_cfg,
+        )
         self.uart = UARTMonitor(uart_port)
     
     def load_test_yaml(self) -> Optional[Dict[str, Any]]:
@@ -183,44 +206,44 @@ class HILTestRunner:
         
         # Start OpenOCD for GPIO access
         print("\n[2/3] Starting OpenOCD...")
-        self.openocd.start()
-        
-        # Connect UART
-        print("\n[3/3] Connecting UART...")
-        if not self.uart.connect():
-            self.openocd.stop()
+        if not self.openocd.start():
             return False
         
-        # Execute test steps
-        print("\n" + "=" * 60)
-        print("Executing Test Steps")
-        print("=" * 60)
-        
-        steps = test_data.get('steps', [])
-        for i, step in enumerate(steps, 1):
-            print(f"\nStep {i}/{len(steps)}: {step}")
+        # Connect UART
+        try:
+            print("\n[3/3] Connecting UART...")
+            if not self.uart.connect():
+                return False
             
-            if 'wait-serial' in step:
-                pattern = step['wait-serial']
-                if not self.uart.wait_for_pattern(pattern):
-                    print(f"\n✗ TEST FAILED at step {i}")
-                    self.cleanup()
+            # Execute test steps
+            print("\n" + "=" * 60)
+            print("Executing Test Steps")
+            print("=" * 60)
+
+            steps = test_data.get('steps', [])
+            for i, step in enumerate(steps, 1):
+                print(f"\nStep {i}/{len(steps)}: {step}")
+
+                if 'wait-serial' in step:
+                    pattern = step['wait-serial']
+                    if not self.uart.wait_for_pattern(pattern):
+                        print(f"\n✗ TEST FAILED at step {i}")
+                        return False
+
+                elif 'expect-pin' in step:
+                    print("  ✗ expect-pin is not supported by this runner yet")
+                    return False
+
+                else:
+                    print(f"  ✗ Unknown step type: {step}")
                     return False
             
-            elif 'expect-pin' in step:
-                # Note: Current implementation skips pin verification
-                # as internal LED (GP25) verification is optional
-                print("  ℹ expect-pin skipped (internal LED, verified separately)")
-            
-            else:
-                print(f"  ⚠ Unknown step type: {step}")
-        
-        print("\n" + "=" * 60)
-        print("✅ ALL TESTS PASSED")
-        print("=" * 60)
-        
-        self.cleanup()
-        return True
+            print("\n" + "=" * 60)
+            print("✅ ALL TESTS PASSED")
+            print("=" * 60)
+            return True
+        finally:
+            self.cleanup()
     
     def cleanup(self):
         """Cleanup resources"""
@@ -233,11 +256,27 @@ def main():
     parser = argparse.ArgumentParser(description='HIL Test Runner for Raspberry Pi Pico')
     parser.add_argument('--test', default='blink.test.yaml', help='Test YAML file')
     parser.add_argument('--elf', default='build/blink.elf', help='Firmware ELF file')
-    parser.add_argument('--uart', default='/dev/cu.usbmodem14402', help='UART port')
+    parser.add_argument('--uart', required=True, help='UART port')
+    parser.add_argument(
+        '--openocd-interface-cfg',
+        default='interface/cmsis-dap.cfg',
+        help='OpenOCD interface config file'
+    )
+    parser.add_argument(
+        '--openocd-target-cfg',
+        default='target/rp2040.cfg',
+        help='OpenOCD target config file'
+    )
     
     args = parser.parse_args()
     
-    runner = HILTestRunner(args.test, args.elf, args.uart)
+    runner = HILTestRunner(
+        args.test,
+        args.elf,
+        args.uart,
+        args.openocd_interface_cfg,
+        args.openocd_target_cfg,
+    )
     success = runner.execute_test()
     
     sys.exit(0 if success else 1)

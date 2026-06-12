@@ -13,7 +13,7 @@ graph TD
 
     subgraph "Dev Container (Ubuntu 22.04)"
         OS[OS Layer: Ubuntu 22.04 LTS]
-        Toolchain[Toolchain Layer: ARM GCC 11.3, CMake, Ninja]
+        Toolchain[Toolchain Layer: ARM GCC 11.3, CMake, Make]
         SDK[SDK Layer: Pico SDK, Picotool, OpenOCD]
         App[Application Layer: Source Code, Build Scripts]
     end
@@ -39,7 +39,7 @@ graph TD
 *   **ARM GCC**: `arm-none-eabi-gcc` バージョン 11.3.rel1
     *   役割: クロスコンパイル。
 *   **CMake**: ビルド設定と依存関係解決。
-*   **Build Essentials**: `make`, `ninja` 等のビルド実行ツール。
+*   **Build Essentials**: `make` 等のビルド実行ツール。
 
 ### 2.3 SDK & ライブラリ
 *   **Pico SDK**: Raspberry Pi Pico 用の公式SDK。
@@ -59,5 +59,5 @@ graph TD
 3.  **Build Trigger**: ユーザーがコマンド実行、またはタスク実行。
 4.  **Compile**: `cmake` -> `make` が走り、`build/blink.elf` を生成。
 5.  **Test Trigger**: `ctest` または `build_and_test.sh` が実行。
-6.  **Simulation**: Wokwi CLI が `blink.elf` をロードし、`diagram.json` に基づき実行。
+6.  **Simulation**: Wokwi CLI が `wokwi.toml` / `diagram.json` に基づいてファームウェアを実行し、UARTログシナリオを検証。
 7.  **Feedback**: テスト結果（Pass/Fail）がコンソールおよびCIバッジとして返却される。

@@ -4,7 +4,7 @@
 
 ## 1. 推奨手順: DevContainer (Docker)
 
-環境を再現する最も確実な方法は、VS Code DevContainersを使用することです。これにより、元の環境と全く同じツールチェーンバージョン (GCC 11.3.rel1, CMake等) が保証されます。
+環境を再現する最も確実な方法は、VS Code DevContainersを使用することです。これにより、主要ツールチェーン (ARM GCC 11.3.rel1, Pico SDK 2.0.0 等) をCIと揃えられます。
 
 ### 前提条件
 - **VS Code** がインストールされていること。
@@ -138,5 +138,5 @@ chmod +x build_and_test.sh
 3.  **配線**: `docs/reports/HIL_RESEARCH_REPORT.md` の記述に従い、SWDとUARTを接続します。
 4.  **テスト実行**:
     ```bash
-    python3 tools/hil/hil_runner.py --test blink.test.yaml --elf build/blink.elf
+    PICO_HARDWARE=1 PICO_UART_PORT=/dev/cu.usbmodem14402 scripts/run_hil.sh
     ```

@@ -17,10 +17,20 @@
 ファイルパスやツール構成が現在と異なっていてもそのまま残します。
 現在の正しい手順は常に `guides/` と `operations/` を参照してください。
 
+**読み方の優先順位:** 現在の運用判断は `operations/` → `guides/` →
+リポジトリ直下の概要文書 → `v_model/` / `v_model_environment/` の順に確認します。
+`reports/` と現在の実装・Living文書が矛盾して見える場合は、`reports/` を
+当時の記録として扱い、Living文書を優先してください。
+
 **新しい文書の置き場所:**
 - 調査・検証を実施したら → `reports/` に日付入りでレポートを追加
 - 運用ルールを追加・変更したら → `operations/` を更新
 - 手順が変わったら → `guides/` を更新(レポートは書き換えない)
+- テストシナリオやHIL対応stepが変わったら → `CONTRIBUTING.md` と
+  `v_model/04_test_specification.md` を更新
+- 回路/ピン/シミュレータ構成が変わったら → `diagram.json` と
+  `v_model/02_basic_design.md` / `v_model/03_detailed_design.md` を同期
+- 検証入口や証拠ファイルの扱いが変わったら → `operations/` と `README.md` を同期
 
 ## 文書一覧
 

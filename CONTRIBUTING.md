@@ -33,7 +33,7 @@ AIは以下の順序で変更を行います。
 9.  **skip / stub を成功扱いしない**
 10. 変更内容・検証結果・残課題をコミットまたはPRに明記する
 
-あわせて Wokwi (視覚確認) と GitHub Actions (CI) も活用してください。
+あわせて Wokwi (シミュレーション/UARTログ確認) と GitHub Actions (CI) も活用してください。
 判定基準の詳細: `docs/operations/AGENT_OPERATION.md`, `docs/operations/TEST_EVIDENCE_POLICY.md`
 
 ### AIエージェント向け注意
@@ -60,22 +60,24 @@ AIは以下の順序で変更を行います。
 1.  **シナリオファイルの更新**:
     `blink.test.yaml` に新しいテストケースを追記します。
     ```yaml
-    - name: "Button Press Test"
-      steps:
-        - press: "button1"  # ボタンを押す
-        - wait: 100         # 100ms待つ
-        - expect-pin: 25:1   # GP25(内部LED)がHighであることを期待 (実機のみ)
+    name: Button press smoke
+    version: 1
+    steps:
+      - wait-serial: "LED on"
     ```
+    現在のHIL runnerがサポートする共通stepは `wait-serial` です。
+    `expect-pin` や `press` / `wait` などの未対応stepはHILでは明示的に失敗します。
 
 2.  **ローカル実行**:
     ```bash
     ./build_and_test.sh
     ```
-    ※ 現在の `build_and_test.sh` は基本的なビルドチェック（`size_check`）のみを行います。
-    
-    Wokwiのシナリオテストを実行するには、別途以下のコマンドを実行してください：
+    `WOKWI_CLI_TOKEN` が設定されている場合、`build_and_test.sh` はWokwiシナリオも実行します。
+    未設定の場合、Wokwiステップはskipされ、ビルドと `size_check` のみ実行されます。
+
+    Wokwiのシナリオテストだけを直接実行する場合:
     ```bash
-    wokwi-cli . --scenario blink.test.yaml --timeout 1000
+    wokwi-cli . --scenario blink.test.yaml --timeout 5000
     ```
 
 ## 3. Troubleshooting

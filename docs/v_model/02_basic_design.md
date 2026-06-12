@@ -7,7 +7,7 @@
 ```mermaid
 graph LR
     User[User / Serial Monitor] <-->|UART| Pico[Raspberry Pi Pico]
-    Pico -->|GPIO| LED[LED Indicator]
+    Pico -->|GP25| LED[Onboard LED]
 ```
 
 ## 2. ハードウェア構成
@@ -15,14 +15,13 @@ graph LR
 | コンポーネント | 型番/仕様 | 数量 | 備考 |
 | :--- | :--- | :--- | :--- |
 | MCU | Raspberry Pi Pico (RP2040) | 1 | メインコントローラ |
-| LED | Red LED (Standard 5mm) | 1 | 状態表示用 |
-| 抵抗 | 1kΩ | 1 | 電流制限用 |
+| LED | Pico Onboard LED (GP25) | 1 | 状態表示用 |
 
 ### 2.2 接続定義
-Wokwiシミュレータ定義 (`diagram.json`) に基づく接続は以下の通り。
+外部配線とボード内蔵機能の扱いは以下の通り。
 
 *   **LED接続**:
-    *   Pico Onboard LED (GP25)
+    *   Pico Onboard LED (GP25)。`diagram.json` には外部LED配線を置かない。
 
 ## 3. 外部インターフェース設計
 ### 3.1 GPIOインターフェース

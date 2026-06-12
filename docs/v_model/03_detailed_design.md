@@ -14,7 +14,7 @@
 プログラムのエントリーポイント。以下の順序で処理を実行する。
 
 1.  **初期化処理**
-    *   `stdio_init_all()`: 標準入出力（UART/USB）ドライバを初期化する。
+    *   `stdio_init_all()`: 有効化された標準入出力を初期化する。本プロジェクトではUARTを有効、USB stdioを無効にしている。
     *   `gpio_init(25)`: GP25ピンをGPIOとして初期化する。
     *   `gpio_set_dir(25, GPIO_OUT)`: GP25ピンを出力モードに設定する。
 
@@ -37,14 +37,12 @@
 | `LED_PIN` | 25 | LEDが接続されているGPIOピン番号 (PICO_DEFAULT_LED_PIN) |
 
 ## 4. 回路図詳細 (Wokwi Definition)
-`diagram.json` における配線定義の詳細。
+`diagram.json` では、外部LEDは接続せず、Pico本体のオンボードLED
+(GP25 / `PICO_DEFAULT_LED_PIN`)を使用する。
 
 ```json
 "connections": [
   [ "pico:GP0", "$serialMonitor:RX", "", [] ], 
-  [ "pico:GP1", "$serialMonitor:TX", "", [] ],
-  [ "pico:GP2", "r1:2", "green", [ "v0" ] ],
-  [ "r1:1", "led1:A", "green", [ "v0" ] ],
-  [ "pico:GND.3", "led1:C", "black", [ "v-19.2", "h9.6" ] ]
+  [ "pico:GP1", "$serialMonitor:TX", "", [] ]
 ]
 ```

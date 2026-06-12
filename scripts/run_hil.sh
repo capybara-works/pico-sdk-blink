@@ -22,6 +22,8 @@ hardware_gate "hil" "${RESULT_JSON}" "${HIL_LOG}"
 UART_PORT="${PICO_UART_PORT:-$(cfg_get serial.port "")}"
 ELF_PATH="$(cfg_get target.elf build/blink.elf)"
 TEST_FILE="$(cfg_get target.test_scenario blink.test.yaml)"
+INTERFACE_CFG="$(cfg_get debug.openocd_interface_cfg interface/cmsis-dap.cfg)"
+TARGET_CFG="$(cfg_get debug.openocd_target_cfg target/rp2040.cfg)"
 
 if [ -z "${UART_PORT}" ]; then
     echo "SKIP: hardware not configured (set PICO_UART_PORT or serial.port in config/hardware.local.yaml)" | tee "${HIL_LOG}"
@@ -39,7 +41,9 @@ echo "== scripts/run_hil.sh: running hil_runner.py (uart: ${UART_PORT}) =="
 if python3 "${REPO_ROOT}/tools/hil/hil_runner.py" \
     --test "${REPO_ROOT}/${TEST_FILE}" \
     --elf "${REPO_ROOT}/${ELF_PATH}" \
-    --uart "${UART_PORT}" 2>&1 | tee "${HIL_LOG}"; then
+    --uart "${UART_PORT}" \
+    --openocd-interface-cfg "${INTERFACE_CFG}" \
+    --openocd-target-cfg "${TARGET_CFG}" 2>&1 | tee "${HIL_LOG}"; then
     STATUS="pass"
     REASON=""
 else

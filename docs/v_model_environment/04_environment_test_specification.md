@@ -8,7 +8,7 @@
 *   **テストID**: ENV-001
 *   **目的**: `Dockerfile` からDockerイメージが正常にビルドできることを確認する。
 *   **手順**:
-    1.  `docker build -f .devcontainer/Dockerfile .` を実行する。
+    1.  `./docker_build.sh` または `docker build -t pico-sdk-blink-dev -f .devcontainer/Dockerfile .devcontainer` を実行する。
 *   **合格基準**: エラーなく終了し、イメージIDが出力されること。
 
 ### 2.2 ツールチェーン存在確認

@@ -29,7 +29,7 @@
 
 ### 1.4 Raspberry Pi Pico SDK
 *   **リポジトリ**: `https://github.com/raspberrypi/pico-sdk.git`
-*   **ブランチ**: `master` (または特定のタグ)
+*   **ブランチ**: `2.0.0` (CIとDevContainerで固定)
 *   **インストール先**: `/apps/pico-sdk`
 *   **環境変数**: `PICO_SDK_PATH=/apps/pico-sdk`
 

@@ -41,7 +41,8 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         port = sys.argv[1]
     else:
-        port = "/dev/cu.usbmodem14201"  # Default for macOS
+        print("Usage: uart_monitor.py <serial_port> [duration_seconds]")
+        sys.exit(2)
 
     duration = float(sys.argv[2]) if len(sys.argv) > 2 else 5.0
 

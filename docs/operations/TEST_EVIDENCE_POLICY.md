@@ -29,7 +29,7 @@
 - `pass` — 実際に実行され、期待結果が確認された
 - `fail` — 実際に実行され、失敗した(ログに失敗理由が残る)
 - `skip` — 前提(実機・ツール・設定)が無い、または `PICO_HARDWARE=1` 等の明示的許可が無いため実行されなかった
-- `stub` — 実装がまだスタブで、**結果は実測値ではない**
+- `stub` — サンプル・代替データ・未有効化の代替経路による結果で、**実測値ではない**
 
 **重要:** `skip` と `stub` は成功ではありません。報告時に「成功」と
 言い換えてはいけません。
@@ -45,8 +45,19 @@
 
 ## 証拠の運用
 
-- `evidence/latest/` は実行ごとに上書きされる作業領域で、Git管理しない
-  (`.gitkeep` のみコミット)。
+- `evidence/latest/` は作業領域で、Git管理しない(`.gitkeep` のみコミット)。
+- `scripts/verify_all.sh` は固定入口が生成する既知の証拠ファイルを初期化してから実行する。
+  個別スクリプトを直接実行した場合は、そのスクリプトの証拠だけが更新される。
 - 残したい代表例・学習用サンプルは `evidence/samples/` に小さく置いてコミットする。
 - 証拠が不足している場合は、`verification.md` の Notes に不足内容が明記される。
   不足したまま成功判定をしてはいけない。
+
+## 現在の自動検証カバレッジ
+
+| 項目 | 現状 |
+|---|---|
+| Build / CTest | `scripts/build.sh` で実行 |
+| Wokwi | `WOKWI_CLI_TOKEN` 設定時にUARTログシナリオを実行 |
+| Flash / HIL / UART / GDB | `PICO_HARDWARE=1` のときのみ実機で実行 |
+| HILシナリオ | 現状の共通stepは `wait-serial` |
+| Logic Analyzer | `PICO_LOGIC_ANALYZER=1` かつ `sigrok-cli` 利用可能時のみ実測。それ以外はstub |

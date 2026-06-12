@@ -17,8 +17,11 @@
 
 set -u
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "${SCRIPT_DIR}/common.sh"
 UART_DURATION="${1:-5}"
 FAILED=0
+
+reset_evidence_dir
 
 if ! "${SCRIPT_DIR}/build.sh"; then
     echo "== verify_all: build failed; skipping hardware steps =="

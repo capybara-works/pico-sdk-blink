@@ -5,7 +5,7 @@
 Raspberry Pi Pico (RP2040) を題材にした、**個人用 Embedded AI Agent Lab** です。
 題材ファームウェアはオンボードLED (GP25) を点滅させる最小構成ですが、
 本リポジトリの主目的はLチカそのものではなく、AI生成コードを
-**ビルド → シミュレーション(Wokwi/CI) → 実機書き込み → 観測(UART/GPIO/GDB/ロジックアナライザ) → 証拠保存 → AIによる判定**
+**ビルド → シミュレーション(Wokwi/CI) → 実機書き込み → 観測(UART/GDB/必要に応じてGPIO・ロジックアナライザ) → 証拠保存 → AIによる判定**
 という閉ループで検証できる、最小で再現性のあるPoC基盤を作ることです。
 
 ```text
@@ -15,7 +15,7 @@ AIがコードを変更する
   ↓ scripts/run_hil.sh         (実機HILテスト)
   ↓ scripts/capture_uart.sh    (UART観測)
   ↓ scripts/gdb_snapshot.sh    (GDBレジスタ+バックトレース取得)
-  ↓ scripts/capture_logic_i2c.sh (ロジックアナライザ: スタブ)
+  ↓ scripts/capture_logic_i2c.sh (ロジックアナライザ: 未有効ならスタブ)
   ↓ evidence/latest/           (ログ + JSON として証拠を保存)
   ↓ scripts/summarize_evidence.py → evidence/latest/verification.md
 AIが証拠を読んで成功/失敗/原因候補を判断する
@@ -82,7 +82,7 @@ python3 scripts/summarize_evidence.py  # → evidence/latest/verification.md
 3.  **高速なフィードバック**: 統一されたCI環境により、AIが生成したコードの品質を即座に検証可能。
 
 **🔴 課題 (Cons)**
-1.  **テスト深度**: CIでWokwi機能テスト（Lチカの挙動確認など）は実装済みですが、`WOKWI_CLI_TOKEN` シークレットの設定が必要です。より複雑なシナリオテスト（タイミング検証、複数サイクル確認等）への拡張も検討の余地があります。
+1.  **テスト深度**: CIでWokwiシナリオテスト（UARTログ `LED on` / `LED off` の確認）は実装済みですが、`WOKWI_CLI_TOKEN` シークレットの設定が必要です。GPIO状態・周期精度・複数サイクル確認などは今後の拡張余地があります。
 2.  **シミュレータの限界**: 実機特有のノイズやタイミング問題は再現不可。
 3.  **ブラックボックス化**: 環境が便利すぎるため、低レイヤー技術の理解がおろそかになるリスク。
 
@@ -90,7 +90,7 @@ python3 scripts/summarize_evidence.py  # → evidence/latest/verification.md
 
 このプロジェクトをローカルでビルド・開発するには、以下のツールが必要です。
 
-*   **Pico SDK**: Raspberry Pi Pico SDK (v1.5.0以上推奨, CIはv2.0.0使用)
+*   **Pico SDK**: Raspberry Pi Pico SDK (DevContainer/CIはv2.0.0固定。手動ローカルもv2.0.0推奨)
 *   **CMake**: ビルドシステム
 *   **GCC ARM Toolchain**: クロスコンパイラ (`arm-none-eabi-gcc`)
 *   **VS Code**: 推奨エディタ (Wokwi拡張機能利用のため)
@@ -98,7 +98,8 @@ python3 scripts/summarize_evidence.py  # → evidence/latest/verification.md
 
 ## 🔑 Wokwi Token Setup
 
-Wokwiの自動テスト（ローカルおよびCI）を実行するには、APIトークンが必要です。
+Wokwiの自動テストをCIで実行するには、APIトークンが必要です。ローカルでは任意で、
+未設定の場合 `build_and_test.sh` はWokwiステップをskipします。
 
 1.  **トークンの取得**:
     [https://wokwi.com/dashboard/ci](https://wokwi.com/dashboard/ci) にアクセスし、トークンを取得してください。
@@ -157,7 +158,7 @@ GitHub Actions (`.github/workflows/ci.yml`) により、以下のプロセスが
 1.  **環境構築**: 必要なツールチェーンとPico SDK (v2.0.0) のセットアップ。
 2.  **ビルド & テスト**: ローカルと同じ `build_and_test.sh` を使用して実行。
 3.  **アーティファクト保存**: ビルド成果物 (`blink.uf2`, `blink.elf`) を保存。
-4.  **Wokwi統合テスト**: シミュレータ環境でLEDの点滅動作を自動検証 (要 `WOKWI_CLI_TOKEN` シークレット設定)。
+4.  **Wokwi統合テスト**: シミュレータ環境でUARTログシナリオを自動検証 (要 `WOKWI_CLI_TOKEN` シークレット設定)。
 
 ## 💻 Wokwi シミュレーション
 
@@ -165,7 +166,7 @@ GitHub Actions (`.github/workflows/ci.yml`) により、以下のプロセスが
 
 1.  VS Codeでプロジェクトを開く。
 2.  `diagram.json` を開くか、コマンドパレット (F1) から **"Wokwi: Start Simulator"** を選択。
-3.  LEDが点滅することを確認。
+3.  Serial Monitor に `LED on` / `LED off` が出力されることを確認。
 
 ## 🔧 実機テスト (Hardware-in-the-Loop)
 
@@ -206,9 +207,9 @@ ls /dev/cu.usbmodem*  # macOS
 ls /dev/ttyACM*       # Linux
 
 # テスト実行 (推奨: scripts/run_hil.sh 経由)
-PICO_UART_PORT=/dev/cu.usbmodem14402 scripts/run_hil.sh  # 実際のポートに置き換え
+PICO_HARDWARE=1 PICO_UART_PORT=/dev/cu.usbmodem14402 scripts/run_hil.sh  # 実際のポートに置き換え
 
-# または直接
+# または低レベル確認として直接実行
 python3 tools/hil/hil_runner.py \
   --test blink.test.yaml \
   --elf build/blink.elf \
@@ -219,7 +220,7 @@ python3 tools/hil/hil_runner.py \
 
 *   **`hil_runner.py`**: 完全自動E2Eテスト (入口: `scripts/run_hil.sh`)
 *   **`uart_monitor.py`**: UART出力の監視・パターン検証 (入口: `scripts/capture_uart.sh`)
-*   **`gpio_test.py`**: GPIO状態の検証
+*   **`gpio_test.py`**: GPIO状態の補助検証(手動/調査用)
 
 **詳細:** `docs/guides/HARDWARE_SETUP.md`、`docs/reports/HARDWARE_INTEGRATION_TEST_REPORT.md` および `docs/reports/HIL_RESEARCH_REPORT.md` を参照。
 
