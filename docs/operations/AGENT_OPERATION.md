@@ -31,6 +31,7 @@ python3 scripts/summarize_evidence.py # verification.md 生成
 
 `scripts/verify_all.sh` は固定入口が生成する既知の証拠ファイルを初期化してから実行する。
 個別スクリプトを直接実行した場合は、そのスクリプトの証拠だけが更新される。
+`scripts/build.sh` は `build_result.json` / `ctest_result.json` / `wokwi_result.json` を個別に生成する。
 
 `evidence/latest/verification.md` の Overall Status と Notes を確認し、
 skip / stub / fail をそのまま報告すること。skipを「成功」と言い換えてはいけない。

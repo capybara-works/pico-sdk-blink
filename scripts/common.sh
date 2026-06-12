@@ -21,6 +21,10 @@ reset_evidence_dir() {
     local generated_files=(
         build.log
         build_result.json
+        ctest.log
+        ctest_result.json
+        wokwi.log
+        wokwi_result.json
         flash.log
         flash_result.json
         hil.log

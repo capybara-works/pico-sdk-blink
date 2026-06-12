@@ -17,7 +17,7 @@ AI生成コードをビルド → シミュレーション → 実機 → 観測
 ```bash
 scripts/verify_all.sh                  # 検証ループ一括 (実機には触れない: 実機系はskip)
 PICO_HARDWARE=1 scripts/verify_all.sh  # 実機操作を明示的に有効化 (人間の許可が前提)
-scripts/build.sh                       # ビルド + ctest + 任意Wokwi
+scripts/build.sh                       # ビルド + ctest + 任意Wokwi (個別証拠を生成)
 python3 scripts/summarize_evidence.py  # evidence/latest/verification.md 生成
 ```
 

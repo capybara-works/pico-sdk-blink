@@ -7,7 +7,9 @@
 
 | 証拠 | 生成元 | 場所 |
 |---|---|---|
-| ビルドログ | `scripts/build.sh` | `evidence/latest/build.log` |
+| ビルドログ | `scripts/build.sh` / `scripts/build_firmware.sh` | `evidence/latest/build.log` |
+| CTestログ | `scripts/build.sh` / `scripts/test_ctest.sh` | `evidence/latest/ctest.log` |
+| Wokwiログ | `scripts/build.sh` / `scripts/test_wokwi.sh` | `evidence/latest/wokwi.log` |
 | 結果JSON (`*_result.json`) | 各 `scripts/*.sh` | `evidence/latest/` |
 | UARTログ | `scripts/capture_uart.sh` / `scripts/run_hil.sh` | `evidence/latest/uart.log`, `hil.log` |
 | GDBスナップショット | `scripts/gdb_snapshot.sh` | `evidence/latest/gdb_snapshot.json` |
@@ -56,8 +58,9 @@
 
 | 項目 | 現状 |
 |---|---|
-| Build / CTest | `scripts/build.sh` が `scripts/build_firmware.sh` と `scripts/test_ctest.sh` を実行 |
-| Wokwi | `scripts/test_wokwi.sh` が `WOKWI_CLI_TOKEN` 設定時にUARTログシナリオを実行 |
+| Build | `scripts/build.sh` が `scripts/build_firmware.sh` を実行し、`build_result.json` を生成 |
+| CTest | `scripts/build.sh` が `scripts/test_ctest.sh` を実行し、`ctest_result.json` を生成 |
+| Wokwi | `scripts/build.sh` が `scripts/test_wokwi.sh` を実行し、`wokwi_result.json` を生成。`WOKWI_CLI_TOKEN` 未設定時は `skip` |
 | Flash / HIL / UART / GDB | `PICO_HARDWARE=1` のときのみ実機で実行 |
 | HILシナリオ | 現状の共通stepは `wait-serial` |
 | Logic Analyzer | `PICO_LOGIC_ANALYZER=1` かつ `sigrok-cli` 利用可能時のみ実測。それ以外はstub |

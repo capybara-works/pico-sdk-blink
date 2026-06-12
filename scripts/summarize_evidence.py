@@ -23,6 +23,8 @@ EVIDENCE_DIR = REPO_ROOT / "evidence" / "latest"
 # (step label, result json filename, associated log/evidence filenames)
 STEPS = [
     ("Build", "build_result.json", ["build.log"]),
+    ("CTest", "ctest_result.json", ["ctest.log"]),
+    ("Wokwi", "wokwi_result.json", ["wokwi.log"]),
     ("Flash", "flash_result.json", ["flash.log"]),
     ("HIL", "hil_result.json", ["hil.log"]),
     ("UART", "uart_result.json", ["uart.log"]),
@@ -100,7 +102,7 @@ def main():
         if r is None:
             notes.append(f"- {label}: 未実施。証拠ファイル `{fname}` がありません。")
         elif r.get("status") == "skip":
-            notes.append(f"- {label}: スキップ ({r.get('reason', '理由不明')})。実機未接続または未設定です。")
+            notes.append(f"- {label}: スキップ ({r.get('reason', '理由不明')})。前提条件がないため未実行です。")
         elif r.get("status") == "stub":
             notes.append(f"- {label}: スタブ結果です。実測値ではありません ({r.get('reason', '')})。")
         elif r.get("status") == "error":

@@ -23,7 +23,7 @@
 │   ├── latest/             # [Evidence] 実行ごとの証拠 (ログ+JSON, Git除外)
 │   └── samples/            # [Evidence] 学習・解析用の代表サンプル (Git管理)
 ├── scripts/                # [Script] 証拠ベース検証の入口 (build/flash/HIL/UART/GDB/ロジアナ)
-│   ├── build.sh            # [Script] ビルド+CTest+任意Wokwi → build_result.json
+│   ├── build.sh            # [Script] ビルド+CTest+任意Wokwi → 個別result.json
 │   ├── build_firmware.sh   # [Script] CMake configure/buildのみ
 │   ├── test_ctest.sh       # [Script] CTestのみ
 │   ├── test_wokwi.sh       # [Script] 任意Wokwiシナリオのみ
@@ -46,7 +46,7 @@
 ### Key Files Description
 
 *   **`scripts/build.sh`**:
-    *   **役割**: 証拠付きの標準ビルド入口。ワンコマンドでビルドとテストを実行し、`evidence/latest/build.log` と `build_result.json` を生成する。
+    *   **役割**: 証拠付きの標準ビルド入口。ワンコマンドでビルドとテストを実行し、`build_result.json` / `ctest_result.json` / `wokwi_result.json` を生成する。
     *   **動作**: `scripts/build_firmware.sh` -> `scripts/test_ctest.sh` -> `scripts/test_wokwi.sh` の順に実行。`build_and_test.sh` は互換用wrapperとしてこの入口へ委譲する。
 
 *   **`diagram.json`**:

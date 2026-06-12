@@ -3,7 +3,8 @@
 #
 # Runs the full verification loop WITHOUT PICO_HARDWARE / PICO_LOGIC_ANALYZER
 # and asserts that:
-#   - the build passes and verification.md is generated
+#   - the build and CTest pass, optional Wokwi is recorded, and
+#     verification.md is generated
 #   - hardware steps (flash/hil/uart/gdb) are recorded as "skip", proving
 #     the safety gates hold (no hardware operation without explicit opt-in)
 #   - the logic analyzer step is "stub" or "skip", never a fake "pass"
@@ -34,6 +35,8 @@ import json, os, sys
 evidence_dir = sys.argv[1]
 expected = {
     "build_result.json": {"pass"},
+    "ctest_result.json": {"pass"},
+    "wokwi_result.json": {"pass", "skip"},
     "flash_result.json": {"skip"},
     "hil_result.json": {"skip"},
     "uart_result.json": {"skip"},
@@ -61,7 +64,8 @@ if failures:
     sys.exit(1)
 
 print("ci_phase1_smoke: OK")
-print("  - build: pass (executed)")
+print("  - build/ctest: pass (executed)")
+print("  - wokwi: pass/skip (depending on token/tool availability)")
 print("  - flash/hil/uart/gdb: skip (safety gates held; not executed)")
 print("  - logic_i2c: stub/skip (not measured)")
 print("  - verification.md generated")

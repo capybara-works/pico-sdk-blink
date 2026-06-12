@@ -32,9 +32,9 @@
 ## 3. パイプライン連携テスト (Pipeline Integration Test)
 ### 3.1 ローカル統合スクリプトテスト
 *   **テストID**: ENV-004
-*   **目的**: `scripts/build.sh` が環境差異を吸収して動作し、証拠を生成することを確認する。
+*   **目的**: `scripts/build.sh` が環境差異を吸収して動作し、Build / CTest / Wokwi の個別証拠を生成することを確認する。
 *   **手順**: コンテナ内で `scripts/build.sh` を実行する。
-*   **合格基準**: Configure, Build, Test の全フェーズが成功すること。
+*   **合格基準**: Configure, Build, CTest が成功し、Wokwiはtoken設定時に成功、未設定時は `skip` として記録されること。
 
 ### 3.2 CIワークフローテスト
 *   **テストID**: ENV-005
