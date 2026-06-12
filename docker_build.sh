@@ -34,8 +34,9 @@ docker run --rm \
     -v "$(pwd):/workspace" \
     -w /workspace \
     -u "$(id -u):$(id -g)" \
+    --entrypoint /bin/bash \
     $IMAGE_NAME \
-    -c "chmod +x build_and_test.sh && ./build_and_test.sh"
+    -lc "chmod +x scripts/*.sh && scripts/build.sh"
 
 echo ""
 echo "============================================================"

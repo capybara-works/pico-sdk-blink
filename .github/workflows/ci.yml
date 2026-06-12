@@ -54,20 +54,11 @@ jobs:
           cd pico-sdk && git submodule update --init
 
       # ---------------------------------------------------------
-      # Run unified local+CI build/test script
-      # ---------------------------------------------------------
-      - name: Run build_and_test.sh
-        run: |
-          cd ${{ github.workspace }}
-          chmod +x ./build_and_test.sh
-          ./build_and_test.sh
-
-      # ---------------------------------------------------------
       # Phase 1 evidence pipeline smoke test (no hardware in CI:
       # asserts hardware steps skip via safety gates, logic analyzer
       # stays stub, and verification.md is generated)
       # ---------------------------------------------------------
-      - name: Phase 1 evidence smoke test
+      - name: Build and run evidence smoke test
         run: |
           chmod +x ./scripts/*.sh
           ./scripts/ci_phase1_smoke.sh

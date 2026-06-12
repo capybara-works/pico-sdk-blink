@@ -41,7 +41,7 @@ chmod +x docker_build.sh
 このスクリプトは以下の処理を自動化します:
 1.  `.devcontainer/Dockerfile` を使用してDockerイメージをビルドします。
 2.  コンテナを起動し、カレントディレクトリをマウントします。
-3.  コンテナ内で `build_and_test.sh` を実行します。
+3.  コンテナ内で `scripts/build.sh` を実行します。
 
 ---
 
@@ -112,14 +112,14 @@ source ~/.bashrc
 
 ## 3. 動作確認
 
-環境が正しくセットアップされているか確認するために、統合ビルド・テストスクリプトを実行します。
+環境が正しくセットアップされているか確認するために、証拠付きビルド・テスト入口を実行します。
 
 ```bash
 # スクリプトに実行権限を付与
-chmod +x build_and_test.sh
+chmod +x scripts/*.sh
 
 # ビルドとテストを実行
-./build_and_test.sh
+scripts/build.sh
 ```
 
 **成功基準:**

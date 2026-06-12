@@ -7,7 +7,7 @@
 ## 2. ソースコード付き逆アセンブル (Source-Interleaved Disassembly)
 
 ### 2.1 概要
-ビルドプロセス (`cmake --build` または `build_and_test.sh`) の完了後、自動的に以下のファイルが生成されます。
+ビルドプロセス (`cmake --build`, `scripts/build_firmware.sh`, または `scripts/build.sh`) の完了後、自動的に以下のファイルが生成されます。
 
 *   **ファイルパス**: `build/blink.S.dis`
 *   **生成ツール**: `arm-none-eabi-objdump -S`

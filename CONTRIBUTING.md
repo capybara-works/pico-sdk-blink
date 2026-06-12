@@ -70,9 +70,9 @@ AIは以下の順序で変更を行います。
 
 2.  **ローカル実行**:
     ```bash
-    ./build_and_test.sh
+    scripts/build.sh
     ```
-    `WOKWI_CLI_TOKEN` が設定されている場合、`build_and_test.sh` はWokwiシナリオも実行します。
+    `WOKWI_CLI_TOKEN` が設定されている場合、`scripts/build.sh` はWokwiシナリオも実行します。
     未設定の場合、Wokwiステップはskipされ、ビルドと `size_check` のみ実行されます。
 
     Wokwiのシナリオテストだけを直接実行する場合:

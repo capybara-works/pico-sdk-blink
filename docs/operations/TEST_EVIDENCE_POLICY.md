@@ -56,8 +56,8 @@
 
 | 項目 | 現状 |
 |---|---|
-| Build / CTest | `scripts/build.sh` で実行 |
-| Wokwi | `WOKWI_CLI_TOKEN` 設定時にUARTログシナリオを実行 |
+| Build / CTest | `scripts/build.sh` が `scripts/build_firmware.sh` と `scripts/test_ctest.sh` を実行 |
+| Wokwi | `scripts/test_wokwi.sh` が `WOKWI_CLI_TOKEN` 設定時にUARTログシナリオを実行 |
 | Flash / HIL / UART / GDB | `PICO_HARDWARE=1` のときのみ実機で実行 |
 | HILシナリオ | 現状の共通stepは `wait-serial` |
 | Logic Analyzer | `PICO_LOGIC_ANALYZER=1` かつ `sigrok-cli` 利用可能時のみ実測。それ以外はstub |

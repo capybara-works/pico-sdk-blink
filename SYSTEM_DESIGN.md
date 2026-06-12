@@ -23,13 +23,17 @@
 │   ├── latest/             # [Evidence] 実行ごとの証拠 (ログ+JSON, Git除外)
 │   └── samples/            # [Evidence] 学習・解析用の代表サンプル (Git管理)
 ├── scripts/                # [Script] 証拠ベース検証の入口 (build/flash/HIL/UART/GDB/ロジアナ)
+│   ├── build.sh            # [Script] ビルド+CTest+任意Wokwi → build_result.json
+│   ├── build_firmware.sh   # [Script] CMake configure/buildのみ
+│   ├── test_ctest.sh       # [Script] CTestのみ
+│   ├── test_wokwi.sh       # [Script] 任意Wokwiシナリオのみ
 │   └── verify_all.sh       # [Script] 検証ループ一括実行 → verification.md 生成
 ├── tools/
 │   ├── hil/                # [HIL] 実機テスト実装本体 (hil_runner/uart_monitor/gpio_test)
 │   └── mcp_server/         # [Future] MCPサーバー設計メモ (実装は将来フェーズ)
 ├── blink.cpp               # [Main] アプリケーションのエントリーポイント (Sample)
 ├── blink.test.yaml         # [Test] Wokwi/HIL共用テストシナリオ定義
-├── build_and_test.sh       # [Script] ローカル/CI兼用の統合ビルド・テストスクリプト
+├── build_and_test.sh       # [Script] 互換用wrapper (scripts/build.shへ委譲)
 ├── CLAUDE.md               # [Doc] AIエージェント向けエントリポイント
 ├── CMakeLists.txt          # [Build] CMakeビルド設定ファイル
 ├── diagram.json            # [Wokwi] ハードウェア構成定義
@@ -41,9 +45,9 @@
 
 ### Key Files Description
 
-*   **`build_and_test.sh`**:
-    *   **役割**: 環境差異を吸収し、ワンコマンドでビルドとテストを完遂させるためのスクリプト。
-    *   **動作**: `cmake configure` -> `cmake build` -> `ctest` の順に実行。
+*   **`scripts/build.sh`**:
+    *   **役割**: 証拠付きの標準ビルド入口。ワンコマンドでビルドとテストを実行し、`evidence/latest/build.log` と `build_result.json` を生成する。
+    *   **動作**: `scripts/build_firmware.sh` -> `scripts/test_ctest.sh` -> `scripts/test_wokwi.sh` の順に実行。`build_and_test.sh` は互換用wrapperとしてこの入口へ委譲する。
 
 *   **`diagram.json`**:
     *   **役割**: Wokwiシミュレータが読み込むハードウェア定義。
@@ -65,7 +69,7 @@
 | **ドキュメント** | `docs/`<br>`SYSTEM_DESIGN.md` | 「何を作るか」「どう動くか」「どう開発するか」の完全な定義。 |
 | **ハードウェア** | `diagram.json`<br>`wokwi.toml` | 物理的な回路図の代わりとなる、実行可能なハードウェア定義。 |
 | **ソフトウェア** | `*.cpp`<br>`CMakeLists.txt` | Pico SDKを用いた制御ロジックとビルド定義。 |
-| **パイプライン** | `build_and_test.sh`<br>`.github/workflows/ci.yml` | DevContainer/CIを中心に、同じ入口スクリプトで検証する仕組み。手動ローカル環境はツールバージョン差分があり得るため証拠で確認する。 |
+| **パイプライン** | `scripts/build.sh`<br>`scripts/verify_all.sh`<br>`.github/workflows/ci.yml` | DevContainer/CIを中心に、同じ入口スクリプトで検証する仕組み。手動ローカル環境はツールバージョン差分があり得るため証拠で確認する。 |
 | **検証証拠** | `scripts/`<br>`evidence/` | 実機・シミュレーションの観測結果をログ+JSONとして保存し、AI/人間が証拠に基づいて成否判定する仕組み (`docs/operations/TEST_EVIDENCE_POLICY.md`)。 |
 
 ### 2.2 AI-Driven CI/CD Workflow

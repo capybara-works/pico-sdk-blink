@@ -32,8 +32,8 @@
 ## 3. パイプライン連携テスト (Pipeline Integration Test)
 ### 3.1 ローカル統合スクリプトテスト
 *   **テストID**: ENV-004
-*   **目的**: `build_and_test.sh` が環境差異を吸収して動作することを確認する。
-*   **手順**: コンテナ内で `./build_and_test.sh` を実行する。
+*   **目的**: `scripts/build.sh` が環境差異を吸収して動作し、証拠を生成することを確認する。
+*   **手順**: コンテナ内で `scripts/build.sh` を実行する。
 *   **合格基準**: Configure, Build, Test の全フェーズが成功すること。
 
 ### 3.2 CIワークフローテスト
@@ -52,7 +52,7 @@
 *   **目的**: Wokwi CLI を用いてファームウェアの機能テストが自動実行できることを確認する。
 *   **手順**:
     1.  (CI) GitHub Actions の "Test on Wokwi" ジョブが成功することを確認する。
-    2.  (Local) `WOKWI_CLI_TOKEN` を設定し、`./build_and_test.sh` を実行する。
+    2.  (Local) `WOKWI_CLI_TOKEN` を設定し、`scripts/build.sh` を実行する。
 *   **合格基準**:
     1.  CIジョブが緑色（Success）になること。
     2.  ローカル実行時、"Running Wokwi test..." と表示され、テストが Pass すること。

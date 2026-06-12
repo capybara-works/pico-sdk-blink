@@ -37,7 +37,7 @@ GitHub Actions (`.github/workflows/ci.yml`) 上で以下のプロセスが正常
 1.  **Checkout**: リポジトリの取得。
 2.  **Toolchain Setup**: ARM GCC, CMake のインストール。
 3.  **SDK Setup**: Pico SDK (v2.0.0) の取得とキャッシュ。
-4.  **Build & Test**: `build_and_test.sh` の実行（Configure, Build, CTest）。
+4.  **Build & Test**: `scripts/build.sh` の実行（Configure, Build, CTest, 任意Wokwi）。
 5.  **Artifact Upload**: 生成されたファームウェア (`blink.uf2`, `blink.elf`) の保存。
 
 ### 4.2 Wokwi統合テストジョブ (test-on-wokwi)

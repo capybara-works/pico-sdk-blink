@@ -51,13 +51,13 @@ graph TD
 ### 2.4 CI/CD連携
 *   **GitHub Actions**: CIランナー。
 *   **Workflow**: `.github/workflows/ci.yml`
-    *   役割: コンテナ環境の再現（または同等のツールチェーンセットアップ）と、`build_and_test.sh` の実行。
+    *   役割: コンテナ環境の再現（または同等のツールチェーンセットアップ）と、`scripts/ci_phase1_smoke.sh` / `scripts/verify_all.sh` の実行。
 
 ## 3. データフロー
 1.  **Code Change**: ユーザーまたはAIがソースコードを変更。
 2.  **Sync**: VS Code Server がコンテナ内のファイルを更新。
 3.  **Build Trigger**: ユーザーがコマンド実行、またはタスク実行。
 4.  **Compile**: `cmake` -> `make` が走り、`build/blink.elf` を生成。
-5.  **Test Trigger**: `ctest` または `build_and_test.sh` が実行。
+5.  **Test Trigger**: `scripts/build.sh` または個別の `scripts/test_ctest.sh` / `scripts/test_wokwi.sh` が実行。
 6.  **Simulation**: Wokwi CLI が `wokwi.toml` / `diagram.json` に基づいてファームウェアを実行し、UARTログシナリオを検証。
 7.  **Feedback**: テスト結果（Pass/Fail）がコンソールおよびCIバッジとして返却される。
