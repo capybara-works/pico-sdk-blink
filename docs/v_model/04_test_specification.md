@@ -49,7 +49,7 @@ GitHub Actions (`.github/workflows/ci.yml`) 上で以下のプロセスが正常
     1.  ビルド済みファームウェア (`blink.uf2`, `blink.elf`) をアーティファクトからダウンロード。
     2.  Wokwi CIアクションでシミュレーションを起動。
     3.  `blink.test.yaml` で定義されたテストシナリオ (IT-001) を実行。
-    4.  シリアル出力の検証結果を取得。
+    4.  シリアル出力の検証結果を取得し、`evidence-with-wokwi` artifact に `wokwi_result.json` と `verification.md` を保存。
 *   **必須設定**: GitHubリポジトリシークレット `WOKWI_CLI_TOKEN` の設定
 *   **タイムアウト**: 5000ms
 *   **合格基準**: テストシナリオの全ステップがタイムアウト内に成功すること。

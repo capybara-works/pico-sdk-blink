@@ -45,6 +45,7 @@
 *   **合格基準**:
     *   ワークフローが緑色（Success）で終了すること。
     *   "Upload firmware artifacts" ステップでアーティファクトがアップロードされていること。
+    *   `evidence` および `evidence-with-wokwi` アーティファクトがアップロードされていること。
 
 ## 4. シミュレータ連携テスト
 ### 4.1 Wokwi 自動テスト (Automated Wokwi Test)
@@ -55,4 +56,5 @@
     2.  (Local) `WOKWI_CLI_TOKEN` を設定し、`scripts/build.sh` を実行する。
 *   **合格基準**:
     1.  CIジョブが緑色（Success）になること。
-    2.  ローカル実行時、"Running Wokwi test..." と表示され、テストが Pass すること。
+    2.  CIの `evidence-with-wokwi` に `wokwi_result.json` が保存され、`status` が `pass` であること。
+    3.  ローカル実行時、"Running Wokwi test..." と表示され、テストが Pass すること。

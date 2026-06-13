@@ -9,7 +9,7 @@
 |---|---|---|
 | ビルドログ | `scripts/build.sh` / `scripts/build_firmware.sh` | `evidence/latest/build.log` |
 | CTestログ | `scripts/build.sh` / `scripts/test_ctest.sh` | `evidence/latest/ctest.log` |
-| Wokwiログ | `scripts/build.sh` / `scripts/test_wokwi.sh` | `evidence/latest/wokwi.log` |
+| Wokwiログ | `scripts/build.sh` / `scripts/test_wokwi.sh` / `scripts/record_wokwi_ci_result.sh` | `evidence/latest/wokwi.log` |
 | 結果JSON (`*_result.json`) | 各 `scripts/*.sh` | `evidence/latest/` |
 | UARTログ | `scripts/capture_uart.sh` / `scripts/run_hil.sh` | `evidence/latest/uart.log`, `hil.log` |
 | GDBスナップショット | `scripts/gdb_snapshot.sh` | `evidence/latest/gdb_snapshot.json` |
@@ -60,7 +60,7 @@
 |---|---|
 | Build | `scripts/build.sh` が `scripts/build_firmware.sh` を実行し、`build_result.json` を生成 |
 | CTest | `scripts/build.sh` が `scripts/test_ctest.sh` を実行し、`ctest_result.json` を生成 |
-| Wokwi | `scripts/build.sh` が `scripts/test_wokwi.sh` を実行し、`wokwi_result.json` を生成。`WOKWI_CLI_TOKEN` 未設定時は `skip` |
+| Wokwi | ローカル/Build jobでは `scripts/test_wokwi.sh` が `wokwi_result.json` を生成。CIの `test-on-wokwi` jobでは `scripts/record_wokwi_ci_result.sh` が action 結果を `evidence-with-wokwi` artifact に統合 |
 | Flash / HIL / UART / GDB | `PICO_HARDWARE=1` のときのみ実機で実行 |
 | HILシナリオ | 現状の共通stepは `wait-serial` |
 | Logic Analyzer | `PICO_LOGIC_ANALYZER=1` かつ `sigrok-cli` 利用可能時のみ実測。それ以外はstub |

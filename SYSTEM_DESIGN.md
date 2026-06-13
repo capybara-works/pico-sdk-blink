@@ -27,6 +27,7 @@
 │   ├── build_firmware.sh   # [Script] CMake configure/buildのみ
 │   ├── test_ctest.sh       # [Script] CTestのみ
 │   ├── test_wokwi.sh       # [Script] 任意Wokwiシナリオのみ
+│   ├── record_wokwi_ci_result.sh # [Script] CI Wokwi action結果を証拠化
 │   └── verify_all.sh       # [Script] 検証ループ一括実行 → verification.md 生成
 ├── tools/
 │   ├── hil/                # [HIL] 実機テスト実装本体 (hil_runner/uart_monitor/gpio_test)

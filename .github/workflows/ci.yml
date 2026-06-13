@@ -86,6 +86,13 @@ jobs:
     needs: build-and-test
     steps:
       - uses: actions/checkout@v6
+
+      - name: Download evidence
+        uses: actions/download-artifact@v8
+        with:
+          name: evidence
+          path: evidence/latest
+
       - name: Download firmware
         uses: actions/download-artifact@v8
         with:
@@ -93,9 +100,29 @@ jobs:
           path: build
 
       - name: Test on Wokwi
+        id: wokwi
+        continue-on-error: true
         uses: wokwi/wokwi-ci-action@v1
         with:
           token: ${{ secrets.WOKWI_CLI_TOKEN }}
           path: .
           timeout: 5000
           scenario: 'blink.test.yaml'
+
+      - name: Record Wokwi evidence
+        if: always()
+        run: |
+          chmod +x ./scripts/*.sh
+          ./scripts/record_wokwi_ci_result.sh "${{ steps.wokwi.outcome }}"
+          python3 ./scripts/summarize_evidence.py
+
+      - name: Upload evidence with Wokwi result
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: evidence-with-wokwi
+          path: evidence/latest/
+
+      - name: Fail if Wokwi failed
+        if: steps.wokwi.outcome != 'success'
+        run: exit 1
