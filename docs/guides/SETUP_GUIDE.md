@@ -6,6 +6,8 @@
 
 環境を再現する最も確実な方法は、VS Code DevContainersを使用することです。これにより、主要ツールチェーン (ARM GCC 11.3.rel1, Pico SDK 2.0.0 等) をCIと揃えられます。
 
+DevContainerは `.devcontainer/Dockerfile` を再現元とし、GHCR上の事前ビルド済みイメージ (`ghcr.io/capybara-works/pico-sdk-blink/devcontainer:main`) をキャッシュ候補として使用します。事前ビルド済みイメージを利用できない場合の初回ローカルビルドでは、ARM GNU Toolchainの大きなアーカイブ取得と展開が発生します。ネットワーク状況によっては数十分かかることがありますが、2回目以降はDockerレイヤキャッシュにより短縮されます。
+
 ### 前提条件
 - **VS Code** がインストールされていること。
 - **Docker Desktop** (または同等のDockerエンジン) がインストールされ、実行されていること。
@@ -21,9 +23,10 @@
 **自動的にインストールされるもの:**
 -   ARM GCC Toolchain (11.3.rel1)
 -   CMake, Build Essentials
--   Pico SDK
--   OpenOCD (ハードウェアデバッグ用)
--   Picotool
+-   Pico SDK (2.0.0)
+-   OpenOCD (v0.12.0, ハードウェアデバッグ用)
+-   Picotool (2.0.0)
+-   bootterm (v0.5)
 -   VS Code Extensions (C/C++, Wokwi, Cortex-Debug, etc.)
 
 ### 1.5 Docker CLIによるビルド (VS Code不要)
@@ -39,9 +42,22 @@ chmod +x docker_build.sh
 ```
 
 このスクリプトは以下の処理を自動化します:
-1.  `.devcontainer/Dockerfile` を使用してDockerイメージをビルドします。
-2.  コンテナを起動し、カレントディレクトリをマウントします。
-3.  コンテナ内で `scripts/build.sh` を実行します。
+1.  事前ビルド済みイメージ (`ghcr.io/capybara-works/pico-sdk-blink/devcontainer:main`) をpullし、ローカル名 `pico-sdk-blink-dev` として使用します。
+2.  事前ビルド済みイメージを取得できない場合は、`.devcontainer/Dockerfile` からローカルでDockerイメージをビルドします。
+3.  コンテナを起動し、カレントディレクトリをマウントします。
+4.  コンテナ内で `PICO_BUILD_DIR=/workspace/build-docker scripts/build.sh` を実行します。
+
+ローカルDockerfileビルドを強制する場合は、以下のように実行します。
+
+```bash
+PICO_DOCKER_FORCE_BUILD=1 ./docker_build.sh
+```
+
+forkや検証用の別イメージを使う場合は、`PICO_DEVCONTAINER_IMAGE` でpull元を、`PICO_DOCKER_IMAGE_NAME` でローカルイメージ名を変更できます。
+
+Docker CLI経由のビルド成果物は、ホスト側の通常ビルド用 `build/` とは分離して `build-docker/` に生成されます。これにより、ホスト環境で作成済みの `build/CMakeCache.txt` とコンテナ内パス (`/workspace`) の衝突を避けます。
+
+Docker/DevContainer相当環境とCIのファームウェアpayloadは、`blink.uf2` と `blink.bin` のhashで比較します。`blink.elf`, map, disassembly はビルドパスを含むため、環境が一致していてもhashが異なる場合があります。
 
 ---
 

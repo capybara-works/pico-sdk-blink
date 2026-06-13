@@ -46,6 +46,15 @@
     *   リポジトリ: `https://github.com/wtarreau/bootterm.git`
     *   タグ: `v0.5`
 
+### 1.6 事前ビルド済みDevContainerイメージ
+*   **再現元**: `.devcontainer/Dockerfile`
+*   **公開先**: `ghcr.io/capybara-works/pico-sdk-blink/devcontainer`
+*   **主タグ**: `main`
+*   **追跡用タグ**: `sha-<commit>`
+*   **生成workflow**: `.github/workflows/devcontainer-image.yml`
+*   **ローカル利用**: `docker_build.sh` は既定で `ghcr.io/capybara-works/pico-sdk-blink/devcontainer:main` をpullし、取得できない場合は `.devcontainer/Dockerfile` からローカルビルドする。
+*   **DevContainer利用**: `.devcontainer/devcontainer.json` は同イメージを `cacheFrom` に指定しつつ、Dockerfileからの再現経路を維持する。
+
 ## 2. VS Code 拡張機能構成
 `.devcontainer/devcontainer.json` および `.vscode/extensions.json` に基づく。
 

@@ -6,10 +6,17 @@
 ## 2. 環境構築テスト (Build Verification Test)
 ### 2.1 コンテナビルドテスト
 *   **テストID**: ENV-001
-*   **目的**: `Dockerfile` からDockerイメージが正常にビルドできることを確認する。
+*   **目的**: 事前ビルド済みDevContainerイメージまたは `Dockerfile` からDocker実行環境を準備でき、コンテナ内でローカル検証入口が実行できることを確認する。
 *   **手順**:
-    1.  `./docker_build.sh` または `docker build -t pico-sdk-blink-dev -f .devcontainer/Dockerfile .devcontainer` を実行する。
-*   **合格基準**: エラーなく終了し、イメージIDが出力されること。
+    1.  `./docker_build.sh` を実行する。
+    2.  ローカルDockerfileビルドも確認する場合は、`PICO_DOCKER_FORCE_BUILD=1 ./docker_build.sh` を実行する。
+    3.  イメージ単体だけを確認する場合は、`docker build -t pico-sdk-blink-dev -f .devcontainer/Dockerfile .devcontainer` を実行する。
+*   **合格基準**:
+    *   `./docker_build.sh` が事前ビルド済みイメージをpullできる場合はそれを使用し、取得できない場合はローカルビルドへfallbackすること。
+    *   ローカルDockerfileビルドがエラーなく完了すること。
+    *   `./docker_build.sh` 実行時、コンテナ内で `PICO_BUILD_DIR=/workspace/build-docker scripts/build.sh` が実行されること。
+    *   `build-docker/` に `blink.elf`, `blink.uf2`, `blink.bin` が生成されること。
+    *   Build と CTest が `pass` になり、Wokwiはtoken未設定時に `skip`、設定時に `pass` として証拠に記録されること。
 
 ### 2.2 ツールチェーン存在確認
 *   **テストID**: ENV-002
@@ -48,9 +55,34 @@
     *   `evidence` および `evidence-with-wokwi` アーティファクトがアップロードされていること。
     *   `scripts/fetch_ci_evidence.sh` で `evidence-with-wokwi` を取得できること。
 
+### 3.3 Docker/CI ファームウェアpayload一致確認
+*   **テストID**: ENV-006
+*   **目的**: DevContainer相当環境で生成した実行用payloadとCI artifactが一致することを確認する。
+*   **手順**:
+    1.  `./docker_build.sh` を実行し、`build-docker/` の成果物を生成する。
+    2.  対象CI runの `firmware` artifactを `artifacts/latest/firmware/<run_id>/` に取得する。
+    3.  `shasum -a 256 build-docker/blink.uf2 artifacts/latest/firmware/<run_id>/blink.uf2` を実行する。
+    4.  `shasum -a 256 build-docker/blink.bin artifacts/latest/firmware/<run_id>/blink.bin` を実行する。
+*   **合格基準**:
+    *   `blink.uf2` のhashが一致すること。
+    *   `blink.bin` のhashが一致すること。
+    *   `blink.elf`, `.map`, `.dis` はビルドパスやデバッグ情報を含むため、payload一致の必須判定対象にしない。
+
+### 3.4 DevContainerイメージ公開テスト
+*   **テストID**: ENV-007
+*   **目的**: `.devcontainer/Dockerfile` から事前ビルド済みDevContainerイメージが生成され、GHCRに公開されることを確認する。
+*   **手順**:
+    1.  `.github/workflows/devcontainer-image.yml` を手動実行、または `.devcontainer/**` の変更を `main` に反映する。
+    2.  "Build devcontainer image" ワークフローの状態を確認する。
+    3.  `docker pull ghcr.io/capybara-works/pico-sdk-blink/devcontainer:main` を実行する。
+*   **合格基準**:
+    *   ワークフローが緑色（Success）で終了すること。
+    *   `ghcr.io/capybara-works/pico-sdk-blink/devcontainer:main` と `sha-<commit>` タグが公開されること。
+    *   pullしたイメージを `docker_build.sh` がローカル名 `pico-sdk-blink-dev` として使用できること。
+
 ## 4. シミュレータ連携テスト
 ### 4.1 Wokwi 自動テスト (Automated Wokwi Test)
-*   **テストID**: ENV-006
+*   **テストID**: ENV-008
 *   **目的**: Wokwi CLI を用いてファームウェアの機能テストが自動実行できることを確認する。
 *   **手順**:
     1.  (CI) GitHub Actions の "Test on Wokwi" ジョブが成功することを確認する。

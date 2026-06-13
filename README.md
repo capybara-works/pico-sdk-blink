@@ -165,8 +165,10 @@ GitHub Actions (`.github/workflows/ci.yml`) により、以下のプロセスが
 
 1.  **環境構築**: 必要なツールチェーンとPico SDK (v2.0.0) のセットアップ。
 2.  **ビルド & テスト**: `scripts/ci_phase1_smoke.sh` 経由で `scripts/verify_all.sh` を実行し、ビルド・CTest・証拠生成を確認。
-3.  **アーティファクト保存**: ビルド成果物 (`blink.uf2`, `blink.elf`) と evidence を保存。
+3.  **アーティファクト保存**: ビルド成果物 (`build/blink.*`: `blink.uf2`, `blink.bin`, `blink.elf`, map/disassembly 等) と evidence を保存。
 4.  **Wokwi統合テスト**: シミュレータ環境でUARTログシナリオを自動検証し、結果を `evidence-with-wokwi` artifact に統合 (要 `WOKWI_CLI_TOKEN` シークレット設定)。
+
+DevContainer用の事前ビルド済みイメージは、`.github/workflows/devcontainer-image.yml` により `ghcr.io/capybara-works/pico-sdk-blink/devcontainer:main` へ公開されます。`docker_build.sh` はこのイメージを優先して使用し、取得できない場合は `.devcontainer/Dockerfile` からローカルビルドします。
 
 ## 💻 Wokwi シミュレーション
 

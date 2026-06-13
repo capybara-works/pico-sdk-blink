@@ -1,0 +1,59 @@
+name: Build devcontainer image
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".devcontainer/**"
+      - ".github/workflows/devcontainer-image.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build-devcontainer-image:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Prepare image tags
+        shell: bash
+        run: |
+          image_name="ghcr.io/${GITHUB_REPOSITORY,,}/devcontainer"
+          {
+            echo "IMAGE_NAME=${image_name}"
+            echo "IMAGE_TAG_MAIN=${image_name}:main"
+            echo "IMAGE_TAG_SHA=${image_name}:sha-${GITHUB_SHA}"
+          } >> "$GITHUB_ENV"
+
+      - name: Login to GitHub Container Registry
+        shell: bash
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" \
+            | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+
+      - name: Set up Docker Buildx
+        shell: bash
+        run: docker buildx create --use
+
+      - name: Build and push image
+        shell: bash
+        run: |
+          tags=(-t "${IMAGE_TAG_SHA}")
+          if [[ "${GITHUB_REF}" == "refs/heads/main" ]]; then
+            tags+=(-t "${IMAGE_TAG_MAIN}")
+          fi
+
+          docker buildx build \
+            --file .devcontainer/Dockerfile \
+            --cache-from type=gha \
+            --cache-to type=gha,mode=max \
+            --label "org.opencontainers.image.source=https://github.com/${GITHUB_REPOSITORY}" \
+            --label "org.opencontainers.image.revision=${GITHUB_SHA}" \
+            --push \
+            "${tags[@]}" \
+            .devcontainer

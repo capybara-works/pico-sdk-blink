@@ -1,8 +1,9 @@
 #!/bin/bash
-set -e
+set -euo pipefail
 
-# Image name
-IMAGE_NAME="pico-sdk-blink-dev"
+LOCAL_IMAGE_NAME="${PICO_DOCKER_IMAGE_NAME:-pico-sdk-blink-dev}"
+PREBUILT_IMAGE="${PICO_DEVCONTAINER_IMAGE:-ghcr.io/capybara-works/pico-sdk-blink/devcontainer:main}"
+FORCE_BUILD="${PICO_DOCKER_FORCE_BUILD:-0}"
 
 # Check if Docker is installed
 if ! command -v docker &> /dev/null; then
@@ -11,13 +12,26 @@ if ! command -v docker &> /dev/null; then
 fi
 
 echo "============================================================"
-echo " Building Docker Image: $IMAGE_NAME"
+echo " Preparing Docker Image: $LOCAL_IMAGE_NAME"
 echo "============================================================"
 
-# Build the image using the existing Dockerfile in .devcontainer
-# We use the context of the current directory to allow COPY if needed, 
-# but the Dockerfile is in .devcontainer
-docker build -t $IMAGE_NAME -f .devcontainer/Dockerfile .devcontainer
+build_image() {
+    echo "Building local image from .devcontainer/Dockerfile..."
+    docker build -t "$LOCAL_IMAGE_NAME" -f .devcontainer/Dockerfile .devcontainer
+}
+
+if [[ "$FORCE_BUILD" == "1" ]]; then
+    echo "PICO_DOCKER_FORCE_BUILD=1; skipping prebuilt image pull."
+    build_image
+else
+    echo "Trying prebuilt image: $PREBUILT_IMAGE"
+    if docker pull "$PREBUILT_IMAGE"; then
+        docker tag "$PREBUILT_IMAGE" "$LOCAL_IMAGE_NAME"
+    else
+        echo "Prebuilt image is unavailable; falling back to a local build."
+        build_image
+    fi
+fi
 
 echo ""
 echo "============================================================"
@@ -35,7 +49,7 @@ docker run --rm \
     -w /workspace \
     -u "$(id -u):$(id -g)" \
     --entrypoint /bin/bash \
-    $IMAGE_NAME \
+    "$LOCAL_IMAGE_NAME" \
     -lc "chmod +x scripts/*.sh && PICO_BUILD_DIR=/workspace/build-docker scripts/build.sh"
 
 echo ""

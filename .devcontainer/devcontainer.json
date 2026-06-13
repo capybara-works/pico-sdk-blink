@@ -3,7 +3,10 @@
 {
 	"name": "C++ Raspberry Pi Pico",
 	"build": {
-		"dockerfile": "Dockerfile"
+		"dockerfile": "Dockerfile",
+		"cacheFrom": [
+			"ghcr.io/capybara-works/pico-sdk-blink/devcontainer:main"
+		]
 	},
 	// Set *default* container specific settings.json values on container create.
 	"settings": {

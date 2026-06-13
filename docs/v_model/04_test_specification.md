@@ -8,7 +8,7 @@
 *   **テストID**: UT-001
 *   **目的**: ソースコードが正常にコンパイル・リンクできることを確認する。
 *   **手順**: `cmake --build .` を実行する。
-*   **合格基準**: エラーなく終了し、実行バイナリ（`blink.elf`, `blink.uf2`）が生成されること。
+*   **合格基準**: エラーなく終了し、実行用ファームウェア（`blink.elf`, `blink.uf2`, `blink.bin`）が生成されること。
 
 ### 2.2 サイズチェック
 *   **テストID**: UT-002
@@ -38,7 +38,7 @@ GitHub Actions (`.github/workflows/ci.yml`) 上で以下のプロセスが正常
 2.  **Toolchain Setup**: ARM GCC, CMake のインストール。
 3.  **SDK Setup**: Pico SDK (v2.0.0) の取得とキャッシュ。
 4.  **Build & Test**: `scripts/build.sh` の実行（Configure, Build, CTest, 任意Wokwi）。
-5.  **Artifact Upload**: 生成されたファームウェア (`blink.uf2`, `blink.elf`) の保存。
+5.  **Artifact Upload**: 生成されたファームウェア (`build/blink.*`: `blink.uf2`, `blink.bin`, `blink.elf`, map/disassembly 等) の保存。
 
 ### 4.2 Wokwi統合テストジョブ (test-on-wokwi)
 *   **テストID**: SV-001
@@ -46,7 +46,7 @@ GitHub Actions (`.github/workflows/ci.yml`) 上で以下のプロセスが正常
 *   **目的**: シミュレータ環境でのハードウェア・ソフトウェア統合動作を検証する。
 *   **実行環境**: `wokwi/wokwi-ci-action@v1`
 *   **手順**:
-    1.  ビルド済みファームウェア (`blink.uf2`, `blink.elf`) をアーティファクトからダウンロード。
+    1.  ビルド済みファームウェア artifact (`build/blink.*`) を `build/` にダウンロード。
     2.  Wokwi CIアクションでシミュレーションを起動。
     3.  `blink.test.yaml` で定義されたテストシナリオ (IT-001) を実行。
     4.  シリアル出力の検証結果を取得し、`evidence-with-wokwi` artifact に `wokwi_result.json` と `verification.md` を保存。
