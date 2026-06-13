@@ -47,6 +47,10 @@ evidence/latest/*
 captures/latest/*
 !captures/latest/.gitkeep
 
+# downloaded CI artifacts
+artifacts/latest/*
+!artifacts/latest/.gitkeep
+
 # build outputs
 build/
 *.elf

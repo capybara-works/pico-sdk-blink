@@ -46,6 +46,7 @@
     *   ワークフローが緑色（Success）で終了すること。
     *   "Upload firmware artifacts" ステップでアーティファクトがアップロードされていること。
     *   `evidence` および `evidence-with-wokwi` アーティファクトがアップロードされていること。
+    *   `scripts/fetch_ci_evidence.sh` で `evidence-with-wokwi` を取得できること。
 
 ## 4. シミュレータ連携テスト
 ### 4.1 Wokwi 自動テスト (Automated Wokwi Test)

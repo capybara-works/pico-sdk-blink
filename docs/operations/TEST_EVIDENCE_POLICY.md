@@ -16,6 +16,7 @@
 | ロジックアナライザのデコード結果 | `scripts/capture_logic_i2c.sh` | `evidence/latest/logic_i2c_decode.txt` |
 | 実取得スクリーンショット | 人間またはツールが実際に取得したもの | 取得経緯を明記して保存 |
 | CI実行ログ | GitHub Actions | Actionsの実行ページ |
+| CI証拠artifact | `scripts/fetch_ci_evidence.sh` | `artifacts/latest/evidence-with-wokwi/` |
 
 ## 証拠として認めないもの
 
@@ -48,6 +49,8 @@
 ## 証拠の運用
 
 - `evidence/latest/` は作業領域で、Git管理しない(`.gitkeep` のみコミット)。
+- `artifacts/latest/` はCI artifactの取得先で、Git管理しない(`.gitkeep` のみコミット)。
+  `scripts/fetch_ci_evidence.sh` は最新 successful run の `evidence-with-wokwi` を取得する。
 - `scripts/verify_all.sh` は固定入口が生成する既知の証拠ファイルを初期化してから実行する。
   個別スクリプトを直接実行した場合は、そのスクリプトの証拠だけが更新される。
 - 残したい代表例・学習用サンプルは `evidence/samples/` に小さく置いてコミットする。

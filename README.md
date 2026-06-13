@@ -44,6 +44,9 @@ PICO_HARDWARE=1 PICO_LOGIC_ANALYZER=1 scripts/verify_all.sh
 scripts/build.sh                       # → build/ctest/wokwi のログ + result.json
 PICO_HARDWARE=1 scripts/run_hil.sh     # → evidence/latest/hil_result.json
 python3 scripts/summarize_evidence.py  # → evidence/latest/verification.md
+
+# CIで生成されたWokwi統合済み証拠を取得 (GitHub CLI / gh auth login が必要)
+scripts/fetch_ci_evidence.sh           # → artifacts/latest/evidence-with-wokwi/
 ```
 
 **安全ゲート:** 実機操作(flash/HIL/UART/GDB)は `PICO_HARDWARE=1`、
@@ -63,6 +66,8 @@ python3 scripts/summarize_evidence.py  # → evidence/latest/verification.md
 
 `evidence/latest/` はGit管理外の作業領域で、代表サンプルは
 [evidence/samples/](evidence/samples/) にあります(実測/合成の来歴つき)。
+CIで生成された `evidence-with-wokwi` artifact は `scripts/fetch_ci_evidence.sh` で
+`artifacts/latest/evidence-with-wokwi/` に取得できます。
 
 ## 💡 コンセプト (Concept)
 
