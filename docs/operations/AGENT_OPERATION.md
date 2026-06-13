@@ -33,7 +33,7 @@ python3 scripts/summarize_evidence.py # verification.md 生成
 個別スクリプトを直接実行した場合は、そのスクリプトの証拠だけが更新される。
 `scripts/build.sh` は `build_result.json` / `ctest_result.json` / `wokwi_result.json` を個別に生成する。
 CIのWokwi統合済み証拠を確認する場合は `scripts/fetch_ci_evidence.sh` で
-`artifacts/latest/evidence-with-wokwi/` に取得し、`verification.md` と
+`artifacts/latest/evidence-with-wokwi/<run_id>/` に取得し、`verification.md` と
 `wokwi_result.json` を読む。
 
 `evidence/latest/verification.md` の Overall Status と Notes を確認し、

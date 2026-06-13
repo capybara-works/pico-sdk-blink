@@ -16,7 +16,7 @@
 | ロジックアナライザのデコード結果 | `scripts/capture_logic_i2c.sh` | `evidence/latest/logic_i2c_decode.txt` |
 | 実取得スクリーンショット | 人間またはツールが実際に取得したもの | 取得経緯を明記して保存 |
 | CI実行ログ | GitHub Actions | Actionsの実行ページ |
-| CI証拠artifact | `scripts/fetch_ci_evidence.sh` | `artifacts/latest/evidence-with-wokwi/` |
+| CI証拠artifact | `scripts/fetch_ci_evidence.sh` | `artifacts/latest/evidence-with-wokwi/<run_id>/` |
 
 ## 証拠として認めないもの
 

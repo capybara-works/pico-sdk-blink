@@ -72,14 +72,22 @@ if [ -z "${RUN_ID}" ]; then
 fi
 
 RUN_URL="$(gh run view -R "${REPO}" "${RUN_ID}" --json url --jq '.url')"
-OUT_DIR="${CI_EVIDENCE_DIR:-${REPO_ROOT}/artifacts/latest/${ARTIFACT_NAME}}"
+if [ -n "${CI_EVIDENCE_DIR:-}" ]; then
+    OUT_DIR="${CI_EVIDENCE_DIR}"
+else
+    OUT_DIR="${REPO_ROOT}/artifacts/latest/${ARTIFACT_NAME}/${RUN_ID}"
+fi
 
 mkdir -p "${OUT_DIR}"
 
 echo "== Downloading ${ARTIFACT_NAME} =="
 echo "run: ${RUN_URL}"
 echo "out: ${OUT_DIR}"
-gh run download "${RUN_ID}" -R "${REPO}" --name "${ARTIFACT_NAME}" --dir "${OUT_DIR}"
+if [ -f "${OUT_DIR}/verification.md" ] && [ -f "${OUT_DIR}/wokwi_result.json" ]; then
+    echo "artifact already present; using existing files"
+else
+    gh run download "${RUN_ID}" -R "${REPO}" --name "${ARTIFACT_NAME}" --dir "${OUT_DIR}"
+fi
 
 echo "== CI evidence =="
 echo "verification: ${OUT_DIR}/verification.md"
