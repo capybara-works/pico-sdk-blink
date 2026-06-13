@@ -36,10 +36,15 @@
 ### 1.5 追加ツール
 *   **OpenOCD**:
     *   リポジトリ: `https://github.com/openocd-org/openocd.git`
-    *   構成オプション: `--enable-ftdi --enable-sysfsgpio --enable-picoprobe --enable-cmsis-dap`
+    *   タグ: `v0.12.0`
+    *   構成オプション: `--enable-internal-jimtcl --enable-ftdi --enable-sysfsgpio --enable-picoprobe --enable-cmsis-dap`
 *   **Picotool**:
     *   リポジトリ: `https://github.com/raspberrypi/picotool.git`
+    *   タグ: `2.0.0`
     *   インストール先: `/usr/local/bin/picotool`
+*   **bootterm**:
+    *   リポジトリ: `https://github.com/wtarreau/bootterm.git`
+    *   タグ: `v0.5`
 
 ## 2. VS Code 拡張機能構成
 `.devcontainer/devcontainer.json` および `.vscode/extensions.json` に基づく。

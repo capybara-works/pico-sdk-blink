@@ -32,6 +32,7 @@
 *.app
 
 build/**
+build-docker/**
 .vscode/.cortex-debug.*
 
 # Python
@@ -53,6 +54,7 @@ artifacts/latest/*
 
 # build outputs
 build/
+build-docker/
 *.elf
 *.uf2
 *.bin

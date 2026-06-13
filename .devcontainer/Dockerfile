@@ -18,7 +18,7 @@ WORKDIR /apps
 
 RUN echo "$TOOLCHAINURL/$TOOLCHAINARCHIVE"
 
-RUN wget $TOOLCHAINURL/$TOOLCHAINARCHIVE 
+RUN wget $TOOLCHAINURL/$TOOLCHAINARCHIVE
 RUN tar xf $TOOLCHAINARCHIVE
 
 RUN mv $TOOLCHAINDIR gcc-arm-none && \
@@ -27,15 +27,19 @@ ENV PATH=$PATH:/apps/gcc-arm-none/bin
 
 RUN git clone -b $PICO_SDK_VERSION https://github.com/raspberrypi/pico-sdk.git --depth=1 && git -C pico-sdk submodule update --init
 ENV PICO_SDK_PATH=/apps/pico-sdk
+ENV OPENOCD_VERSION="v0.12.0"
+ENV PICOTOOL_VERSION="2.0.0"
+ENV BOOTTERM_VERSION="v0.5"
 
-RUN git clone https://github.com/openocd-org/openocd.git --depth=1 --recurse-submodules \
-# RUN git clone https://github.com/raspberrypi/openocd.git --depth=1 --recurse-submodules \
-    && cd openocd && ./bootstrap && ./configure --enable-ftdi --enable-sysfsgpio --enable-picoprobe --enable-cmsis-dap && make -j 8 install 
+RUN git clone -b $OPENOCD_VERSION https://github.com/openocd-org/openocd.git --depth=1 --recurse-submodules \
+    && cd openocd && ./bootstrap \
+    && ./configure --enable-internal-jimtcl --enable-ftdi --enable-sysfsgpio --enable-picoprobe --enable-cmsis-dap \
+    && make -j 8 install
 
-RUN cd /apps && git clone https://github.com/raspberrypi/picotool.git --depth=1 \
+RUN cd /apps && git clone -b $PICOTOOL_VERSION https://github.com/raspberrypi/picotool.git --depth=1 \
     && cd picotool && mkdir build && cd build && cmake ../ && make -j 8 && cp picotool /usr/local/bin
 
-RUN cd /apps && git clone https://github.com/wtarreau/bootterm.git --depth=1 \
-    && cd bootterm && make -j 8 install 
+RUN cd /apps && git clone -b $BOOTTERM_VERSION https://github.com/wtarreau/bootterm.git --depth=1 \
+    && cd bootterm && make -j 8 install
 
 RUN usermod -aG plugdev vscode

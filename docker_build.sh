@@ -36,7 +36,7 @@ docker run --rm \
     -u "$(id -u):$(id -g)" \
     --entrypoint /bin/bash \
     $IMAGE_NAME \
-    -lc "chmod +x scripts/*.sh && scripts/build.sh"
+    -lc "chmod +x scripts/*.sh && PICO_BUILD_DIR=/workspace/build-docker scripts/build.sh"
 
 echo ""
 echo "============================================================"
