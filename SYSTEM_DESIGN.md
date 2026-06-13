@@ -40,6 +40,7 @@
 ├── CMakeLists.txt          # [Build] CMakeビルド設定ファイル
 ├── diagram.json            # [Wokwi] ハードウェア構成定義
 ├── pico_sdk_import.cmake   # [SDK] Pico SDKインポート用ヘルパースクリプト
+├── requirements-hil.txt    # [HIL] Python実機補助ツールの依存関係
 ├── wokwi.toml              # [Wokwi] プロジェクト設定 (ファームウェアパス等)
 ├── README.md               # [Doc] プロジェクト概要・利用手順
 └── SYSTEM_DESIGN.md        # [Doc] プラットフォーム設計書 (本ドキュメント)

@@ -35,6 +35,9 @@ python3 scripts/summarize_evidence.py # verification.md 生成
 CIのWokwi統合済み証拠を確認する場合は `scripts/fetch_ci_evidence.sh` で
 `artifacts/latest/evidence-with-wokwi/<run_id>/` に取得し、`verification.md` と
 `wokwi_result.json` を読む。
+GitHub CLIを手動で使う場合は、複数remoteにより `upstream` 側へ推測されることが
+あるため、`-R capybara-works/pico-sdk-blink` または
+`GH_REPO=capybara-works/pico-sdk-blink` を明示する。
 
 `evidence/latest/verification.md` の Overall Status と Notes を確認し、
 skip / stub / fail をそのまま報告すること。skipを「成功」と言い換えてはいけない。

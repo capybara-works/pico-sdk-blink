@@ -68,6 +68,9 @@ scripts/fetch_ci_evidence.sh           # → artifacts/latest/evidence-with-wokw
 [evidence/samples/](evidence/samples/) にあります(実測/合成の来歴つき)。
 CIで生成された `evidence-with-wokwi` artifact は `scripts/fetch_ci_evidence.sh` で
 `artifacts/latest/evidence-with-wokwi/<run_id>/` に取得できます。
+GitHub CLIを手動で使う場合、複数remoteがある作業ツリーでは参照先の推測が
+ずれることがあります。Actions確認時は `-R capybara-works/pico-sdk-blink`
+または `GH_REPO=capybara-works/pico-sdk-blink` を明示してください。
 
 ## 💡 コンセプト (Concept)
 
@@ -191,13 +194,13 @@ Debug Probeを使用した実機での自動テストが可能です (Phase 0完
 **macOS:**
 ```bash
 brew install open-ocd
-pip3 install pyserial pyyaml
+pip3 install -r requirements-hil.txt
 ```
 
 **Linux:**
 ```bash
 sudo apt install openocd python3-pip
-pip3 install pyserial pyyaml
+pip3 install -r requirements-hil.txt
 ```
 
 #### 2. ハードウェア接続

@@ -1,5 +1,14 @@
 # Hardware-in-the-Loop (HIL) Testing Strategy Report
 
+> [!NOTE]
+> 現行状態注記 (2026-06-13): この文書は2025-12時点の調査記録です。
+> 現在の実行入口は `scripts/flash.sh`、`scripts/run_hil.sh`、
+> `scripts/capture_uart.sh`、`scripts/gdb_snapshot.sh` です。
+> `tools/hil/hil_runner.py` は `wait-serial` を実行できますが、
+> `expect-pin` のHILシナリオ統合とstep単位の構造化evidence出力は
+> 今後の改善項目です。現在の手順は `docs/guides/HARDWARE_SETUP.md` と
+> `docs/operations/AGENT_OPERATION.md` を優先してください。
+
 ## 1. 概要
 本レポートでは、Raspberry Pi Picoの実機を用いた自動テスト（HILテスト）の実現方法をまとめます。
 **まず最小構成（PC + Debug Probe + Pico）でのシステム完成を優先**し、将来的なCI/CDパイプライン統合への拡張性を確保します。
@@ -635,4 +644,3 @@ Phase 0-3の完成後、必要に応じてCI/CDパイプラインへの統合を
 この構成により、**「Wokwiでテストシナリオを作成・検証」→「同じシナリオで実機テスト」** という理想的なフローが、最小限のハードウェアとセットアップで実現できます。
 ただし、**状態ベースの検証に適用範囲が限定される**ことに留意してください。実時間GPIO検証やより厳密なハードウェア検証が必要な場合は、Phase 4（CI/CD統合）で物理的GPIO配線やGPIO制御ボードの導入を検討します。
 将来的にCI/CD統合が必要になった場合でも、Phase 0-3で構築したTest Runnerをそのまま活用できます。
-

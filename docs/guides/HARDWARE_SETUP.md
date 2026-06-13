@@ -29,11 +29,11 @@ PC ──USB── Debug Probe ──SWD(3pin)── Pico (SWDIO/SWCLK/GND)
 ```bash
 # macOS
 brew install open-ocd
-pip3 install pyserial pyyaml
+pip3 install -r requirements-hil.txt
 
 # Linux
 sudo apt install openocd python3-pip
-pip3 install pyserial pyyaml
+pip3 install -r requirements-hil.txt
 ```
 
 ## ローカル設定
