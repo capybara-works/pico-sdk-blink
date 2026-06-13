@@ -34,6 +34,10 @@
 build/**
 .vscode/.cortex-debug.*
 
+# Python
+__pycache__/
+*.py[cod]
+
 # local hardware settings
 config/hardware.local.yaml
 .env
@@ -42,10 +46,6 @@ config/hardware.local.yaml
 # generated evidence
 evidence/latest/*
 !evidence/latest/.gitkeep
-
-# generated captures
-captures/latest/*
-!captures/latest/.gitkeep
 
 # downloaded CI artifacts
 artifacts/latest/*

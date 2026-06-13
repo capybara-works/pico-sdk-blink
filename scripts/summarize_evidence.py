@@ -28,7 +28,7 @@ STEPS = [
     ("Flash", "flash_result.json", ["flash.log"]),
     ("HIL", "hil_result.json", ["hil.log"]),
     ("UART", "uart_result.json", ["uart.log"]),
-    ("GDB", "gdb_snapshot.json", []),
+    ("GDB", "gdb_snapshot.json", ["gdb_snapshot.log"]),
     ("Logic Analyzer", "logic_i2c_result.json", ["logic_i2c_decode.txt"]),
 ]
 
