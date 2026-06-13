@@ -148,8 +148,6 @@ chmod +x scripts/*.sh
 scripts/build.sh
 ```
 
-`build_and_test.sh` は互換用wrapperとして残していますが、新しい自動化では `scripts/build.sh` を使用してください。
-
 ### 手動ビルド
 
 従来のCMakeコマンドによるビルドも可能です。

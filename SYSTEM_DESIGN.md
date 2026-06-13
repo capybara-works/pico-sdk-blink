@@ -35,7 +35,6 @@
 │   └── mcp_server/         # [Future] MCPサーバー設計メモ (実装は将来フェーズ)
 ├── blink.cpp               # [Main] アプリケーションのエントリーポイント (Sample)
 ├── blink.test.yaml         # [Test] Wokwi/HIL共用テストシナリオ定義
-├── build_and_test.sh       # [Script] 互換用wrapper (scripts/build.shへ委譲)
 ├── CLAUDE.md               # [Doc] AIエージェント向けエントリポイント
 ├── CMakeLists.txt          # [Build] CMakeビルド設定ファイル
 ├── diagram.json            # [Wokwi] ハードウェア構成定義
@@ -50,7 +49,7 @@
 
 *   **`scripts/build.sh`**:
     *   **役割**: 証拠付きの標準ビルド入口。ワンコマンドでビルドとテストを実行し、`build_result.json` / `ctest_result.json` / `wokwi_result.json` を生成する。
-    *   **動作**: `scripts/build_firmware.sh` -> `scripts/test_ctest.sh` -> `scripts/test_wokwi.sh` の順に実行。`build_and_test.sh` は互換用wrapperとしてこの入口へ委譲する。
+    *   **動作**: `scripts/build_firmware.sh` -> `scripts/test_ctest.sh` -> `scripts/test_wokwi.sh` の順に実行する。
 
 *   **`diagram.json`**:
     *   **役割**: Wokwiシミュレータが読み込むハードウェア定義。
