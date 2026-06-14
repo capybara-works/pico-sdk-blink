@@ -60,7 +60,7 @@
 *   **目的**: DevContainer相当環境で生成した実行用payloadとCI artifactが一致することを確認する。
 *   **手順**:
     1.  `./docker_build.sh` を実行し、`build-docker/` の成果物を生成する。
-    2.  対象CI runの `firmware` artifactを `artifacts/latest/firmware/<run_id>/` に取得する。
+    2.  `scripts/fetch_ci_firmware.sh <run_id>` を実行し、対象CI runの `firmware` artifactを `artifacts/latest/firmware/<run_id>/` に取得する。
     3.  `shasum -a 256 build-docker/blink.uf2 artifacts/latest/firmware/<run_id>/blink.uf2` を実行する。
     4.  `shasum -a 256 build-docker/blink.bin artifacts/latest/firmware/<run_id>/blink.bin` を実行する。
 *   **合格基準**:
