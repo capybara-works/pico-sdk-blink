@@ -26,6 +26,10 @@ add_executable(blink blink.cpp )
 pico_set_program_name(blink "Blink")
 pico_set_program_version(blink "0.1")
 
+# Pico SDK defaults binary-info build date to __DATE__; keep payload hashes reproducible.
+set(BLINK_BINARY_INFO_BUILD_DATE "Jan 01 1970" CACHE STRING "Binary info build date used for reproducible firmware payloads")
+target_compile_definitions(blink PRIVATE "PICO_PROGRAM_BUILD_DATE=\"${BLINK_BINARY_INFO_BUILD_DATE}\"")
+
 pico_enable_stdio_uart(blink 1)
 pico_enable_stdio_usb(blink 0)
 

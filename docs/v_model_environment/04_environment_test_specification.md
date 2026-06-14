@@ -66,6 +66,7 @@
 *   **合格基準**:
     *   `blink.uf2` のhashが一致すること。
     *   `blink.bin` のhashが一致すること。
+    *   Pico SDKのbinary info build date固定により、日付境界だけでpayload hashが変化しないこと。
     *   `blink.elf`, `.map`, `.dis` はビルドパスやデバッグ情報を含むため、payload一致の必須判定対象にしない。
 
 ### 3.4 DevContainerイメージ公開テスト
