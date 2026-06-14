@@ -8,7 +8,11 @@
 #             decode (evidence/samples/i2c_nack_decode_sample.txt) so the
 #             downstream pipeline can be exercised without hardware.
 #
-# Usage: scripts/capture_logic_i2c.sh [duration_ms]   (default: 1000)
+# Usage: scripts/capture_logic_i2c.sh [duration_ms]   (default: 6000)
+#
+# Default is 6s so the window spans bursty/periodic I2C activity (for example
+# a bus scan that only re-runs every few seconds); a 1s window can miss it and
+# produce a misleading "no decode" fail.
 #
 # Outputs:
 #   evidence/latest/logic_i2c_decode.txt
@@ -20,7 +24,7 @@ source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/common.sh"
 
 DECODE_TXT="${EVIDENCE_DIR}/logic_i2c_decode.txt"
 RESULT_JSON="${EVIDENCE_DIR}/logic_i2c_result.json"
-DURATION_MS="${1:-1000}"
+DURATION_MS="${1:-6000}"
 
 DRIVER="$(cfg_get logic_analyzer.device fx2lafw)"
 CONN="$(cfg_get logic_analyzer.conn "")"

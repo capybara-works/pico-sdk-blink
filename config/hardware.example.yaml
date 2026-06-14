@@ -30,7 +30,10 @@ logic_analyzer:
   driver: "sigrok"
   device: "fx2lafw"
   # Optional connection id from `sigrok-cli --driver fx2lafw --scan`.
-  # Leave empty when only one supported logic analyzer is connected.
+  # Prefer leaving this empty: the USB connection id (e.g. "20.3") changes on
+  # re-enumeration, so a hard-coded value causes false "not connected" fails.
+  # An empty conn auto-selects the single matching device. Only set it when
+  # more than one supported logic analyzer is connected at once.
   conn: ""
   sample_rate: "1 MHz"
   channels:

@@ -15,6 +15,10 @@ AIアシスタントと協調し、効率的に開発を進めるためのガイ
 ### Step 2: AI-Driven Implementation (AIによる実装)
 AIは以下の順序で変更を行います。
 1.  **Hardware**: `diagram.json` を修正し、配線を変更。
+    接続(どのピンをどこへ)はJSONで一意に決まるが、**配線の見た目(レイアウト・
+    引き回し)はWokwiキャンバスの座標依存**で、CLIからは確認できない。
+    waypoint等のレイアウト変更時は、Wokwiエディタのスクリーンショットで視認確認する
+    (各ピンのピクセル座標が必要なため、座標決め打ちでは外しやすい)。
 2.  **Software**: `blink.cpp` 等のソースコードを修正。
 3.  **Build & Test**: `scripts/build.sh` (または `scripts/verify_all.sh`) を実行し、動作を検証。
 
