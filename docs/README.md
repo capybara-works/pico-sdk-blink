@@ -76,6 +76,7 @@ C4モデル(Context/Container/Component)+ UML(シーケンス/ステート)を M
 
 | 文書 | 日付 | 内容 |
 |---|---|---|
+| [AGENT_AUTONOMY_ASSESSMENT.md](reports/AGENT_AUTONOMY_ASSESSMENT.md) | 2026-06-15 | AIの自律性アセスメント(どこまで自律でき、どこがネックか。構造的天井=実機物理観測) |
 | [PHASE2_OLED_LOGIC_BRINGUP_REPORT.md](reports/PHASE2_OLED_LOGIC_BRINGUP_REPORT.md) | 2026-06-15 | Phase 2 I2C/OLED + ロジアナ実機ブリングアップ(チャージポンプ待ち・配線診断の知見) |
 | [AGENT_LAB_PHASE1_REPORT.md](reports/AGENT_LAB_PHASE1_REPORT.md) | 2026-06-12 | Phase 1 証拠基盤の実装・実機検証・GDB/DBGPAUSE調査記録 |
 | [PHYSICAL_LAYER_ANALYSIS.md](reports/PHYSICAL_LAYER_ANALYSIS.md) | 2025-12 | 物理層解析 |
