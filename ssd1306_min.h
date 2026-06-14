@@ -11,6 +11,7 @@
 #define SSD1306_MIN_H
 
 #include "hardware/i2c.h"
+#include "pico/stdlib.h"
 #include <cstdint>
 #include <cstring>
 
@@ -94,6 +95,10 @@ static void ssd1306_init(i2c_inst_t *i2c) {
       0xAF,             // display on
   };
   for (uint8_t b : seq) ssd1306_cmd(i2c, b);
+  // Real SSD1306 panels need the charge pump to settle after display-on before
+  // RAM writes are visible; without this delay the panel stays blank on
+  // hardware (Wokwi does not require it).
+  sleep_ms(100);
   memset(ssd1306_buf, 0, sizeof(ssd1306_buf));
 }
 
