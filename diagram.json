@@ -14,17 +14,17 @@
     {
       "type": "board-ssd1306",
       "id": "oled1",
-      "top": 260,
-      "left": 132.55,
+      "top": 300,
+      "left": 250,
       "attrs": { "i2cAddress": "0x3c" }
     }
   ],
   "connections": [
-    [ "pico:GP0", "$serialMonitor:RX", "", [] ], 
+    [ "pico:GP0", "$serialMonitor:RX", "", [] ],
     [ "pico:GP1", "$serialMonitor:TX", "", [] ],
-    [ "pico:GP4", "oled1:SDA", "green", [] ],
-    [ "pico:GP5", "oled1:SCL", "blue", [] ],
-    [ "pico:GND.1", "oled1:GND", "black", [] ],
-    [ "pico:VBUS", "oled1:VCC", "red", [] ]
+    [ "pico:GP4", "oled1:SDA", "green", [ "v138", "h-2" ] ],
+    [ "pico:GP5", "oled1:SCL", "blue", [ "v128", "h-3" ] ],
+    [ "pico:GND.1", "oled1:GND", "black", [ "v118", "h-11" ] ],
+    [ "pico:3V3", "oled1:VCC", "red", [ "v50", "h10" ] ]
   ]
 }
