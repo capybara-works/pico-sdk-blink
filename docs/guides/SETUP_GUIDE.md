@@ -6,7 +6,7 @@
 
 環境を再現する最も確実な方法は、VS Code DevContainersを使用することです。これにより、主要ツールチェーン (ARM GCC 11.3.rel1, Pico SDK 2.0.0 等) をCIと揃えられます。
 
-DevContainerは `.devcontainer/Dockerfile` を再現元とし、GHCR上の事前ビルド済みイメージ (`ghcr.io/capybara-works/pico-sdk-blink/devcontainer:main`) をキャッシュ候補として使用します。事前ビルド済みイメージを利用できない場合の初回ローカルビルドでは、ARM GNU Toolchainの大きなアーカイブ取得と展開が発生します。ネットワーク状況によっては数十分かかることがありますが、2回目以降はDockerレイヤキャッシュにより短縮されます。
+DevContainerは `.devcontainer/Dockerfile` を再現元とし、GHCR上の事前ビルド済みイメージ (`ghcr.io/capybara-works/pico-sdk-blink/devcontainer:main`) をキャッシュ候補として使用します。現行イメージは `linux/amd64` として構築します。Apple SiliconではDocker Desktopのamd64エミュレーションを利用します。事前ビルド済みイメージを利用できない場合の初回ローカルビルドでは、ARM GNU Toolchainの大きなアーカイブ取得と展開が発生します。ネットワーク状況によっては数十分かかることがありますが、2回目以降はDockerレイヤキャッシュにより短縮されます。
 
 ### 前提条件
 - **VS Code** がインストールされていること。
@@ -28,6 +28,7 @@ DevContainerは `.devcontainer/Dockerfile` を再現元とし、GHCR上の事前
 -   Picotool (2.0.0)
 -   bootterm (v0.5)
 -   Wokwi CLI (v0.26.1)
+-   HIL補助Python依存 (`pyserial==3.5`, `PyYAML==6.0.2`)
 -   VS Code Extensions (C/C++, Wokwi, Cortex-Debug, etc.)
 
 ### 1.5 Docker CLIによるビルド (VS Code不要)
@@ -43,8 +44,8 @@ chmod +x docker_build.sh
 ```
 
 このスクリプトは以下の処理を自動化します:
-1.  事前ビルド済みイメージ (`ghcr.io/capybara-works/pico-sdk-blink/devcontainer:main`) をpullし、ローカル名 `pico-sdk-blink-dev` として使用します。
-2.  事前ビルド済みイメージを取得できない場合は、`.devcontainer/Dockerfile` からローカルでDockerイメージをビルドします。
+1.  事前ビルド済みイメージ (`ghcr.io/capybara-works/pico-sdk-blink/devcontainer:main`) を `linux/amd64` としてpullし、ローカル名 `pico-sdk-blink-dev` として使用します。
+2.  事前ビルド済みイメージを取得できない場合は、`.devcontainer/Dockerfile` から同じplatformでローカルDockerイメージをビルドします。
 3.  `WOKWI_CLI_TOKEN` が設定されている場合は、コンテナへ環境変数として渡します。
 4.  コンテナを起動し、カレントディレクトリをマウントします。
 5.  コンテナ内で `PICO_BUILD_DIR=/workspace/build-docker scripts/build.sh` を実行します。
@@ -57,7 +58,7 @@ PICO_DOCKER_FORCE_BUILD=1 ./docker_build.sh
 
 forkや検証用の別イメージを使う場合は、`PICO_DEVCONTAINER_IMAGE` でpull元を、`PICO_DOCKER_IMAGE_NAME` でローカルイメージ名を変更できます。
 
-Docker CLI経由のビルド成果物は、ホスト側の通常ビルド用 `build/` とは分離して `build-docker/` に生成されます。これにより、ホスト環境で作成済みの `build/CMakeCache.txt` とコンテナ内パス (`/workspace`) の衝突を避けます。
+Docker CLI経由のビルド成果物は、ホスト側の通常ビルド用 `build/` とは分離して `build-docker/` に生成されます。これにより、ホスト環境で作成済みの `build/CMakeCache.txt` とコンテナ内パス (`/workspace`) の衝突を避けます。`WOKWI_CLI_TOKEN` が設定されている場合、Docker内のWokwiテストは `build-docker/blink.elf` を明示的に使います。
 
 Docker/DevContainer相当環境とCIのファームウェアpayloadは、`blink.uf2` と `blink.bin` のhashで比較します。CIの `firmware` artifactは `scripts/fetch_ci_firmware.sh <run_id>` で `artifacts/latest/firmware/<run_id>/` に取得できます。Pico SDKのbinary info build dateは `CMakeLists.txt` で固定しているため、日付境界によるpayload hash差分は発生しません。`blink.elf`, map, disassembly はビルドパスを含むため、環境が一致していてもhashが異なる場合があります。
 

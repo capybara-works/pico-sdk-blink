@@ -6,7 +6,8 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
-BUILD_DIR="${PICO_BUILD_DIR:-${REPO_ROOT}/build}"
+source "${SCRIPT_DIR}/common.sh"
+BUILD_DIR="$(build_dir)"
 
 echo "== Configure (cmake) =="
 cmake -S "${REPO_ROOT}" -B "${BUILD_DIR}"

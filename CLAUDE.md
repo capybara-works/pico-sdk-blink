@@ -27,7 +27,7 @@ python3 scripts/summarize_evidence.py  # evidence/latest/verification.md 生成
 
 ## 構成の要点
 
-- `scripts/` — 検証入口(各々がログ+JSONを `evidence/latest/` に保存)
+- `scripts/` — 検証入口。証拠付き入口(`build.sh`, `verify_all.sh`, 実機/観測wrapper)がログ+JSONを `evidence/latest/` に保存し、低レベル部品(`build_firmware.sh`, `test_ctest.sh`, `test_wokwi.sh`)は呼び出し元が証拠化する
 - `tools/hil/` — HIL実装本体 (hil_runner.py / uart_monitor.py / gpio_test.py)
 - `docs/README.md` — 文書マップ。規程は `docs/operations/`、手順は `docs/guides/`、
   調査記録は `docs/reports/`(書き換え禁止のRecord)

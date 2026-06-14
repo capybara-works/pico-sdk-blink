@@ -50,6 +50,7 @@ jobs:
 
           docker buildx build \
             --file .devcontainer/Dockerfile \
+            --platform linux/amd64 \
             --cache-from type=gha \
             --cache-to type=gha,mode=max \
             --label "org.opencontainers.image.source=https://github.com/${GITHUB_REPOSITORY}" \

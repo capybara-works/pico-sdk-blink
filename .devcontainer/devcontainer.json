@@ -8,6 +8,9 @@
 			"ghcr.io/capybara-works/pico-sdk-blink/devcontainer:main"
 		]
 	},
+	"runArgs": [
+		"--platform=linux/amd64"
+	],
 	// Set *default* container specific settings.json values on container create.
 	"settings": {
 		"terminal.integrated.profiles.linux": {

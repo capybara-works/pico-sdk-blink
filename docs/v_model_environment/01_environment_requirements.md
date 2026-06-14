@@ -33,7 +33,7 @@
 ## 4. 非機能要件
 ### 4.1 互換性
 *   **REQ-NE-001**: ホストOSとして macOS, Windows, Linux をサポートすること（Docker Desktop等のコンテナランタイム依存）。
-*   **REQ-NE-002**: Apple Silicon (M1/M2) および Intel x86_64 アーキテクチャの両方で動作すること。
+*   **REQ-NE-002**: Intel x86_64 環境で動作すること。Apple Silicon (M1/M2) では `linux/amd64` DevContainer/DockerイメージをDocker Desktopのエミュレーションで実行できること。現行Dockerfileはarm64ネイティブイメージを要求しない。
 
 ### 4.2 パフォーマンス
 *   **REQ-NE-003**: 通常利用時は事前ビルド済みDevContainerイメージまたはDockerレイヤキャッシュを活用し、コンテナ準備と検証が実用的な時間で完了すること。事前ビルド済みイメージを取得できない初回ローカルビルドはARM GNU Toolchain等の大きな外部配布物取得に依存するため、ネットワーク状況により数十分かかる場合がある。

@@ -2,8 +2,9 @@
 
 # [Choice] Debian / Ubuntu version: debian-10, debian-9, ubuntu-20.04, ubuntu-18.04
 ARG VARIANT="ubuntu-22.04"
+ARG DOCKER_PLATFORM="linux/amd64"
 
-FROM mcr.microsoft.com/vscode/devcontainers/cpp:0-$VARIANT
+FROM --platform=${DOCKER_PLATFORM} mcr.microsoft.com/vscode/devcontainers/cpp:0-$VARIANT
 
 ENV TOOLCHAINURL="https://developer.arm.com/-/media/Files/downloads/gnu/11.3.rel1/binrel"
 ENV TOOLCHAINARCHIVE="arm-gnu-toolchain-11.3.rel1-x86_64-arm-none-eabi.tar.xz"
@@ -72,5 +73,14 @@ RUN set -eux; \
     wget -q -O /usr/local/bin/wokwi-cli "https://github.com/wokwi/wokwi-cli/releases/download/${WOKWI_CLI_VERSION}/wokwi-cli-linuxstatic-x64"; \
     chmod +x /usr/local/bin/wokwi-cli; \
     wokwi-cli --version
+
+RUN set -eux; \
+    apt-get update; \
+    export DEBIAN_FRONTEND=noninteractive; \
+    apt-get -y install --no-install-recommends python3-pip; \
+    rm -rf /var/lib/apt/lists/*; \
+    python3 -m pip install --no-cache-dir \
+        pyserial==3.5 \
+        PyYAML==6.0.2
 
 RUN usermod -aG plugdev vscode

@@ -6,6 +6,8 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+source "${SCRIPT_DIR}/common.sh"
+ELF_PATH="$(build_artifact_path "blink.elf")"
 
 echo "== Run Wokwi Test (Optional) =="
 if [ -z "${WOKWI_CLI_TOKEN:-}" ]; then
@@ -22,5 +24,11 @@ else
     exit 0
 fi
 
+if [ ! -f "${ELF_PATH}" ]; then
+    echo "FAIL: Wokwi ELF not found: ${ELF_PATH} (run scripts/build_firmware.sh first)"
+    exit 1
+fi
+
 echo "Running Wokwi test with ${WOKWI_CMD[*]}..."
-"${WOKWI_CMD[@]}" "${REPO_ROOT}" --scenario "${REPO_ROOT}/blink.test.yaml" --timeout 5000
+echo "Using ELF: ${ELF_PATH}"
+"${WOKWI_CMD[@]}" "${REPO_ROOT}" --elf "${ELF_PATH}" --scenario "${REPO_ROOT}/blink.test.yaml" --timeout 5000

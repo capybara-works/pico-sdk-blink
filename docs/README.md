@@ -10,6 +10,7 @@
 | `guides/` | セットアップ・手順書 (Guides) | **Living** — 常に現状を反映。手順が変わったら即更新する |
 | `design/` | 設計メモ (Design Memos) | **Living** — 方針変更時に更新。実装済みになったらガイドへ昇格 |
 | `reports/` | 調査・検証レポート (Reports) | **Record** — その時点の記録。原則として後から書き換えない |
+| `architecture/` | アーキテクチャ図 (Views) | **Living** — 構造/フロー変更時に更新。C4+UMLをMermaidで保持 |
 | `v_model/` | アプリ仕様書 (V字モデル) | Living — 仕様変更時に更新 |
 | `v_model_environment/` | 環境仕様書 (V字モデル) | Living — 環境変更時に更新 |
 
@@ -55,6 +56,21 @@
 | 文書 | 内容 |
 |---|---|
 | [MCP_SETUP.md](design/MCP_SETUP.md) | MCPサーバー化の方針 (将来フェーズ、任意シェル実行は提供しない) |
+
+### architecture/ — アーキテクチャ図 (Views)
+
+C4モデル(Context/Container/Component)+ UML(シーケンス/ステート)を Mermaid で記述した、
+**この開発基盤そのものを理解するための図集**。題材ファームウェアではなく検証ループを対象とする。
+
+| 文書 | 内容 |
+|---|---|
+| [architecture/README.md](architecture/README.md) | ビュー索引(どの図が何の問いに答えるか) |
+| [architecture/01_context.md](architecture/01_context.md) | C4 System Context — 外部との関わり |
+| [architecture/02_containers.md](architecture/02_containers.md) | C4 Container — 主要構成要素 |
+| [architecture/03_components_scripts.md](architecture/03_components_scripts.md) | C4 Component — `scripts/` の内部 |
+| [architecture/04_verification_flow.md](architecture/04_verification_flow.md) | UML シーケンス — 1回の検証実行の流れ |
+| [architecture/05_evidence_states.md](architecture/05_evidence_states.md) | UML ステートマシン — 証拠ステータスと全体判定 |
+| [architecture/06_deployment.md](architecture/06_deployment.md) | デプロイ — ローカル/Docker/CI/実機の配置 |
 
 ### reports/ — 調査・検証レポート (Record)
 

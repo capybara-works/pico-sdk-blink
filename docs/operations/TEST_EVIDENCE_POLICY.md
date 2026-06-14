@@ -10,7 +10,7 @@
 | ビルドログ | `scripts/build.sh` / `scripts/build_firmware.sh` | `evidence/latest/build.log` |
 | CTestログ | `scripts/build.sh` / `scripts/test_ctest.sh` | `evidence/latest/ctest.log` |
 | Wokwiログ | `scripts/build.sh` / `scripts/test_wokwi.sh` / `scripts/record_wokwi_ci_result.sh` | `evidence/latest/wokwi.log` |
-| 結果JSON (`*_result.json`) | 各 `scripts/*.sh` | `evidence/latest/` |
+| 結果JSON (`*_result.json`) | 証拠付き入口 (`scripts/build.sh`, `scripts/verify_all.sh`, 実機/観測wrapper等) | `evidence/latest/` |
 | UARTログ | `scripts/capture_uart.sh` / `scripts/run_hil.sh` | `evidence/latest/uart.log`, `hil.log` |
 | GDBスナップショット | `scripts/gdb_snapshot.sh` | `evidence/latest/gdb_snapshot.json` |
 | ロジックアナライザのデコード結果 | `scripts/capture_logic_i2c.sh` | `evidence/latest/logic_i2c_decode.txt` |
@@ -55,6 +55,7 @@
   `scripts/fetch_ci_firmware.sh` は同じワークフローの `firmware` を取得する。
 - `scripts/verify_all.sh` は固定入口が生成する既知の証拠ファイルを初期化してから実行する。
   個別スクリプトを直接実行した場合は、そのスクリプトの証拠だけが更新される。
+- `scripts/build_firmware.sh`, `scripts/test_ctest.sh`, `scripts/test_wokwi.sh` は低レベル部品であり、直接実行時は呼び出し元のログ/JSON生成に依存する。
 - 残したい代表例・学習用サンプルは `evidence/samples/` に小さく置いてコミットする。
 - 証拠が不足している場合は、`verification.md` の Notes に不足内容が明記される。
   不足したまま成功判定をしてはいけない。

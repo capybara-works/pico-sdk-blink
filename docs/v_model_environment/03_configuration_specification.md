@@ -19,6 +19,7 @@
 *   `pkg-config`
 *   `clang-format`
 *   `libhidapi-dev`
+*   `python3-pip`
 
 ### 1.3 ARM ツールチェーン
 *   **提供元**: ARM Developer (GNU Toolchain)
@@ -45,12 +46,19 @@
 *   **bootterm**:
     *   リポジトリ: `https://github.com/wtarreau/bootterm.git`
     *   タグ: `v0.5`
+*   **Wokwi CLI**:
+    *   タグ: `v0.26.1`
+    *   インストール先: `/usr/local/bin/wokwi-cli`
+*   **HIL補助Python依存**:
+    *   `pyserial==3.5`
+    *   `PyYAML==6.0.2`
 
 ### 1.6 事前ビルド済みDevContainerイメージ
 *   **再現元**: `.devcontainer/Dockerfile`
 *   **公開先**: `ghcr.io/capybara-works/pico-sdk-blink/devcontainer`
 *   **主タグ**: `main`
 *   **追跡用タグ**: `sha-<commit>`
+*   **platform**: `linux/amd64`
 *   **生成workflow**: `.github/workflows/devcontainer-image.yml`
 *   **ローカル利用**: `docker_build.sh` は既定で `ghcr.io/capybara-works/pico-sdk-blink/devcontainer:main` をpullし、取得できない場合は `.devcontainer/Dockerfile` からローカルビルドする。
 *   **DevContainer利用**: `.devcontainer/devcontainer.json` は同イメージを `cacheFrom` に指定しつつ、Dockerfileからの再現経路を維持する。

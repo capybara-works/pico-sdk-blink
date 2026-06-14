@@ -27,18 +27,35 @@ run_required_step() {
     local log_path="$2"
     local result_json="$3"
     local log_rel="evidence/latest/$(basename "${log_path}")"
+    local extra_json=""
     shift 3
 
     echo "== scripts/build.sh: ${step} =="
     if "$@" 2>&1 | tee "${log_path}"; then
-        write_result_json "${result_json}" "${step}" "pass" "" "${log_rel}"
+        case "${step}" in
+            build)
+                extra_json="$(artifact_metadata_json blink.elf blink.uf2 blink.bin)"
+                ;;
+            wokwi)
+                extra_json="$(artifact_metadata_json blink.elf blink.uf2)"
+                ;;
+        esac
+        write_result_json "${result_json}" "${step}" "pass" "" "${log_rel}" "${extra_json}"
         echo "== ${step}: pass (log: ${log_rel}) =="
         return 0
     fi
 
     local rc=$?
+    case "${step}" in
+        build)
+            extra_json="$(artifact_metadata_json blink.elf blink.uf2 blink.bin)"
+            ;;
+        wokwi)
+            extra_json="$(artifact_metadata_json blink.elf blink.uf2)"
+            ;;
+    esac
     write_result_json "${result_json}" "${step}" "fail" \
-        "exit code ${rc}; see ${log_rel}" "${log_rel}"
+        "exit code ${rc}; see ${log_rel}" "${log_rel}" "${extra_json}"
     echo "== ${step}: fail (log: ${log_rel}) =="
     return 1
 }
@@ -51,7 +68,7 @@ skip_wokwi_step() {
         echo "To run Wokwi tests locally, set WOKWI_CLI_TOKEN and install wokwi-cli."
     } | tee "${WOKWI_LOG}"
     write_result_json "${WOKWI_RESULT_JSON}" "wokwi" "skip" \
-        "${reason}" "evidence/latest/wokwi.log"
+        "${reason}" "evidence/latest/wokwi.log" "$(artifact_metadata_json blink.elf blink.uf2)"
     echo "== wokwi: skip (log: evidence/latest/wokwi.log) =="
 }
 

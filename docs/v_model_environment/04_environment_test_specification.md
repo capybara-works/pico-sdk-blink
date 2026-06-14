@@ -10,13 +10,14 @@
 *   **手順**:
     1.  `./docker_build.sh` を実行する。
     2.  ローカルDockerfileビルドも確認する場合は、`PICO_DOCKER_FORCE_BUILD=1 ./docker_build.sh` を実行する。
-    3.  イメージ単体だけを確認する場合は、`docker build -t pico-sdk-blink-dev -f .devcontainer/Dockerfile .devcontainer` を実行する。
+    3.  イメージ単体だけを確認する場合は、`docker build --platform linux/amd64 -t pico-sdk-blink-dev -f .devcontainer/Dockerfile .devcontainer` を実行する。
 *   **合格基準**:
-    *   `./docker_build.sh` が事前ビルド済みイメージをpullできる場合はそれを使用し、取得できない場合はローカルビルドへfallbackすること。
+    *   `./docker_build.sh` が `linux/amd64` の事前ビルド済みイメージをpullできる場合はそれを使用し、取得できない場合は同platformのローカルビルドへfallbackすること。
     *   ローカルDockerfileビルドがエラーなく完了すること。
     *   `./docker_build.sh` 実行時、コンテナ内で `PICO_BUILD_DIR=/workspace/build-docker scripts/build.sh` が実行されること。
     *   `build-docker/` に `blink.elf`, `blink.uf2`, `blink.bin` が生成されること。
     *   Build と CTest が `pass` になり、Wokwiはtoken未設定時に `skip`、設定時に `pass` として証拠に記録されること。
+    *   Wokwi実行時は `build-docker/blink.elf` がCLIへ明示され、`wokwi_result.json` に対象artifactのパスとhashが記録されること。
 
 ### 2.2 ツールチェーン存在確認
 *   **テストID**: ENV-002
@@ -25,9 +26,13 @@
     1.  `arm-none-eabi-gcc --version`
     2.  `cmake --version`
     3.  `make --version`
+    4.  `wokwi-cli --version`
+    5.  `python3 -c "import serial, yaml"`
 *   **合格基準**:
     *   GCC: 11.3.rel1 であること。
     *   CMake: 3.x 以上であること。
+    *   Wokwi CLI: v0.26.1 であること。
+    *   `python3 -c "import serial, yaml"` が成功すること。
     *   各コマンドがエラーなくバージョン情報を返すこと。
 
 ### 2.3 SDKパス確認
@@ -92,3 +97,4 @@
     1.  CIジョブが緑色（Success）になること。
     2.  CIの `evidence-with-wokwi` に `wokwi_result.json` が保存され、`status` が `pass` であること。
     3.  ローカル実行時、"Running Wokwi test..." と表示され、テストが Pass すること。
+    4.  `wokwi_result.json` の `artifacts["blink.elf"].path` が、その実行で指定した `PICO_BUILD_DIR` 配下を指すこと。
