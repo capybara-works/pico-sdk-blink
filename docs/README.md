@@ -56,6 +56,7 @@
 | 文書 | 内容 |
 |---|---|
 | [MCP_SETUP.md](design/MCP_SETUP.md) | MCPサーバー化の方針 (将来フェーズ、任意シェル実行は提供しない) |
+| [CHEAP_AUTONOMY_LEVERS.md](design/CHEAP_AUTONOMY_LEVERS.md) | 安価・確実に自律性のネック(N1物理観測)を削る手段の洗い出しと優先順位 (Pico自己計測POST/ループバック/INA260/ウェブカメラ) |
 
 ### architecture/ — アーキテクチャ図 (Views)
 
