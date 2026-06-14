@@ -39,6 +39,7 @@ target_link_libraries(blink pico_stdlib)
 # Add any user requested libraries
 target_link_libraries(blink
         hardware_clocks
+        hardware_i2c
         )
 
 pico_add_extra_outputs(blink)

@@ -58,7 +58,7 @@ PICO_DOCKER_FORCE_BUILD=1 ./docker_build.sh
 
 forkや検証用の別イメージを使う場合は、`PICO_DEVCONTAINER_IMAGE` でpull元を、`PICO_DOCKER_IMAGE_NAME` でローカルイメージ名を変更できます。
 
-Docker CLI経由のビルド成果物は、ホスト側の通常ビルド用 `build/` とは分離して `build-docker/` に生成されます。これにより、ホスト環境で作成済みの `build/CMakeCache.txt` とコンテナ内パス (`/workspace`) の衝突を避けます。`WOKWI_CLI_TOKEN` が設定されている場合、Docker内のWokwiテストは `build-docker/blink.elf` を明示的に使います。
+Docker CLI経由のビルド成果物は、ホスト側の通常ビルド用 `build/` とは分離して `build-docker/` に生成されます。これにより、ホスト環境で作成済みの `build/CMakeCache.txt` とコンテナ内パス (`/workspace`) の衝突を避けます。`WOKWI_CLI_TOKEN` が設定されている場合、Docker内のWokwiテストは `build-docker/blink.elf` を明示的に使い、既定では `blink_i2c.test.yaml` で仮想SSD1306 OLED (`0x3C`) のI2C検出とUARTログを検証します。
 
 Docker/DevContainer相当環境とCIのファームウェアpayloadは、`blink.uf2` と `blink.bin` のhashで比較します。CIの `firmware` artifactは `scripts/fetch_ci_firmware.sh <run_id>` で `artifacts/latest/firmware/<run_id>/` に取得できます。Pico SDKのbinary info build dateは `CMakeLists.txt` で固定しているため、日付境界によるpayload hash差分は発生しません。`blink.elf`, map, disassembly はビルドパスを含むため、環境が一致していてもhashが異なる場合があります。
 

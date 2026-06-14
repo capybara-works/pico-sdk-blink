@@ -67,7 +67,7 @@
 |---|---|
 | Build | `scripts/build.sh` が `scripts/build_firmware.sh` を実行し、`build_result.json` を生成 |
 | CTest | `scripts/build.sh` が `scripts/test_ctest.sh` を実行し、`ctest_result.json` を生成 |
-| Wokwi | `scripts/build.sh` では `scripts/test_wokwi.sh` が `wokwi_result.json` を生成。`scripts/ci_phase1_smoke.sh` は既定でtokenを抑制してskipを許容し、CIの `test-on-wokwi` jobでは `scripts/record_wokwi_ci_result.sh` が action 結果を `evidence-with-wokwi` artifact に統合 |
+| Wokwi | `scripts/build.sh` では `scripts/test_wokwi.sh` が既定で `blink_i2c.test.yaml` を実行し、`wokwi_result.json` を生成。`scripts/ci_phase1_smoke.sh` は既定でtokenを抑制してskipを許容し、CIの `test-on-wokwi` jobでは `scripts/record_wokwi_ci_result.sh` が action 結果を `evidence-with-wokwi` artifact に統合 |
 | Flash / HIL / UART / GDB | `PICO_HARDWARE=1` のときのみ実機で実行 |
-| HILシナリオ | 現状の共通stepは `wait-serial` |
+| HILシナリオ | 実機HILは `blink.test.yaml` を使う。現状の共通stepは `wait-serial` |
 | Logic Analyzer | `PICO_LOGIC_UART=1` / `PICO_LOGIC_I2C=1`、または全capture用の `PICO_LOGIC_ANALYZER=1` かつ `sigrok-cli` 利用可能時のみ実測。それ以外はstub。UARTは `LED on/off` デコード、I2Cはprotocol decode注釈を証拠化 |

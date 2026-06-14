@@ -16,7 +16,7 @@ sequenceDiagram
     Dev->>VA: 実行 (PICO_HARDWARE? / PICO_LOGIC_UART? / PICO_LOGIC_I2C?)
     VA->>EV: reset_evidence_dir(既知の生成物を掃除)
     VA->>B: build_firmware + ctest + 任意wokwi
-    Note over B: WokwiはPICO_BUILD_DIR配下の<br/>blink.elfを --elf で明示
+    Note over B: WokwiはPICO_BUILD_DIR配下の<br/>blink.elfと既定scenarioを明示
     B->>EV: build / ctest / wokwi _result.json<br/>(artifact path + sha256)
 
     alt build 失敗
@@ -48,7 +48,7 @@ sequenceDiagram
 - `PICO_HARDWARE=1` を**人間が明示的に**付けたときだけ実機を操作します。AIがこのゲートを勝手に有効化・回避することは禁止です([../operations/AGENT_OPERATION.md](../operations/AGENT_OPERATION.md))。
 - ロジックアナライザは `PICO_LOGIC_UART=1` / `PICO_LOGIC_I2C=1` で個別に実測します。`PICO_LOGIC_ANALYZER=1` は全captureを有効化する互換スイッチです。
 - **ビルド失敗は早期打ち切り**。古いファームウェアを焼いて「動いているように見える」誤証拠を避ける設計です。
-- **Wokwiは対象ELFを明示**します。Docker経路では `build-docker/blink.elf`、ホスト経路では `build/blink.elf` を使い、`*_result.json` の `artifacts` でパスとhashを確認できます。
+- **Wokwiは対象ELFとscenarioを明示**します。Docker経路では `build-docker/blink.elf`、ホスト経路では `build/blink.elf` を使い、既定では `blink_i2c.test.yaml` でI2Cスキャン + UARTログを検証します。`*_result.json` の `artifacts` でパスとhashを確認できます。
 - 最終的な裁可は `verification.md` の要約ではなく、**一次証拠(`*_result.json` と各ログ)**に基づいて行います。
 
 ## 判定の決まり方

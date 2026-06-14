@@ -30,6 +30,18 @@ Wokwiシミュレータを使用したハードウェア・ソフトウェア連
     4.  シリアル出力 "LED off" を待機する。
 *   **合格基準**: 上記ステップがタイムアウト（5000ms）内に全て成功すること。
 
+### 3.2 シナリオテスト: Wokwi I2C題材
+*   **テストID**: IT-002
+*   **目的**: Wokwi上の仮想SSD1306 OLEDがI2Cデバイスとして検出され、LED制御ログも継続して出力されることを確認する。
+*   **定義ファイル**: `blink_i2c.test.yaml`
+*   **手順**:
+    1.  シミュレーションを開始する。
+    2.  シリアル出力 "I2C scan start" を待機する。
+    3.  シリアル出力 "I2C device: 0x3C" を待機する。
+    4.  シリアル出力 "I2C scan done" を待機する。
+    5.  シリアル出力 "LED on" / "LED off" を待機する。
+*   **合格基準**: 上記ステップがタイムアウト（10000ms）内に全て成功すること。
+
 ## 4. CI/CD検証 (System Verification)
 GitHub Actions (`.github/workflows/ci.yml`) 上で以下のプロセスが正常に完了することを以て、システム全体の健全性を保証する。
 
@@ -48,8 +60,8 @@ GitHub Actions (`.github/workflows/ci.yml`) 上で以下のプロセスが正常
 *   **手順**:
     1.  ビルド済みファームウェア artifact (`build/blink.*`) を `build/` にダウンロード。
     2.  Wokwi CIアクションでシミュレーションを起動。
-    3.  `blink.test.yaml` で定義されたテストシナリオ (IT-001) を実行。
+    3.  `blink_i2c.test.yaml` で定義されたWokwi専用テストシナリオ (IT-002) を実行。
     4.  シリアル出力の検証結果を取得し、`evidence-with-wokwi` artifact に `wokwi_result.json` と `verification.md` を保存。
 *   **必須設定**: GitHubリポジトリシークレット `WOKWI_CLI_TOKEN` の設定
-*   **タイムアウト**: 5000ms
+*   **タイムアウト**: 10000ms
 *   **合格基準**: テストシナリオの全ステップがタイムアウト内に成功すること。

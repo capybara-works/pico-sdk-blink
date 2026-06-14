@@ -12,7 +12,7 @@ flowchart TB
         scripts["scripts/<br/>証拠付き入口 + 低レベル部品<br/>build/flash/hil/uart/gdb/logic/summarize"]
         hil["tools/hil/<br/>hil_runner.py / uart_monitor.py / gpio_test.py"]
         cfg["config/<br/>hardware.local.yaml ← example<br/>(ローカル環境値・Git管理外)"]
-        src["ファームウェア定義<br/>blink.cpp / CMakeLists.txt<br/>diagram.json / blink.test.yaml"]
+        src["ファームウェア定義<br/>blink.cpp / CMakeLists.txt<br/>diagram.json<br/>blink.test.yaml / blink_i2c.test.yaml"]
         build["ビルド出力<br/>build/ ・ build-docker/ (Git管理外)"]
         ev["evidence/<br/>latest/(作業・Git管理外)<br/>samples/(教材・Git管理)"]
         art["artifacts/latest/<br/>CI取得物 (Git管理外)"]

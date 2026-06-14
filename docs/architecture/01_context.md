@@ -18,7 +18,7 @@ flowchart LR
     human -->|"意図・コード変更"| lab
     lab -->|"verification.md / 一次証拠"| human
     lab -->|"ビルド成果物でシミュレーション"| wokwi
-    wokwi -->|"UARTログ判定"| lab
+    wokwi -->|"I2C + UARTログ判定"| lab
     lab -->|"flash / UART / GDB"| hw
     hw -->|"観測値"| lab
     lab -.->|"UART/I2C等のデコード<br/>(PICO_LOGIC_* gate)"| la

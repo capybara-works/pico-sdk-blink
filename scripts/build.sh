@@ -37,7 +37,7 @@ run_required_step() {
                 extra_json="$(artifact_metadata_json blink.elf blink.uf2 blink.bin)"
                 ;;
             wokwi)
-                extra_json="$(artifact_metadata_json blink.elf blink.uf2)"
+                extra_json="$(wokwi_metadata_json)"
                 ;;
         esac
         write_result_json "${result_json}" "${step}" "pass" "" "${log_rel}" "${extra_json}"
@@ -51,13 +51,28 @@ run_required_step() {
             extra_json="$(artifact_metadata_json blink.elf blink.uf2 blink.bin)"
             ;;
         wokwi)
-            extra_json="$(artifact_metadata_json blink.elf blink.uf2)"
+            extra_json="$(wokwi_metadata_json)"
             ;;
     esac
     write_result_json "${result_json}" "${step}" "fail" \
         "exit code ${rc}; see ${log_rel}" "${log_rel}" "${extra_json}"
     echo "== ${step}: fail (log: ${log_rel}) =="
     return 1
+}
+
+wokwi_metadata_json() {
+    python3 - "${PICO_WOKWI_SCENARIO:-blink_i2c.test.yaml}" "${PICO_WOKWI_TIMEOUT_MS:-10000}" "$(artifact_metadata_json blink.elf blink.uf2)" <<'PYEOF'
+import json
+import sys
+
+scenario, timeout_ms, artifact_json = sys.argv[1:4]
+metadata = json.loads(artifact_json)
+metadata["wokwi"] = {
+    "scenario": scenario,
+    "timeout_ms": timeout_ms,
+}
+print(json.dumps(metadata, separators=(",", ":")))
+PYEOF
 }
 
 skip_wokwi_step() {
@@ -68,7 +83,7 @@ skip_wokwi_step() {
         echo "To run Wokwi tests locally, set WOKWI_CLI_TOKEN and install wokwi-cli."
     } | tee "${WOKWI_LOG}"
     write_result_json "${WOKWI_RESULT_JSON}" "wokwi" "skip" \
-        "${reason}" "evidence/latest/wokwi.log" "$(artifact_metadata_json blink.elf blink.uf2)"
+        "${reason}" "evidence/latest/wokwi.log" "$(wokwi_metadata_json)"
     echo "== wokwi: skip (log: evidence/latest/wokwi.log) =="
 }
 

@@ -12,7 +12,7 @@ flowchart TB
     end
 
     subgraph docker["Docker / DevContainer (linux/amd64・ツール固定)"]
-        dk["docker_build.sh<br/>PICO_BUILD_DIR=build-docker<br/>Wokwi: build-docker/blink.elf"]
+        dk["docker_build.sh<br/>PICO_BUILD_DIR=build-docker<br/>Wokwi: build-docker/blink.elf + blink_i2c.test.yaml"]
         dimg["devcontainerイメージ<br/>ARM GCC 11.3 / SDK 2.0.0<br/>OpenOCD 0.12 / Wokwi CLI<br/>pyserial / PyYAML"]
         dk --> dimg
     end
@@ -42,9 +42,9 @@ flowchart TB
 ## 読み方
 
 - **同じ `scripts/` 入口を3環境で共有**します。Docker/DevContainer は `linux/amd64` イメージで固定し、CIは同等ツールチェーンをGitHub Actions runner上にセットアップします。ローカル直ビルドは非固定なので証拠で差分を確認します。
-- **ビルド出力は環境ごとに分離**: ローカルは `build/`、Docker経由は `build-docker/`(`PICO_BUILD_DIR` で切替)。ホストの `build/CMakeCache.txt` とコンテナ内パスの衝突を避けます。Docker内Wokwiは `build-docker/blink.elf` を明示して実行します。
+- **ビルド出力は環境ごとに分離**: ローカルは `build/`、Docker経由は `build-docker/`(`PICO_BUILD_DIR` で切替)。ホストの `build/CMakeCache.txt` とコンテナ内パスの衝突を避けます。Docker内Wokwiは `build-docker/blink.elf` と `blink_i2c.test.yaml` を明示して実行します。
 - **再現性の比較は payload(`blink.uf2` / `blink.bin`)の hash** で行います。`build_result.json` に sha256 が記録され、ビルド日付は `CMakeLists.txt` で固定済み。比較対象は「Docker相当環境 ⇔ CI」であり、**ホスト直ビルドの `build/` は基準にしません**(ツール差で hash が変わるため)。
-- **CIは2ジョブ**: `build-and-test`(実機なし、ゲートが skip/stub になることを `ci_phase1_smoke.sh` が表明。smoke内Wokwiは既定でtokenを抑制)と `test-on-wokwi`(Wokwiシミュレーション)。生成物は `fetch_ci_*.sh` で `artifacts/latest/` に取得します。
+- **CIは2ジョブ**: `build-and-test`(実機なし、ゲートが skip/stub になることを `ci_phase1_smoke.sh` が表明。smoke内Wokwiは既定でtokenを抑制)と `test-on-wokwi`(I2C + UARTのWokwiシミュレーション)。生成物は `fetch_ci_*.sh` で `artifacts/latest/` に取得します。
 
 ## Source of Truth
 

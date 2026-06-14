@@ -28,8 +28,10 @@ PC ──USB── Logic Analyzer ──────────── Pico (D2 
 | GND | Pin 3 / GND | 信号基準。Debug ProbeのGNDと共通 |
 | D2 / CH2 | Pin 1 / GP0 / UART0 TX | `LED on` / `LED off` のUART TX観測 |
 
-ファームウェアはUART0 (115200 baud) に `LED on` / `LED off` を出力します
-(CMakeLists.txt で `pico_enable_stdio_uart(blink 1)`)。
+ファームウェアはUART0 (115200 baud) に `LED on` / `LED off` とI2Cスキャン結果を
+出力します(CMakeLists.txt で `pico_enable_stdio_uart(blink 1)`)。
+I2Cは GP4=SDA / GP5=SCL を初期化しますが、現状の実機HIL最小確認では
+I2CデバイスやロジックアナライザのI2C配線は必須ではありません。
 
 ## ツールのインストール
 
@@ -102,3 +104,7 @@ UART/I2C/SPIの物理層観測用に、FX2LP系USBロジックアナライザを
 実測は `PICO_LOGIC_UART=1` / `PICO_LOGIC_I2C=1`、または全capture用の
 `PICO_LOGIC_ANALYZER=1` を明示した場合のみ行います。
 チャネル割り当ては `config/hardware.example.yaml` の `logic_analyzer.channels` を参照。
+
+現在の実機配線(GND + D2→GP0)で有効にしてよいのは `PICO_LOGIC_UART=1` だけです。
+I2C実測を行う前には、追加で D0→GP5/SCL、D1→GP4/SDA を接続し、
+必要に応じてI2Cデバイスまたはpull-upの実機構成を確認してください。

@@ -17,7 +17,7 @@
     *   `./docker_build.sh` 実行時、コンテナ内で `PICO_BUILD_DIR=/workspace/build-docker scripts/build.sh` が実行されること。
     *   `build-docker/` に `blink.elf`, `blink.uf2`, `blink.bin` が生成されること。
     *   Build と CTest が `pass` になり、Wokwiはtoken未設定時に `skip`、設定時に `pass` として証拠に記録されること。
-    *   Wokwi実行時は `build-docker/blink.elf` がCLIへ明示され、`wokwi_result.json` に対象artifactのパスとhashが記録されること。
+    *   Wokwi実行時は `build-docker/blink.elf` と `blink_i2c.test.yaml` がCLIへ明示され、`wokwi_result.json` に対象artifactのパスとhashが記録されること。
 
 ### 2.2 ツールチェーン存在確認
 *   **テストID**: ENV-002
@@ -89,12 +89,12 @@
 ## 4. シミュレータ連携テスト
 ### 4.1 Wokwi 自動テスト (Automated Wokwi Test)
 *   **テストID**: ENV-008
-*   **目的**: Wokwi CLI を用いてファームウェアの機能テストが自動実行できることを確認する。
+*   **目的**: Wokwi CLI を用いて、仮想SSD1306 OLEDのI2C検出とUARTログ出力の機能テストが自動実行できることを確認する。
 *   **手順**:
     1.  (CI) GitHub Actions の "Test on Wokwi" ジョブが成功することを確認する。
     2.  (Local) `WOKWI_CLI_TOKEN` を設定し、`scripts/build.sh` を実行する。
 *   **合格基準**:
     1.  CIジョブが緑色（Success）になること。
     2.  CIの `evidence-with-wokwi` に `wokwi_result.json` が保存され、`status` が `pass` であること。
-    3.  ローカル実行時、"Running Wokwi test..." と表示され、テストが Pass すること。
+    3.  ローカル実行時、"Running Wokwi test..." と表示され、`blink_i2c.test.yaml` が Pass すること。
     4.  `wokwi_result.json` の `artifacts["blink.elf"].path` が、その実行で指定した `PICO_BUILD_DIR` 配下を指すこと。

@@ -106,14 +106,14 @@ jobs:
         with:
           token: ${{ secrets.WOKWI_CLI_TOKEN }}
           path: .
-          timeout: 5000
-          scenario: 'blink.test.yaml'
+          timeout: 10000
+          scenario: 'blink_i2c.test.yaml'
 
       - name: Record Wokwi evidence
         if: always()
         run: |
           chmod +x ./scripts/*.sh
-          ./scripts/record_wokwi_ci_result.sh "${{ steps.wokwi.outcome }}"
+          ./scripts/record_wokwi_ci_result.sh "${{ steps.wokwi.outcome }}" blink_i2c.test.yaml
           python3 ./scripts/summarize_evidence.py
 
       - name: Upload evidence with Wokwi result

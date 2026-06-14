@@ -37,6 +37,8 @@ python3 scripts/summarize_evidence.py  # evidence/latest/verification.md 生成
   「RP2040デバッグの既知の落とし穴」(DBGPAUSEタイマー凍結・flash probe問題)を必ず参照
 - 現在の最小ロジアナ配線は `GND -> Pico Pin 3 / GND`, `D2 -> Pico Pin 1 / GP0 / UART0 TX`。
   I2C未配線なら `PICO_LOGIC_UART=1` のみ使い、`PICO_LOGIC_ANALYZER=1` は使わない
+- Wokwiの既定シナリオは `blink_i2c.test.yaml`。実機HILは `blink.test.yaml` を使う。
+  実機でI2C観測へ進む前に D0→GP5/SCL、D1→GP4/SDA の追加配線を人間に通知する
 
 ## 禁止事項
 

@@ -8,6 +8,13 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 source "${SCRIPT_DIR}/common.sh"
 ELF_PATH="$(build_artifact_path "blink.elf")"
+SCENARIO="${PICO_WOKWI_SCENARIO:-blink_i2c.test.yaml}"
+WOKWI_TIMEOUT_MS="${PICO_WOKWI_TIMEOUT_MS:-10000}"
+
+case "${SCENARIO}" in
+    /*) SCENARIO_PATH="${SCENARIO}" ;;
+    *) SCENARIO_PATH="${REPO_ROOT}/${SCENARIO}" ;;
+esac
 
 echo "== Run Wokwi Test (Optional) =="
 if [ -z "${WOKWI_CLI_TOKEN:-}" ]; then
@@ -29,6 +36,13 @@ if [ ! -f "${ELF_PATH}" ]; then
     exit 1
 fi
 
+if [ ! -f "${SCENARIO_PATH}" ]; then
+    echo "FAIL: Wokwi scenario not found: ${SCENARIO_PATH}"
+    exit 1
+fi
+
 echo "Running Wokwi test with ${WOKWI_CMD[*]}..."
 echo "Using ELF: ${ELF_PATH}"
-"${WOKWI_CMD[@]}" "${REPO_ROOT}" --elf "${ELF_PATH}" --scenario "${REPO_ROOT}/blink.test.yaml" --timeout 5000
+echo "Using scenario: ${SCENARIO_PATH}"
+echo "Using timeout: ${WOKWI_TIMEOUT_MS}ms"
+"${WOKWI_CMD[@]}" "${REPO_ROOT}" --elf "${ELF_PATH}" --scenario "${SCENARIO_PATH}" --timeout "${WOKWI_TIMEOUT_MS}"

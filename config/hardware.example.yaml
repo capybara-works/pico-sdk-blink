@@ -11,6 +11,7 @@ target:
   mcu: "rp2040"
   elf: "build/blink.elf"
   uf2: "build/blink.uf2"
+  # Physical HIL scenario. Wokwi uses blink_i2c.test.yaml by default.
   test_scenario: "blink.test.yaml"
 
 debug:

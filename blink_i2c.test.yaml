@@ -1,0 +1,10 @@
+name: Blinky I2C OLED Wokwi test
+version: 1
+author: capybara-works
+
+steps:
+  - wait-serial: 'I2C scan start'
+  - wait-serial: 'I2C device: 0x3C'
+  - wait-serial: 'I2C scan done'
+  - wait-serial: 'LED on'
+  - wait-serial: 'LED off'

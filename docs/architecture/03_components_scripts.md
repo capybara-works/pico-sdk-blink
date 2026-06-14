@@ -11,7 +11,7 @@ flowchart TB
         b["build.sh"]
         bf["build_firmware.sh<br/>cmake configure + build"]
         ct["test_ctest.sh<br/>size_check"]
-        tw["test_wokwi.sh<br/>PICO_BUILD_DIRのELFを--elf指定<br/>トークン無ければskip"]
+        tw["test_wokwi.sh<br/>PICO_BUILD_DIRのELFとscenarioを指定<br/>トークン無ければskip"]
     end
 
     subgraph hwp["実機/観測 (PICO_HARDWARE=1 のとき実測)"]

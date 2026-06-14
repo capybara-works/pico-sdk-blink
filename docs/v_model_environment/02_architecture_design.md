@@ -59,5 +59,5 @@ graph TD
 3.  **Build Trigger**: ユーザーがコマンド実行、またはタスク実行。
 4.  **Compile**: `cmake` -> `make` が走り、`PICO_BUILD_DIR` 配下に `blink.elf` を生成する(既定は `build/`、Docker経由は `build-docker/`)。
 5.  **Test Trigger**: `scripts/build.sh` または個別の `scripts/test_ctest.sh` / `scripts/test_wokwi.sh` が実行。
-6.  **Simulation**: Wokwi CLI が `diagram.json` と `blink.test.yaml` を使い、`PICO_BUILD_DIR` 配下の `blink.elf` を `--elf` で明示してUARTログシナリオを検証する。VS Code等の手動起動では `wokwi.toml` の既定パスも使用する。
+6.  **Simulation**: Wokwi CLI が `diagram.json` と既定シナリオ `blink_i2c.test.yaml` を使い、`PICO_BUILD_DIR` 配下の `blink.elf` を `--elf` で明示してI2Cスキャン + UARTログシナリオを検証する。実機HILは `blink.test.yaml` を使う。VS Code等の手動起動では `wokwi.toml` の既定パスも使用する。
 7.  **Feedback**: テスト結果（Pass/Fail）がコンソールおよびCIバッジとして返却される。
