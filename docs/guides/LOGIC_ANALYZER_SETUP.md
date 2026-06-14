@@ -40,6 +40,9 @@ sigrok-cli --driver fx2lafw --scan
 
 複数デバイスがある場合や自動検出が不安定な場合は、`config/hardware.local.yaml`
 の `logic_analyzer.conn` に `20.3` のような `conn` 値を記録します。
+USBの抜き差しや接続ポート変更で `conn` 値が変わることがあるため、
+`No devices found` になった場合は再度 `sigrok-cli --driver fx2lafw --scan` を実行し、
+ローカル設定を更新してください。
 
 ## 配線
 

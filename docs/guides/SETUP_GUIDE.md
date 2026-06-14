@@ -62,6 +62,10 @@ Docker CLI経由のビルド成果物は、ホスト側の通常ビルド用 `bu
 
 Docker/DevContainer相当環境とCIのファームウェアpayloadは、`blink.uf2` と `blink.bin` のhashで比較します。CIの `firmware` artifactは `scripts/fetch_ci_firmware.sh <run_id>` で `artifacts/latest/firmware/<run_id>/` に取得できます。Pico SDKのbinary info build dateは `CMakeLists.txt` で固定しているため、日付境界によるpayload hash差分は発生しません。`blink.elf`, map, disassembly はビルドパスを含むため、環境が一致していてもhashが異なる場合があります。
 
+ホスト直実行のWokwi CLIはローカルに入っている版を使うため、DevContainer/Dockerの固定版
+(`v0.26.1`) と異なる場合があります。再現性の基準はDocker/DevContainer/CI側とし、
+ホスト直実行は `scripts/build.sh` が残す `wokwi_result.json` と `wokwi.log` を証拠として確認します。
+
 ---
 
 ## 2. 手動セットアップ (ローカル環境)

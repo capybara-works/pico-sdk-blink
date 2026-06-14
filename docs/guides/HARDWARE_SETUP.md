@@ -15,11 +15,18 @@
 ```text
 PC ──USB── Debug Probe ──SWD(3pin)── Pico (SWDIO/SWCLK/GND)
                        └─UART(3pin)── Pico (GP0=TX → Probe RX, GP1=RX ← Probe TX, GND)
+PC ──USB── Logic Analyzer ──────────── Pico (D2 → GP0/TX, GND → GND)
 ```
 
 1. PC ↔ Debug Probe: USBケーブル
 2. Debug Probe "D"コネクタ ↔ Pico SWDピン (SWCLK / GND / SWDIO)
 3. Debug Probe "U"コネクタ ↔ Pico UART0 (GP0/GP1/GND)
+4. ロジックアナライザ ↔ Pico UART0 TX (Debug ProbeのUART配線は外さず並列接続)
+
+| ロジックアナライザ | Pico | 用途 |
+|---|---|---|
+| GND | Pin 3 / GND | 信号基準。Debug ProbeのGNDと共通 |
+| D2 / CH2 | Pin 1 / GP0 / UART0 TX | `LED on` / `LED off` のUART TX観測 |
 
 ファームウェアはUART0 (115200 baud) に `LED on` / `LED off` を出力します
 (CMakeLists.txt で `pico_enable_stdio_uart(blink 1)`)。
@@ -63,6 +70,7 @@ PICO_HARDWARE=1 scripts/flash.sh        # OpenOCD経由で書き込み
 PICO_HARDWARE=1 scripts/capture_uart.sh # UARTログ取得 → evidence/latest/uart.log
 PICO_HARDWARE=1 scripts/run_hil.sh      # E2E HILテスト → evidence/latest/hil_result.json
 PICO_HARDWARE=1 scripts/gdb_snapshot.sh # レジスタ+バックトレース → evidence/latest/gdb_snapshot.json
+PICO_LOGIC_UART=1 scripts/capture_logic_uart.sh 3000 # ロジアナD2でUART TXを実測
 ```
 
 実機未接続の場合、これらは明示的に fail または skip を返します(偽の成功にはなりません)。

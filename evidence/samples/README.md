@@ -18,6 +18,18 @@ stub と pass を混同してはいけません([../../docs/operations/TEST_EVID
 | `gdb_snapshot_phase1_sample.json` | **実機実測** | 動作中ファームウェアの実レジスタ値 + `main()` までのバックトレース |
 | `uart_phase1_sample.log` | **実機実測** | 250ms周期の `LED on`/`LED off` 実キャプチャ(パターン検証pass) |
 
+## Phase 2 代表証拠(実機 + ロジックアナライザUART実測, 2026-06-14)
+
+実機 (Raspberry Pi Pico + Debug Probe) に加えて、FX2LP系ロジックアナライザを
+GND -> Pico Pin 3 / GND、D2 -> Pico Pin 1 / GP0 / UART0 TX に並列接続し、
+`PICO_HARDWARE=1 PICO_LOGIC_UART=1` で実行したスナップショットです。
+I2Cは未配線のためstubです。
+
+| ファイル | 来歴 | 内容 |
+|---|---|---|
+| `verification_phase2_logic_uart_sample.md` | **実機実測** | Build/Flash/HIL/UART/GDB/Logic Analyzer UART = pass、Wokwi = skip、Logic Analyzer I2C = stub、Overall = **partial** |
+| `logic_uart_phase2_text_sample.txt` | **実機実測** | ロジックアナライザUART decodeをASCII化した `LED on`/`LED off` 実測テキスト |
+
 ## 教材・解析練習用サンプル(合成)
 
 実機がなくてもAIや人間がログ解析・原因推定を練習できるように作った**架空の例**です。

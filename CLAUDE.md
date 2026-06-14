@@ -17,11 +17,13 @@ AI生成コードをビルド → シミュレーション → 実機 → 観測
 ```bash
 scripts/verify_all.sh                  # 検証ループ一括 (実機には触れない: 実機系はskip)
 PICO_HARDWARE=1 scripts/verify_all.sh  # 実機操作を明示的に有効化 (人間の許可が前提)
+PICO_LOGIC_UART=1 scripts/capture_logic_uart.sh 3000  # ロジアナUARTのみ実測
 scripts/build.sh                       # ビルド + ctest + 任意Wokwi (個別証拠を生成)
 python3 scripts/summarize_evidence.py  # evidence/latest/verification.md 生成
 ```
 
-**実機操作は `PICO_HARDWARE=1`、ロジアナ実測は `PICO_LOGIC_ANALYZER=1` が
+**実機操作は `PICO_HARDWARE=1`、ロジアナ実測は `PICO_LOGIC_UART=1` /
+`PICO_LOGIC_I2C=1`、または全capture用の `PICO_LOGIC_ANALYZER=1` が
 明示された場合のみ実行される。AIがゲートを勝手に有効化・回避してはいけない。**
 未設定時の skip / stub は偽装せずそのまま報告する。
 
@@ -33,6 +35,8 @@ python3 scripts/summarize_evidence.py  # evidence/latest/verification.md 生成
   調査記録は `docs/reports/`(書き換え禁止のRecord)
 - 実機デバッグで詰まったら [docs/guides/HARDWARE_SETUP.md](docs/guides/HARDWARE_SETUP.md) の
   「RP2040デバッグの既知の落とし穴」(DBGPAUSEタイマー凍結・flash probe問題)を必ず参照
+- 現在の最小ロジアナ配線は `GND -> Pico Pin 3 / GND`, `D2 -> Pico Pin 1 / GP0 / UART0 TX`。
+  I2C未配線なら `PICO_LOGIC_UART=1` のみ使い、`PICO_LOGIC_ANALYZER=1` は使わない
 
 ## 禁止事項
 
