@@ -38,16 +38,23 @@ echo "============================================================"
 echo " Running Build and Test in Container"
 echo "============================================================"
 
+DOCKER_ENV_ARGS=()
+if [[ -n "${WOKWI_CLI_TOKEN:-}" ]]; then
+    DOCKER_ENV_ARGS+=(-e WOKWI_CLI_TOKEN)
+fi
+
 # Run the container
 # - --rm: Remove container after exit
 # - -v $(pwd):/workspace: Mount current directory to /workspace
 # - -w /workspace: Set working directory
 # - -u $(id -u):$(id -g): Run as current user to avoid permission issues with generated files
+# - -e WOKWI_CLI_TOKEN: Pass through local Wokwi token when present
 # - --entrypoint /bin/bash: Override entrypoint to run our script
 docker run --rm \
     -v "$(pwd):/workspace" \
     -w /workspace \
     -u "$(id -u):$(id -g)" \
+    "${DOCKER_ENV_ARGS[@]}" \
     --entrypoint /bin/bash \
     "$LOCAL_IMAGE_NAME" \
     -lc "chmod +x scripts/*.sh && PICO_BUILD_DIR=/workspace/build-docker scripts/build.sh"

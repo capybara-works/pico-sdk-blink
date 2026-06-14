@@ -66,4 +66,11 @@ RUN set -eux; \
     make -C bootterm -j"$(nproc)" install; \
     rm -rf bootterm
 
+ENV WOKWI_CLI_VERSION="v0.26.1"
+
+RUN set -eux; \
+    wget -q -O /usr/local/bin/wokwi-cli "https://github.com/wokwi/wokwi-cli/releases/download/${WOKWI_CLI_VERSION}/wokwi-cli-linuxstatic-x64"; \
+    chmod +x /usr/local/bin/wokwi-cli; \
+    wokwi-cli --version
+
 RUN usermod -aG plugdev vscode

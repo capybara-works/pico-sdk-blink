@@ -48,7 +48,7 @@ skip_wokwi_step() {
     {
         echo "== Run Wokwi Test (Optional) =="
         echo "SKIP: ${reason}"
-        echo "To run Wokwi tests locally, set WOKWI_CLI_TOKEN and install @wokwi/cli."
+        echo "To run Wokwi tests locally, set WOKWI_CLI_TOKEN and install wokwi-cli."
     } | tee "${WOKWI_LOG}"
     write_result_json "${WOKWI_RESULT_JSON}" "wokwi" "skip" \
         "${reason}" "evidence/latest/wokwi.log"
@@ -61,8 +61,8 @@ run_wokwi_step() {
         return 0
     fi
 
-    if ! command -v wokwi-cli >/dev/null 2>&1 && ! command -v npx >/dev/null 2>&1; then
-        skip_wokwi_step "wokwi-cli or npx not found."
+    if ! command -v wokwi-cli >/dev/null 2>&1; then
+        skip_wokwi_step "wokwi-cli not found."
         return 0
     fi
 

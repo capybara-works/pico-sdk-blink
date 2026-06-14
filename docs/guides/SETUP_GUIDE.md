@@ -27,6 +27,7 @@ DevContainerは `.devcontainer/Dockerfile` を再現元とし、GHCR上の事前
 -   OpenOCD (v0.12.0, ハードウェアデバッグ用)
 -   Picotool (2.0.0)
 -   bootterm (v0.5)
+-   Wokwi CLI (v0.26.1)
 -   VS Code Extensions (C/C++, Wokwi, Cortex-Debug, etc.)
 
 ### 1.5 Docker CLIによるビルド (VS Code不要)
@@ -44,8 +45,9 @@ chmod +x docker_build.sh
 このスクリプトは以下の処理を自動化します:
 1.  事前ビルド済みイメージ (`ghcr.io/capybara-works/pico-sdk-blink/devcontainer:main`) をpullし、ローカル名 `pico-sdk-blink-dev` として使用します。
 2.  事前ビルド済みイメージを取得できない場合は、`.devcontainer/Dockerfile` からローカルでDockerイメージをビルドします。
-3.  コンテナを起動し、カレントディレクトリをマウントします。
-4.  コンテナ内で `PICO_BUILD_DIR=/workspace/build-docker scripts/build.sh` を実行します。
+3.  `WOKWI_CLI_TOKEN` が設定されている場合は、コンテナへ環境変数として渡します。
+4.  コンテナを起動し、カレントディレクトリをマウントします。
+5.  コンテナ内で `PICO_BUILD_DIR=/workspace/build-docker scripts/build.sh` を実行します。
 
 ローカルDockerfileビルドを強制する場合は、以下のように実行します。
 
@@ -119,7 +121,11 @@ source ~/.bashrc
 ### 2.4 Wokwi セットアップ (推奨オプション)
 自動シミュレーションを実行する場合:
 1.  [Wokwi CI Dashboard](https://wokwi.com/dashboard/ci) からトークンを取得します。
-2.  環境変数を設定します:
+2.  Wokwi CLIをインストールします:
+    ```bash
+    curl -L https://wokwi.com/ci/install.sh | sh
+    ```
+3.  環境変数を設定します:
     ```bash
     export WOKWI_CLI_TOKEN="your_token_here"
     ```
