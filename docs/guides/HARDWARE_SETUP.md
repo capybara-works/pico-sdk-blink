@@ -8,7 +8,7 @@
 
 - **Raspberry Pi Pico** (RP2040) — テスト対象。オンボードLED (GP25) を使用
 - **Raspberry Pi Debug Probe** (CMSIS-DAPv2) — SWD書き込み + UART中継
-- **(将来) FX2LP系 USBロジックアナライザ** — [LOGIC_ANALYZER_SETUP.md](LOGIC_ANALYZER_SETUP.md) 参照
+- **FX2LP系 USBロジックアナライザ** — [LOGIC_ANALYZER_SETUP.md](LOGIC_ANALYZER_SETUP.md) 参照
 
 ## 接続
 
@@ -88,7 +88,8 @@ PICO_HARDWARE=1 scripts/gdb_snapshot.sh # レジスタ+バックトレース →
    `gdb_snapshot.json` の `pc_region` を参照: `bootrom`(<0x10000000)は
    クラッシュ/未起動/上記1・2の症状、`flash` は正常実行中、`sram` はRAM実行コード。
 
-## 将来: ロジックアナライザ
+## ロジックアナライザ
 
-UART/I2C/SPIの物理層観測用に、安価なFX2LP系USBロジックアナライザの接続を予定しています。
-チャネル割り当ての想定は `config/hardware.example.yaml` の `logic_analyzer.channels` を参照。
+UART/I2C/SPIの物理層観測用に、FX2LP系USBロジックアナライザを使用します。
+実測は `PICO_LOGIC_ANALYZER=1` を明示した場合のみ行います。
+チャネル割り当ては `config/hardware.example.yaml` の `logic_analyzer.channels` を参照。

@@ -48,7 +48,7 @@
 |---|---|
 | [SETUP_GUIDE.md](guides/SETUP_GUIDE.md) | 開発環境構築 (DevContainer / Docker / ローカル) |
 | [HARDWARE_SETUP.md](guides/HARDWARE_SETUP.md) | Pico / Debug Probe / UART / SWD 接続、RP2040デバッグの既知の落とし穴 |
-| [LOGIC_ANALYZER_SETUP.md](guides/LOGIC_ANALYZER_SETUP.md) | FX2LP系ロジックアナライザ + sigrok (将来フェーズ) |
+| [LOGIC_ANALYZER_SETUP.md](guides/LOGIC_ANALYZER_SETUP.md) | FX2LP系ロジックアナライザ + sigrok |
 | [DEBUGGING_AND_ANALYSIS.md](guides/DEBUGGING_AND_ANALYSIS.md) | 静的解析 (blink.S.dis) と実行時解析 (GDBスナップショット) |
 
 ### design/ — 設計メモ

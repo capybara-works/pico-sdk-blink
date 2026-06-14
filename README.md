@@ -260,7 +260,7 @@ python3 tools/hil/hil_runner.py \
 | [docs/operations/AGENT_OPERATION.md](docs/operations/AGENT_OPERATION.md) | AIエージェントの運用ルール |
 | [docs/operations/TEST_EVIDENCE_POLICY.md](docs/operations/TEST_EVIDENCE_POLICY.md) | 何を合格証拠と認めるか |
 | [docs/guides/HARDWARE_SETUP.md](docs/guides/HARDWARE_SETUP.md) | Pico / Debug Probe / UART / SWD 接続・既知の落とし穴 |
-| [docs/guides/LOGIC_ANALYZER_SETUP.md](docs/guides/LOGIC_ANALYZER_SETUP.md) | FX2LP系ロジックアナライザ + sigrok (将来) |
+| [docs/guides/LOGIC_ANALYZER_SETUP.md](docs/guides/LOGIC_ANALYZER_SETUP.md) | FX2LP系ロジックアナライザ + sigrok |
 | [docs/design/MCP_SETUP.md](docs/design/MCP_SETUP.md) | MCPサーバー化の設計メモ (将来) |
 | [docs/reports/AGENT_LAB_PHASE1_REPORT.md](docs/reports/AGENT_LAB_PHASE1_REPORT.md) | Phase 1 実装・検証レポート (実測結果・調査記録) |
 

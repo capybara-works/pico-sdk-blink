@@ -23,9 +23,15 @@ RESULT_JSON="${EVIDENCE_DIR}/logic_i2c_result.json"
 DURATION_MS="${1:-1000}"
 
 DRIVER="$(cfg_get logic_analyzer.device fx2lafw)"
+CONN="$(cfg_get logic_analyzer.conn "")"
 SAMPLE_RATE="$(cfg_get logic_analyzer.sample_rate "1 MHz")"
 CH_SCL="$(cfg_get logic_analyzer.channels.scl 0)"
 CH_SDA="$(cfg_get logic_analyzer.channels.sda 1)"
+
+DRIVER_SPEC="${DRIVER}"
+if [ -n "${CONN}" ]; then
+    DRIVER_SPEC="${DRIVER}:conn=${CONN}"
+fi
 
 stub_result() {
     echo "== scripts/capture_logic_i2c.sh: STUB ($1) =="
@@ -46,16 +52,21 @@ if ! command -v sigrok-cli >/dev/null 2>&1; then
     stub_result "sigrok-cli not installed; copied sample decode for pipeline testing"
 fi
 
-echo "== scripts/capture_logic_i2c.sh: capturing ${DURATION_MS}ms via ${DRIVER} =="
+echo "== scripts/capture_logic_i2c.sh: capturing ${DURATION_MS}ms via ${DRIVER_SPEC} =="
 if sigrok-cli \
-    --driver "${DRIVER}" \
+    --driver "${DRIVER_SPEC}" \
     --config "samplerate=${SAMPLE_RATE}" \
-    --time "${DURATION_MS}" \
+    --time "${DURATION_MS}ms" \
     --channels "D${CH_SCL}=SCL,D${CH_SDA}=SDA" \
     --protocol-decoders "i2c:scl=SCL:sda=SDA" \
     --protocol-decoder-annotations i2c 2>&1 | tee "${DECODE_TXT}"; then
-    STATUS="pass"
-    REASON=""
+    if grep -Eq '^i2c-[0-9]+: (Start|Address|Data|ACK|NACK|Stop)' "${DECODE_TXT}"; then
+        STATUS="pass"
+        REASON=""
+    else
+        STATUS="fail"
+        REASON="no I2C decode annotations captured; check wiring, pull-ups, channel mapping, and target activity"
+    fi
 else
     STATUS="fail"
     REASON="sigrok-cli capture failed (logic analyzer not connected?)"
@@ -63,5 +74,8 @@ fi
 
 write_result_json "${RESULT_JSON}" "logic_i2c" "${STATUS}" "${REASON}" "evidence/latest/logic_i2c_decode.txt"
 
+if [ -n "${REASON}" ]; then
+    echo "Reason: ${REASON}"
+fi
 echo "== logic_i2c: ${STATUS} (log: evidence/latest/logic_i2c_decode.txt) =="
 [ "${STATUS}" = "pass" ]

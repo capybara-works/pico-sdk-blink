@@ -28,6 +28,9 @@ serial:
 logic_analyzer:
   driver: "sigrok"
   device: "fx2lafw"
+  # Optional connection id from `sigrok-cli --driver fx2lafw --scan`.
+  # Leave empty when only one supported logic analyzer is connected.
+  conn: ""
   sample_rate: "1 MHz"
   channels:
     scl: 0
