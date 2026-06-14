@@ -29,7 +29,8 @@ STEPS = [
     ("HIL", "hil_result.json", ["hil.log"]),
     ("UART", "uart_result.json", ["uart.log"]),
     ("GDB", "gdb_snapshot.json", ["gdb_snapshot.log"]),
-    ("Logic Analyzer", "logic_i2c_result.json", ["logic_i2c_decode.txt"]),
+    ("Logic Analyzer UART", "logic_uart_result.json", ["logic_uart_decode.txt", "logic_uart_text.txt"]),
+    ("Logic Analyzer I2C", "logic_i2c_result.json", ["logic_i2c_decode.txt"]),
 ]
 
 

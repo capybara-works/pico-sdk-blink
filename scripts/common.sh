@@ -84,6 +84,9 @@ reset_evidence_dir() {
         uart_result.json
         gdb_snapshot.log
         gdb_snapshot.json
+        logic_uart_decode.txt
+        logic_uart_text.txt
+        logic_uart_result.json
         logic_i2c_decode.txt
         logic_i2c_result.json
         verification.md

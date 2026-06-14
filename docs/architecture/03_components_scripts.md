@@ -21,7 +21,8 @@ flowchart TB
         gd["gdb_snapshot.sh"]
     end
 
-    lg["capture_logic_i2c.sh<br/>PICO_LOGIC_ANALYZER=1 で実測 / 否ならstub"]
+    lgu["capture_logic_uart.sh<br/>PICO_LOGIC_ANALYZER=1 でUART実測 / 否ならstub"]
+    lgi["capture_logic_i2c.sh<br/>PICO_LOGIC_ANALYZER=1 でI2C実測 / 否ならstub"]
     sm["summarize_evidence.py<br/>→ verification.md"]
     common["common.sh<br/>hardware_gate / write_result_json<br/>cfg_get / reset_evidence_dir<br/>build_dir / artifact_metadata_json / target_elf_path"]
     ev[("evidence/latest/<br/>*_result.json + *.log")]
@@ -30,7 +31,7 @@ flowchart TB
     b --> bf --> ct --> tw
     va --> fl
     fl --> hl --> ua --> gd
-    va --> lg
+    va --> lgu --> lgi
     va --> sm
 
     b -. uses .-> common
@@ -38,14 +39,16 @@ flowchart TB
     hl -. uses .-> common
     ua -. uses .-> common
     gd -. uses .-> common
-    lg -. uses .-> common
+    lgu -. uses .-> common
+    lgi -. uses .-> common
 
     b --> ev
     fl --> ev
     hl --> ev
     ua --> ev
     gd --> ev
-    lg --> ev
+    lgu --> ev
+    lgi --> ev
     ev --> sm
 
     subgraph cii["CI証拠連携 (手動/CI)"]

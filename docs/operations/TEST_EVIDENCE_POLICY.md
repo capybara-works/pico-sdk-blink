@@ -13,7 +13,8 @@
 | 結果JSON (`*_result.json`) | 証拠付き入口 (`scripts/build.sh`, `scripts/verify_all.sh`, 実機/観測wrapper等) | `evidence/latest/` |
 | UARTログ | `scripts/capture_uart.sh` / `scripts/run_hil.sh` | `evidence/latest/uart.log`, `hil.log` |
 | GDBスナップショット | `scripts/gdb_snapshot.sh` | `evidence/latest/gdb_snapshot.json` |
-| ロジックアナライザのデコード結果 | `scripts/capture_logic_i2c.sh` | `evidence/latest/logic_i2c_decode.txt` |
+| ロジックアナライザのUARTデコード結果 | `scripts/capture_logic_uart.sh` | `evidence/latest/logic_uart_decode.txt`, `evidence/latest/logic_uart_text.txt` |
+| ロジックアナライザのI2Cデコード結果 | `scripts/capture_logic_i2c.sh` | `evidence/latest/logic_i2c_decode.txt` |
 | 実取得スクリーンショット | 人間またはツールが実際に取得したもの | 取得経緯を明記して保存 |
 | CI実行ログ | GitHub Actions | Actionsの実行ページ |
 | CI証拠artifact | `scripts/fetch_ci_evidence.sh` | `artifacts/latest/evidence-with-wokwi/<run_id>/` |
@@ -69,4 +70,4 @@
 | Wokwi | ローカル/Build jobでは `scripts/test_wokwi.sh` が `wokwi_result.json` を生成。CIの `test-on-wokwi` jobでは `scripts/record_wokwi_ci_result.sh` が action 結果を `evidence-with-wokwi` artifact に統合 |
 | Flash / HIL / UART / GDB | `PICO_HARDWARE=1` のときのみ実機で実行 |
 | HILシナリオ | 現状の共通stepは `wait-serial` |
-| Logic Analyzer | `PICO_LOGIC_ANALYZER=1` かつ `sigrok-cli` 利用可能時のみ実測。それ以外はstub |
+| Logic Analyzer | `PICO_LOGIC_ANALYZER=1` かつ `sigrok-cli` 利用可能時のみ実測。それ以外はstub。UARTは `LED on/off` デコード、I2Cはprotocol decode注釈を証拠化 |

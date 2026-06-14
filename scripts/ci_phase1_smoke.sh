@@ -7,7 +7,7 @@
 #     verification.md is generated
 #   - hardware steps (flash/hil/uart/gdb) are recorded as "skip", proving
 #     the safety gates hold (no hardware operation without explicit opt-in)
-#   - the logic analyzer step is "stub" or "skip", never a fake "pass"
+#   - logic analyzer steps are "stub" or "skip", never a fake "pass"
 #
 # Note: skip/stub here means "not executed" — this smoke test verifies the
 # evidence pipeline itself, NOT hardware behavior.
@@ -41,6 +41,7 @@ expected = {
     "hil_result.json": {"skip"},
     "uart_result.json": {"skip"},
     "gdb_snapshot.json": {"skip"},
+    "logic_uart_result.json": {"stub", "skip"},
     "logic_i2c_result.json": {"stub", "skip"},
 }
 failures = []
@@ -67,6 +68,6 @@ print("ci_phase1_smoke: OK")
 print("  - build/ctest: pass (executed)")
 print("  - wokwi: pass/skip (depending on token/tool availability)")
 print("  - flash/hil/uart/gdb: skip (safety gates held; not executed)")
-print("  - logic_i2c: stub/skip (not measured)")
+print("  - logic_uart/logic_i2c: stub/skip (not measured)")
 print("  - verification.md generated")
 PYEOF

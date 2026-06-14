@@ -9,7 +9,7 @@ sequenceDiagram
     participant VA as verify_all.sh
     participant B as build.sh
     participant HW as flash/hil/uart/gdb
-    participant LG as capture_logic_i2c.sh
+    participant LG as logic analyzer scripts
     participant EV as evidence/latest
     participant SM as summarize_evidence.py
 
@@ -29,7 +29,7 @@ sequenceDiagram
         else 未設定(既定)
             HW->>EV: skip を記録
         end
-        VA->>LG: capture_logic_i2c
+        VA->>LG: capture_logic_uart → capture_logic_i2c
         alt PICO_LOGIC_ANALYZER=1
             LG->>EV: 実測デコード (pass / fail)
         else 未設定(既定)

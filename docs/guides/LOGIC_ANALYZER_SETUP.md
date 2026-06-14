@@ -4,7 +4,7 @@ FX2LP系USBロジックアナライザ(8ch / 24MHz クラス、
 いわゆる "Saleae互換" 中華クローン)を sigrok / PulseView で使い、
 Picoの通信を物理層から観測します。
 
-現状、`scripts/capture_logic_i2c.sh` は sigrok-cli 未インストール環境では
+現状、`scripts/capture_logic_uart.sh` / `scripts/capture_logic_i2c.sh` は sigrok-cli 未インストール環境では
 サンプルデコード結果を返す**スタブ**です。
 
 ## 対象と限界
@@ -41,7 +41,19 @@ sigrok-cli --driver fx2lafw --scan
 複数デバイスがある場合や自動検出が不安定な場合は、`config/hardware.local.yaml`
 の `logic_analyzer.conn` に `20.3` のような `conn` 値を記録します。
 
-## 配線(I2C観測の例)
+## 配線
+
+### UART観測(最初の確認)
+
+既存ファームウェアはPico UART0 TX (GP0) に `LED on` / `LED off` を出力します。
+Debug ProbeのUART配線は外さず、ロジックアナライザを同じ信号線へ並列接続します。
+
+| ロジックアナライザ | Pico |
+|---|---|
+| GND | Pin 3 / GND |
+| D2 | Pin 1 / GP0 / UART0 TX |
+
+### 既定チャネル割り当て
 
 `config/hardware.example.yaml` の `logic_analyzer.channels` に対応:
 
@@ -53,11 +65,20 @@ sigrok-cli --driver fx2lafw --scan
 | D3 | UART RX (GP1) |
 | GND | Pico GND (必須) |
 
+I2C観測は後続題材です。現在のBlinkファームウェア確認では、まずD2だけを
+Pico Pin 1 / GP0 / UART0 TX に接続してUARTを観測します。
+
 ## 取得と保存
 
 ```bash
+PICO_LOGIC_ANALYZER=1 scripts/capture_logic_uart.sh 3000  # UART TXを3000ms取得
 PICO_LOGIC_ANALYZER=1 scripts/capture_logic_i2c.sh 1000   # 1000ms取得 (実測の明示的有効化が必要)
 ```
+
+UART実測では `LED on` と `LED off` の両方がデコードされた場合に `pass` になります。
+現在の最小配線(GND + D2→GP0)では、まず `capture_logic_uart.sh` を単独実行してください。
+`PICO_LOGIC_ANALYZER=1 scripts/verify_all.sh` はUARTとI2Cの両方を実測するため、
+I2C未配線の状態ではI2C側が `fail` になります。
 
 `PICO_LOGIC_ANALYZER=1` を付けた実測では、I2Cデコード注釈が1件も得られない場合は
 `fail` になります。端子未接続、SCL/SDAの取り違え、pull-up不足、対象ファームウェアが
@@ -65,10 +86,14 @@ I2Cを出していない状態を、成功として扱わないためです。
 
 出力:
 
+- `evidence/latest/logic_uart_decode.txt` — UARTデコード結果(hex byte等)
+- `evidence/latest/logic_uart_text.txt` — UARTデコード結果をASCII化したテキスト
+- `evidence/latest/logic_uart_result.json` — 機械可読な結果
 - `evidence/latest/logic_i2c_decode.txt` — I2Cデコード結果(Start/アドレス/ACK・NACK/データ/Stop)
 - `evidence/latest/logic_i2c_result.json` — 機械可読な結果
 
 **取得結果は必ずCSVまたはテキストに変換して保存し、AIに読ませます。**
 波形画像のスクリーンショットだけでは機械判定できないため、証拠の主体は
 テキストデコード結果とします(画像は補助)。デコード結果の読み方の例は
+`evidence/samples/logic_uart_decode_sample.txt` と
 `evidence/samples/i2c_nack_decode_sample.txt` を参照してください。

@@ -33,7 +33,8 @@ fi
 "${SCRIPT_DIR}/run_hil.sh"          || FAILED=1
 "${SCRIPT_DIR}/capture_uart.sh" "${UART_DURATION}" || FAILED=1
 "${SCRIPT_DIR}/gdb_snapshot.sh"     || FAILED=1
-"${SCRIPT_DIR}/capture_logic_i2c.sh" || FAILED=1
+"${SCRIPT_DIR}/capture_logic_uart.sh" || FAILED=1
+"${SCRIPT_DIR}/capture_logic_i2c.sh"  || FAILED=1
 
 python3 "${SCRIPT_DIR}/summarize_evidence.py" || FAILED=1
 

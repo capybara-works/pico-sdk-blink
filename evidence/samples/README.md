@@ -27,6 +27,7 @@ stub と pass を混同してはいけません([../../docs/operations/TEST_EVID
 | `build_pass_sample.log` | 合成 | 正常ビルドのログ例 |
 | `build_fail_sample.log` | 合成 | コンパイルエラー(typo)のログ例 |
 | `uart_pass_sample.log` | 合成 | UARTパターン検証passのログ例 |
+| `logic_uart_decode_sample.txt` | 合成 | ロジックアナライザでUART TXをデコードした例。**stub実行時にこのファイルがコピーされる** |
 | `i2c_nack_decode_sample.txt` | 合成 | I2C NACK(デバイス無応答)のデコード例。**stub実行時にこのファイルがコピーされる** |
 | `verification_sample.md` | 合成 | verification.md の形式例 |
 

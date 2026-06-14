@@ -1,0 +1,54 @@
+# sigrok-cli uart protocol decode (sample)
+# driver=fx2lafw samplerate=1MHz channel: D2=TX
+# Scenario: Pico UART0 TX emits the blink status messages.
+uart-1: Start bit
+uart-1: 4C
+uart-1: Stop bit
+uart-1: Start bit
+uart-1: 45
+uart-1: Stop bit
+uart-1: Start bit
+uart-1: 44
+uart-1: Stop bit
+uart-1: Start bit
+uart-1: 20
+uart-1: Stop bit
+uart-1: Start bit
+uart-1: 6F
+uart-1: Stop bit
+uart-1: Start bit
+uart-1: 6E
+uart-1: Stop bit
+uart-1: Start bit
+uart-1: 0D
+uart-1: Stop bit
+uart-1: Start bit
+uart-1: 0A
+uart-1: Stop bit
+uart-1: Start bit
+uart-1: 4C
+uart-1: Stop bit
+uart-1: Start bit
+uart-1: 45
+uart-1: Stop bit
+uart-1: Start bit
+uart-1: 44
+uart-1: Stop bit
+uart-1: Start bit
+uart-1: 20
+uart-1: Stop bit
+uart-1: Start bit
+uart-1: 6F
+uart-1: Stop bit
+uart-1: Start bit
+uart-1: 66
+uart-1: Stop bit
+uart-1: Start bit
+uart-1: 66
+uart-1: Stop bit
+uart-1: Start bit
+uart-1: 0D
+uart-1: Stop bit
+uart-1: Start bit
+uart-1: 0A
+uart-1: Stop bit
