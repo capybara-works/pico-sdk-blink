@@ -21,7 +21,7 @@ flowchart LR
     wokwi -->|"UARTログ判定"| lab
     lab -->|"flash / UART / GDB"| hw
     hw -->|"観測値"| lab
-    lab -.->|"I2C等のデコード<br/>(PICO_LOGIC_ANALYZER=1)"| la
+    lab -.->|"UART/I2C等のデコード<br/>(PICO_LOGIC_* gate)"| la
     lab -->|"push"| ci
     ci -->|"証拠 / ファームウェア artifact"| lab
     ghcr -->|"事前ビルド済み環境"| lab
@@ -32,7 +32,7 @@ flowchart LR
 
 - **中心(ラボ)** は、AIや人間が出した「コード変更」を受け取り、**証拠(verification.md と一次ログ/JSON)**を返す存在です。
 - 外部システムは大きく3系統:**シミュレーション**(Wokwi)、**実機観測**(Pico+Debug Probe、ロジックアナライザ)、**CI/配布**(GitHub Actions と GHCR)。
-- 実機とロジックアナライザへの経路は、安全ゲート(`PICO_HARDWARE` / `PICO_LOGIC_ANALYZER`)が無い限り起動しません。詳細は [04_verification_flow.md](04_verification_flow.md)。
+- 実機とロジックアナライザへの経路は、安全ゲート(`PICO_HARDWARE` / `PICO_LOGIC_UART` / `PICO_LOGIC_I2C` / `PICO_LOGIC_ANALYZER`)が無い限り起動しません。詳細は [04_verification_flow.md](04_verification_flow.md)。
 
 ## Source of Truth
 

@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # CI smoke test for the Phase 1 evidence pipeline. Requires no hardware.
 #
-# Runs the full verification loop WITHOUT PICO_HARDWARE / PICO_LOGIC_ANALYZER
+# Runs the full verification loop WITHOUT hardware / logic analyzer gates
 # and asserts that:
-#   - the build and CTest pass, optional Wokwi is recorded, and
+#   - the build and CTest pass, Wokwi is recorded as skip by default, and
 #     verification.md is generated
 #   - hardware steps (flash/hil/uart/gdb) are recorded as "skip", proving
 #     the safety gates hold (no hardware operation without explicit opt-in)
@@ -20,7 +20,13 @@ REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 EVIDENCE_DIR="${REPO_ROOT}/evidence/latest"
 
 # Make sure the gates are NOT enabled, even if set in the caller's env.
-unset PICO_HARDWARE PICO_LOGIC_ANALYZER
+unset PICO_HARDWARE PICO_LOGIC_ANALYZER PICO_LOGIC_UART PICO_LOGIC_I2C
+
+# Keep the smoke test deterministic and network-free by default. Wokwi is
+# covered by the dedicated CI job; opt in locally with PICO_SMOKE_WOKWI=1.
+if [ "${PICO_SMOKE_WOKWI:-0}" != "1" ]; then
+    unset WOKWI_CLI_TOKEN
+fi
 
 echo "== ci_phase1_smoke: running verify_all.sh without hardware gates =="
 if ! "${SCRIPT_DIR}/verify_all.sh"; then
@@ -66,7 +72,7 @@ if failures:
 
 print("ci_phase1_smoke: OK")
 print("  - build/ctest: pass (executed)")
-print("  - wokwi: pass/skip (depending on token/tool availability)")
+print("  - wokwi: skip by default (set PICO_SMOKE_WOKWI=1 to include local Wokwi)")
 print("  - flash/hil/uart/gdb: skip (safety gates held; not executed)")
 print("  - logic_uart/logic_i2c: stub/skip (not measured)")
 print("  - verification.md generated")

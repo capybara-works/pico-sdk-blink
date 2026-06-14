@@ -14,7 +14,7 @@ stub と pass を混同してはいけません([../../docs/operations/TEST_EVID
 
 | ファイル | 来歴 | 内容 |
 |---|---|---|
-| `verification_phase1_sample.md` | **実機実測** | Build/Flash/HIL/UART/GDB = pass、Logic Analyzer = stub、Overall = **partial** |
+| `verification_phase1_sample.md` | **実機実測** | Build/Flash/HIL/UART/GDB = pass、当時のLogic Analyzer = stub、Overall = **partial** |
 | `gdb_snapshot_phase1_sample.json` | **実機実測** | 動作中ファームウェアの実レジスタ値 + `main()` までのバックトレース |
 | `uart_phase1_sample.log` | **実機実測** | 250ms周期の `LED on`/`LED off` 実キャプチャ(パターン検証pass) |
 

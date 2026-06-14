@@ -71,16 +71,17 @@ Pico Pin 1 / GP0 / UART0 TX に接続してUARTを観測します。
 ## 取得と保存
 
 ```bash
-PICO_LOGIC_ANALYZER=1 scripts/capture_logic_uart.sh 3000  # UART TXを3000ms取得
-PICO_LOGIC_ANALYZER=1 scripts/capture_logic_i2c.sh 1000   # 1000ms取得 (実測の明示的有効化が必要)
+PICO_LOGIC_UART=1 scripts/capture_logic_uart.sh 3000  # UART TXを3000ms取得
+PICO_LOGIC_I2C=1 scripts/capture_logic_i2c.sh 1000    # I2Cを1000ms取得
 ```
 
 UART実測では `LED on` と `LED off` の両方がデコードされた場合に `pass` になります。
 現在の最小配線(GND + D2→GP0)では、まず `capture_logic_uart.sh` を単独実行してください。
-`PICO_LOGIC_ANALYZER=1 scripts/verify_all.sh` はUARTとI2Cの両方を実測するため、
+`scripts/verify_all.sh` に組み込む場合も、I2C未配線なら `PICO_LOGIC_UART=1`
+だけを指定します。`PICO_LOGIC_ANALYZER=1` はUARTとI2Cの両方を実測する互換スイッチなので、
 I2C未配線の状態ではI2C側が `fail` になります。
 
-`PICO_LOGIC_ANALYZER=1` を付けた実測では、I2Cデコード注釈が1件も得られない場合は
+`PICO_LOGIC_I2C=1` を付けた実測では、I2Cデコード注釈が1件も得られない場合は
 `fail` になります。端子未接続、SCL/SDAの取り違え、pull-up不足、対象ファームウェアが
 I2Cを出していない状態を、成功として扱わないためです。
 

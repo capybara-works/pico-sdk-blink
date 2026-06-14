@@ -45,8 +45,8 @@ stub_result() {
     exit 0
 }
 
-if [ "${PICO_LOGIC_ANALYZER:-0}" != "1" ]; then
-    stub_result "logic analyzer not enabled. Set PICO_LOGIC_ANALYZER=1 to enable capture. Using sample decode output."
+if ! logic_capture_enabled uart; then
+    stub_result "logic analyzer UART not enabled. Set PICO_LOGIC_UART=1 to enable UART capture, or PICO_LOGIC_ANALYZER=1 to enable all logic captures. Using sample decode output."
 fi
 
 if ! command -v sigrok-cli >/dev/null 2>&1; then

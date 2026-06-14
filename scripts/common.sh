@@ -143,6 +143,32 @@ hardware_gate() {
     fi
 }
 
+# logic_capture_enabled <uart|i2c>
+# Per-protocol gates override the broad PICO_LOGIC_ANALYZER switch when set.
+# This allows a partial wiring setup (for example UART TX only) to be measured
+# without treating unconnected protocols as failed captures.
+logic_capture_enabled() {
+    case "$1" in
+        uart)
+            if [ "${PICO_LOGIC_UART+x}" = "x" ]; then
+                [ "${PICO_LOGIC_UART}" = "1" ]
+            else
+                [ "${PICO_LOGIC_ANALYZER:-0}" = "1" ]
+            fi
+            ;;
+        i2c)
+            if [ "${PICO_LOGIC_I2C+x}" = "x" ]; then
+                [ "${PICO_LOGIC_I2C}" = "1" ]
+            else
+                [ "${PICO_LOGIC_ANALYZER:-0}" = "1" ]
+            fi
+            ;;
+        *)
+            return 1
+            ;;
+    esac
+}
+
 # write_result_json <outfile> <step> <status> [reason] [log_relpath] [extra_json]
 # status: pass | fail | skip | stub
 write_result_json() {

@@ -21,10 +21,10 @@ flowchart TB
         gd["gdb_snapshot.sh"]
     end
 
-    lgu["capture_logic_uart.sh<br/>PICO_LOGIC_ANALYZER=1 でUART実測 / 否ならstub"]
-    lgi["capture_logic_i2c.sh<br/>PICO_LOGIC_ANALYZER=1 でI2C実測 / 否ならstub"]
+    lgu["capture_logic_uart.sh<br/>PICO_LOGIC_UART=1 でUART実測 / 否ならstub"]
+    lgi["capture_logic_i2c.sh<br/>PICO_LOGIC_I2C=1 でI2C実測 / 否ならstub"]
     sm["summarize_evidence.py<br/>→ verification.md"]
-    common["common.sh<br/>hardware_gate / write_result_json<br/>cfg_get / reset_evidence_dir<br/>build_dir / artifact_metadata_json / target_elf_path"]
+    common["common.sh<br/>hardware_gate / logic_capture_enabled<br/>write_result_json / cfg_get / reset_evidence_dir<br/>build_dir / artifact_metadata_json / target_elf_path"]
     ev[("evidence/latest/<br/>*_result.json + *.log")]
 
     va --> b

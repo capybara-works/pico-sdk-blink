@@ -44,8 +44,8 @@ stub_result() {
 
 # Safety gate: real capture runs only when explicitly enabled, separately
 # from PICO_HARDWARE (a logic analyzer is its own piece of equipment).
-if [ "${PICO_LOGIC_ANALYZER:-0}" != "1" ]; then
-    stub_result "logic analyzer not enabled. Set PICO_LOGIC_ANALYZER=1 to enable capture. Using sample decode output."
+if ! logic_capture_enabled i2c; then
+    stub_result "logic analyzer I2C not enabled. Set PICO_LOGIC_I2C=1 to enable I2C capture, or PICO_LOGIC_ANALYZER=1 to enable all logic captures. Using sample decode output."
 fi
 
 if ! command -v sigrok-cli >/dev/null 2>&1; then

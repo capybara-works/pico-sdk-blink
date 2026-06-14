@@ -3,15 +3,17 @@
 # generates evidence/latest/verification.md at the end.
 #
 # Safe by default: hardware steps (flash/HIL/UART/GDB) run only when
-# PICO_HARDWARE=1 is set, and logic analyzer capture only when
-# PICO_LOGIC_ANALYZER=1 is set; otherwise they record explicit skip/stub
-# results. If the build fails, hardware steps are not attempted
+# PICO_HARDWARE=1 is set. Logic analyzer captures run only when
+# PICO_LOGIC_UART=1 / PICO_LOGIC_I2C=1, or the broad PICO_LOGIC_ANALYZER=1,
+# is set; otherwise they record explicit stub results. If the build fails,
+# hardware steps are not attempted
 # (flashing a stale ELF would produce misleading evidence).
 #
 # Usage:
 #   scripts/verify_all.sh                        # no hardware touched
 #   PICO_HARDWARE=1 scripts/verify_all.sh        # real flash/HIL/UART/GDB
-#   PICO_HARDWARE=1 PICO_LOGIC_ANALYZER=1 scripts/verify_all.sh
+#   PICO_HARDWARE=1 PICO_LOGIC_UART=1 scripts/verify_all.sh
+#   PICO_HARDWARE=1 PICO_LOGIC_ANALYZER=1 scripts/verify_all.sh  # all logic captures
 # Optional arg: [uart_duration_seconds] (default: 5)
 # Exit code: 0 = no step failed (pass/skip/stub), 1 = at least one failure
 

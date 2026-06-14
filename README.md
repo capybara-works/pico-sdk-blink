@@ -15,7 +15,7 @@ AIがコードを変更する
   ↓ scripts/run_hil.sh         (実機HILテスト)
   ↓ scripts/capture_uart.sh    (UART観測)
   ↓ scripts/gdb_snapshot.sh    (GDBレジスタ+バックトレース取得)
-  ↓ scripts/capture_logic_i2c.sh (ロジックアナライザ: 未有効ならスタブ)
+  ↓ scripts/capture_logic_uart.sh / capture_logic_i2c.sh (ロジックアナライザ: 未有効ならスタブ)
   ↓ evidence/latest/           (ログ + JSON として証拠を保存)
   ↓ scripts/summarize_evidence.py → evidence/latest/verification.md
 AIが証拠を読んで成功/失敗/原因候補を判断する
@@ -37,12 +37,16 @@ scripts/verify_all.sh
 # 実機あり (明示的に有効化した場合のみ flash/HIL/UART/GDB を実行)
 PICO_HARDWARE=1 scripts/verify_all.sh
 
-# ロジックアナライザあり (実測を明示的に有効化)
+# ロジックアナライザあり: 現在の最小配線(GND + D2->GP0)ではUARTだけを実測
+PICO_HARDWARE=1 PICO_LOGIC_UART=1 scripts/verify_all.sh
+
+# ロジックアナライザの全capture(UART + I2C)を実測する場合
 PICO_HARDWARE=1 PICO_LOGIC_ANALYZER=1 scripts/verify_all.sh
 
 # 個別実行も可能 (実機系は同じく PICO_HARDWARE=1 が必要)
 scripts/build.sh                       # → build/ctest/wokwi のログ + result.json
 PICO_HARDWARE=1 scripts/run_hil.sh     # → evidence/latest/hil_result.json
+PICO_LOGIC_UART=1 scripts/capture_logic_uart.sh 3000
 python3 scripts/summarize_evidence.py  # → evidence/latest/verification.md
 
 # CIで生成されたWokwi統合済み証拠を取得 (GitHub CLI / gh auth login が必要)
@@ -53,7 +57,8 @@ scripts/fetch_ci_firmware.sh           # → artifacts/latest/firmware/<run_id>/
 ```
 
 **安全ゲート:** 実機操作(flash/HIL/UART/GDB)は `PICO_HARDWARE=1`、
-ロジックアナライザ実測は `PICO_LOGIC_ANALYZER=1` が明示された場合のみ実行されます。
+ロジックアナライザ実測は `PICO_LOGIC_UART=1` / `PICO_LOGIC_I2C=1`
+または全capture用の `PICO_LOGIC_ANALYZER=1` が明示された場合のみ実行されます。
 未指定なら各ステップは `skip` / `stub` を証拠として記録します(偽の成功にはなりません)。
 
 **結果の読み方:** `verification.md` は最終要約であり、一次証拠は
@@ -179,9 +184,12 @@ make -j4
 GitHub Actions (`.github/workflows/ci.yml`) により、以下のプロセスが自動化されています。
 
 1.  **環境構築**: 必要なツールチェーンとPico SDK (v2.0.0) のセットアップ。
-2.  **ビルド & テスト**: `scripts/ci_phase1_smoke.sh` 経由で `scripts/verify_all.sh` を実行し、ビルド・CTest・証拠生成を確認。
+2.  **ビルド & テスト**: `scripts/ci_phase1_smoke.sh` 経由で `scripts/verify_all.sh` を実行し、ビルド・CTest・証拠生成を確認。smokeは既定でWokwi tokenを抑制し、ネットワーク非依存にします。
 3.  **アーティファクト保存**: ビルド成果物 (`build/blink.*`: `blink.uf2`, `blink.bin`, `blink.elf`, map/disassembly 等) と evidence を保存。
 4.  **Wokwi統合テスト**: シミュレータ環境でUARTログシナリオを自動検証し、結果を `evidence-with-wokwi` artifact に統合 (要 `WOKWI_CLI_TOKEN` シークレット設定)。
+
+ローカルで smoke にもWokwi実行を含めたい場合は `PICO_SMOKE_WOKWI=1 scripts/ci_phase1_smoke.sh`
+を使います。通常のWokwi確認は `scripts/build.sh` または `scripts/test_wokwi.sh` で行います。
 
 DevContainer用の事前ビルド済みイメージは、`.github/workflows/devcontainer-image.yml` により `ghcr.io/capybara-works/pico-sdk-blink/devcontainer:main` へ `linux/amd64` イメージとして公開されます。`docker_build.sh` はこのイメージを優先して使用し、取得できない場合は `.devcontainer/Dockerfile` から同じplatformでローカルビルドします。Apple SiliconではDocker Desktopのamd64エミュレーションを利用します。
 

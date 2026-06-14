@@ -1,6 +1,7 @@
 > **NOTE: 代表サンプル (Record)** — これは 2026-06-12 に実機 (Pico + Debug Probe) で
 > `PICO_HARDWARE=1 scripts/verify_all.sh` を実行した結果のスナップショットであり、最新の実行結果ではありません。
-> Build/Flash/HIL/UART/GDB は実測 pass、Logic Analyzer は機材未準備のため stub(実測ではない)、Overall は partial です。
+> Build/Flash/HIL/UART/GDB は実測 pass、当時の単一 Logic Analyzer ステップは機材未準備のため stub(実測ではない)、Overall は partial です。
+> 現在のロジックアナライザ証拠は UART / I2C に分離されています。
 
 # Verification Summary
 

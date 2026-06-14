@@ -91,5 +91,6 @@ PICO_HARDWARE=1 scripts/gdb_snapshot.sh # レジスタ+バックトレース →
 ## ロジックアナライザ
 
 UART/I2C/SPIの物理層観測用に、FX2LP系USBロジックアナライザを使用します。
-実測は `PICO_LOGIC_ANALYZER=1` を明示した場合のみ行います。
+実測は `PICO_LOGIC_UART=1` / `PICO_LOGIC_I2C=1`、または全capture用の
+`PICO_LOGIC_ANALYZER=1` を明示した場合のみ行います。
 チャネル割り当ては `config/hardware.example.yaml` の `logic_analyzer.channels` を参照。

@@ -121,7 +121,9 @@ AI / human review (証拠に基づく裁可)
 | 環境変数 | 有効化される操作 |
 | :--- | :--- |
 | `PICO_HARDWARE=1` | flash / HIL / UART / GDB の実機操作 |
-| `PICO_LOGIC_ANALYZER=1` | ロジックアナライザの実測キャプチャ |
+| `PICO_LOGIC_UART=1` | ロジックアナライザのUART実測キャプチャ |
+| `PICO_LOGIC_I2C=1` | ロジックアナライザのI2C実測キャプチャ |
+| `PICO_LOGIC_ANALYZER=1` | ロジックアナライザの全capture実測(互換スイッチ) |
 
 結果ステータスの定義(詳細: `docs/operations/TEST_EVIDENCE_POLICY.md`):
 
