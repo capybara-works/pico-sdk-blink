@@ -50,6 +50,7 @@
 | [HARDWARE_SETUP.md](guides/HARDWARE_SETUP.md) | Pico / Debug Probe / UART / SWD 接続、RP2040デバッグの既知の落とし穴 |
 | [LOGIC_ANALYZER_SETUP.md](guides/LOGIC_ANALYZER_SETUP.md) | FX2LP系ロジックアナライザ + sigrok |
 | [DEBUGGING_AND_ANALYSIS.md](guides/DEBUGGING_AND_ANALYSIS.md) | 静的解析 (blink.S.dis) と実行時解析 (GDBスナップショット) |
+| [MEASUREMENT_PRACTICES.md](guides/MEASUREMENT_PRACTICES.md) | 計測の作法 (ADC整定+平均, 単位名の分離, ADC分圧ピンへのpull試験禁止, GP29/VSYS実例) |
 
 ### design/ — 設計メモ
 

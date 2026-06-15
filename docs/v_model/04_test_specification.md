@@ -42,10 +42,10 @@ Wokwiシミュレータを使用したハードウェア・ソフトウェア連
     5.  シリアル出力 "POST " を待機する（起動時自己診断行の出力確認）。
     6.  シリアル出力 "LED on" / "LED off" を待機する。
 *   **合格基準**: 上記ステップがタイムアウト（10000ms）内に全て成功すること。
-*   **補足**: POST行は `POST fw=... vsys_raw=... vsys_mv=... temp_mc=... vbus=... i2c_oled=...` 形式。
-    Wokwiは電源/ADCを模擬しないため `vsys_*`/`temp_mc`/`vbus` は非物理値になり、
-    シナリオは行の存在のみを判定する。これらの値が意味を持つのは実機(HIL)。
-    実機検証済み(2026-06-16): `vsys_mv=4975`(≒4.98V, USB給電VSYS正常)。
+*   **補足**: POST行は `POST fw=... gp29_raw=... gp29_adc_mv=... vsys_est_mv=... temp_mc=... vbus=... i2c_oled=...` 形式
+    (raw / ADC pin電圧 / VSYS推定 を名前で分離)。Wokwiは電源/ADCを模擬しないため
+    これらは非物理値になり、シナリオは行の存在のみを判定する。値が意味を持つのは実機(HIL)。
+    実機検証済み(2026-06-16): `vsys_est_mv=4975`(≒4.98V, USB給電VSYS正常)。
     vsysは高インピーダンス分圧のため整定+多数平均が必須(`adc_avg()`)。
 
 ## 4. CI/CD検証 (System Verification)

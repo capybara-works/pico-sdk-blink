@@ -23,7 +23,7 @@
     *   GP4をSDA、GP5をSCLとして設定し、内部pull-upを有効にする。
     *   I2Cアドレススキャンを実行し、検出したアドレスをUARTへ出力する。
     *   **POST (Power-On Self-Test)**: `run_post()` が外付け部品ゼロで実機状態を計測し、
-        1行のテキストで出力する: `POST fw=... vsys_mv=<ADC3:VSYS/3> temp_mc=<ADC4内蔵温度>
+        1行のテキストで出力する: `POST fw=... gp29_raw=.. gp29_adc_mv=.. vsys_est_mv=<ADC3:VSYS/3×3> temp_mc=<ADC4内蔵温度>
         vbus=<GP24> i2c_oled=<0x3C検出>`。AI/人間がUART証拠から物理状態を読めるようにする
         (詳細: `docs/design/CHEAP_AUTONOMY_LEVERS.md` L1)。
 

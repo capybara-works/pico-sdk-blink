@@ -36,23 +36,24 @@ UART証拠経路(`scripts/capture_uart.sh` → `uart_result.json`、`wait-serial
 ### L1. ファーム Power-On Self-Test(最優先・$0) — ✅ 実装済み(2026-06-16)
 起動時に構造化された自己診断行をUARTへ出力する。実装済みの形式:
 ```
-POST fw=blink-i2c-oled vsys_mv=<int> temp_mc=<int> vbus=<0|1> i2c_oled=<0|1>
+POST fw=blink-i2c-oled gp29_raw=<int> gp29_adc_mv=<int> vsys_est_mv=<int> temp_mc=<int> vbus=<0|1> i2c_oled=<0|1>
 OLED updated fbcrc=0x<16bit>   # 描画ごとに「何を書いたか」の指紋
 ```
-- 計測元(外付け部品ゼロ): `vsys_mv`=ADC3(GP29=VSYS/3)、`temp_mc`=ADC4内蔵温度、
+- 計測元(外付け部品ゼロ): ADC3(GP29=内蔵VSYS/3)を `gp29_raw`→`gp29_adc_mv`(pin電圧)→`vsys_est_mv`(×3)の
+  3層で明示、`temp_mc`=ADC4内蔵温度、
   `vbus`=GP24センス、`i2c_oled`=0x3C検出、`fbcrc`=フレームバッファCRC16。全て整数(float printf回避)。
 - **読み取り**: 既存 `capture_uart.sh`。`blink.test.yaml` / `blink_i2c.test.yaml` に
   `wait-serial: 'POST '` を追加済み(CI/Wokwiでも行の存在を判定)。実機リブートは `scripts/reset_target.sh`。
-- **効果**: 今回最大の躓き=ファントム給電を、**`vsys_mv`が低い/`i2c_oled=1`なのに描画系が異常**として
+- **効果**: 今回最大の躓き=ファントム給電を、**`vsys_est_mv`が低い/`i2c_oled=1`なのに描画系が異常**として
   AIが数値で切り分け可能に。人間の目に頼っていた「給電されてる?」「ちゃんと起動した?」が消える。
 - **限界(正直)**: `fbcrc` は「何を書いたか」を保証するが**画素が光ったかは保証しない**(SSD1306はI2Cで
   確実な読み戻しが難しい)。点灯の確証はL3(電流)とL4(画像)で補う。
-  **Wokwiは電源/ADCを模擬しない**ため `vsys_mv`/`temp_mc`/`vbus` は非物理値で、値が意味を持つのは実機。
+  **Wokwiは電源/ADCを模擬しない**ため `vsys_est_mv`/`temp_mc`/`vbus` は非物理値で、値が意味を持つのは実機。
 - **実機検証(2026-06-16)**: フラッシュ→`capture_uart.sh` で実値取得。整定(sleep+捨て読み16)
-  + 256回平均にした正しい測定で `POST ... vsys_raw=2058 vsys_mv=4975 temp_mc=26419 vbus=1
+  + 256回平均にした正しい測定で `POST ... gp29_raw=2058 gp29_adc_mv=1659 vsys_est_mv=4975 temp_mc=26419 vbus=1
   i2c_oled=1` を取得。**vsys=4.98V=USB給電VSYSとして正常**で、temp(~26°C)・vbus・i2c_oledも
   正しい。**4フィールドとも検証済み**。
-- **訂正(重要)**: 初期実装は捨て読み1回のみで `vsys_mv~1.7V` と低く出て、「GP29に分圧が無い
+- **訂正(重要)**: 初期実装は捨て読み1回のみで `vsys_est_mv~1.7V` と低く出て、「GP29に分圧が無い
   /クローン」と誤判定した。これは**誤り**。GP29の分圧は~67kΩと高インピーダンスで、ADCのS/Hが
   整定しきらず初回読みが過小評価していただけ(同じログの `nopull raw=2104`≒5.1Vが真値を示していた)。
   ADC分圧ピンにpull試験をかけたのも不適切だった。**正しい手順=mux固定→数ms待ち→十数サンプル捨て→
