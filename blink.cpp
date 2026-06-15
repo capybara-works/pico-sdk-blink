@@ -49,29 +49,35 @@ void scan_i2c_bus() {
 // Power-On Self-Test: emit a single structured line so an AI/operator can read
 // the board's physical state as text over the existing UART evidence path
 // (no extra hardware). All integer milli-units to avoid float printf.
-//   vsys_mv: system supply, ADC3 (GP29 = VSYS/3 on a genuine Pico). NOTE:
-//            board-dependent -- on the current RP2040 board GP29 does not carry
-//            the VSYS/3 divider, so this field reads ~1/3 of reality and is
-//            unreliable here. Precise supply measurement is INA260's job (L3).
-//   temp_mc: internal temperature sensor (ADC4), milli-Celsius (verified ~29C)
-//   vbus:    USB power present, GP24 sense (verified)
-//   i2c_oled: SSD1306 (0x3C) detected by the scan (verified)
+//   vsys_mv: system supply estimate = ADC3 (GP29 = internal VSYS/3 sense) * 3.
+//            GP29's divider is ~67k, so the ADC S/H needs settling + averaging;
+//            a single read under-reports. We discard then average many samples.
+//   temp_mc: internal temperature sensor (ADC4), milli-Celsius
+//   vbus:    USB power present, GP24 sense
+//   i2c_oled: SSD1306 (0x3C) detected by the scan
+//   vsys_raw: averaged ADC3 raw, exposed so the conversion can be checked.
+static uint32_t adc_avg(int input, int discard, int samples) {
+  adc_select_input(input);
+  sleep_ms(2);
+  for (int i = 0; i < discard; ++i) (void)adc_read();
+  uint32_t acc = 0;
+  for (int i = 0; i < samples; ++i) acc += adc_read();
+  return acc / (uint32_t)samples;
+}
+
 void run_post() {
   adc_init();
   adc_gpio_init(29);
-  adc_select_input(3);
-  (void)adc_read(); // discard first conversion after mux switch (settling)
-  uint32_t vsys_mv = (uint32_t)adc_read() * 9900u / 4095u; // 3.3V ref * 3 divider
   adc_set_temp_sensor_enabled(true);
-  adc_select_input(4);
-  (void)adc_read(); // discard first conversion after mux switch (settling)
-  uint32_t vtemp_mv = (uint32_t)adc_read() * 3300u / 4095u;
+  uint32_t vsys_raw = adc_avg(3, 16, 256);          // GP29 = VSYS/3 (high-Z, settle+avg)
+  uint32_t vsys_mv = vsys_raw * 9900u / 4095u;      // ADC mV * 3 (divider)
+  uint32_t vtemp_mv = adc_avg(4, 16, 64) * 3300u / 4095u;
   int temp_mc = 27000 - (int)(vtemp_mv - 706) * 581; // ~ -1/1.721 mV per deg
   gpio_init(24);
   gpio_set_dir(24, GPIO_IN);
   int vbus = gpio_get(24);
-  printf("POST fw=blink-i2c-oled vsys_mv=%u temp_mc=%d vbus=%d i2c_oled=%d\n",
-         (unsigned)vsys_mv, temp_mc, vbus, oled_present ? 1 : 0);
+  printf("POST fw=blink-i2c-oled vsys_raw=%u vsys_mv=%u temp_mc=%d vbus=%d i2c_oled=%d\n",
+         (unsigned)vsys_raw, (unsigned)vsys_mv, temp_mc, vbus, oled_present ? 1 : 0);
 }
 
 // Render the static labels plus a live blink counter on the OLED.
