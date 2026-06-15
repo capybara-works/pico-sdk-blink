@@ -33,16 +33,21 @@ UART証拠経路(`scripts/capture_uart.sh` → `uart_result.json`、`wait-serial
 | L5 | reset_target.sh + セッション単位許可 | $0(運用) | — | N4往復 | 小 |
 | L6 | はんだ付け/既製ハーネス | ~$5 | 高 | 接触不良の再発 | 小 |
 
-### L1. ファーム Power-On Self-Test(最優先・$0)
-起動時に構造化された自己診断行をUARTへ出力する。例:
+### L1. ファーム Power-On Self-Test(最優先・$0) — ✅ 実装済み(2026-06-16)
+起動時に構造化された自己診断行をUARTへ出力する。実装済みの形式:
 ```
-POST build=<payload8> vsys=4.98V temp=27.3C vbus=1 i2c=[0x3C] fbcrc=0x9A3E heap=...
+POST fw=blink-i2c-oled vsys_mv=<int> temp_mc=<int> vbus=<0|1> i2c_oled=<0|1>
+OLED updated fbcrc=0x<16bit>   # 描画ごとに「何を書いたか」の指紋
 ```
-- **読み取り**: 既存 `capture_uart.sh`。`blink.test.yaml` に `wait-serial: 'POST '` 等を足して合否化。
-- **効果**: 今回最大の躓き=ファントム給電を、**`vsys`が低い/`i2c`にあるのに描画系が異常**として
+- 計測元(外付け部品ゼロ): `vsys_mv`=ADC3(GP29=VSYS/3)、`temp_mc`=ADC4内蔵温度、
+  `vbus`=GP24センス、`i2c_oled`=0x3C検出、`fbcrc`=フレームバッファCRC16。全て整数(float printf回避)。
+- **読み取り**: 既存 `capture_uart.sh`。`blink.test.yaml` / `blink_i2c.test.yaml` に
+  `wait-serial: 'POST '` を追加済み(CI/Wokwiでも行の存在を判定)。実機リブートは `scripts/reset_target.sh`。
+- **効果**: 今回最大の躓き=ファントム給電を、**`vsys_mv`が低い/`i2c_oled=1`なのに描画系が異常**として
   AIが数値で切り分け可能に。人間の目に頼っていた「給電されてる?」「ちゃんと起動した?」が消える。
 - **限界(正直)**: `fbcrc` は「何を書いたか」を保証するが**画素が光ったかは保証しない**(SSD1306はI2Cで
   確実な読み戻しが難しい)。点灯の確証はL3(電流)とL4(画像)で補う。
+  **Wokwiは電源/ADCを模擬しない**ため `vsys_mv`/`temp_mc`/`vbus` は非物理値で、値が意味を持つのは実機。
 
 ### L2. GPIOループバック自己診断(~$0)
 余ったGPIOを2本ジャンパで繋ぎ、片方を駆動・他方で読む。一致をUART報告。

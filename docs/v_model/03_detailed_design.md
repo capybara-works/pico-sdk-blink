@@ -9,6 +9,7 @@
 ### 1.2 依存ライブラリ
 *   **pico_stdlib**: 標準入出力、GPIO制御、時間管理機能を提供。
 *   **hardware_i2c**: I2C0を使ったアドレススキャンを提供。
+*   **hardware_adc**: 起動時自己診断(POST)でVSYS(ADC3)・内蔵温度(ADC4)を測定する。
 
 ## 2. 処理フロー詳細
 ### 2.1 メイン関数 (`main`)
@@ -21,6 +22,10 @@
     *   `i2c_init(i2c0, 100000)`: I2C0を100kHzで初期化する。
     *   GP4をSDA、GP5をSCLとして設定し、内部pull-upを有効にする。
     *   I2Cアドレススキャンを実行し、検出したアドレスをUARTへ出力する。
+    *   **POST (Power-On Self-Test)**: `run_post()` が外付け部品ゼロで実機状態を計測し、
+        1行のテキストで出力する: `POST fw=... vsys_mv=<ADC3:VSYS/3> temp_mc=<ADC4内蔵温度>
+        vbus=<GP24> i2c_oled=<0x3C検出>`。AI/人間がUART証拠から物理状態を読めるようにする
+        (詳細: `docs/design/CHEAP_AUTONOMY_LEVERS.md` L1)。
 
 2.  **メインループ (無限ループ)**
     *   **ステップ1: 点灯**
@@ -44,6 +49,8 @@
 | `I2C_SDA_PIN` | 4 | I2C0 SDAとして使用するGPIOピン番号 |
 | `I2C_SCL_PIN` | 5 | I2C0 SCLとして使用するGPIOピン番号 |
 | `I2C_BAUD_RATE` | 100000 | I2Cバス速度 (100kHz) |
+
+POSTで使う固定ピン: ADC3=GP29(VSYS/3), ADC4=内蔵温度センサ, GP24=VBUSセンス。
 
 ## 4. 回路図詳細 (Wokwi Definition)
 `diagram.json` では、外部LEDは接続せず、Pico本体のオンボードLED

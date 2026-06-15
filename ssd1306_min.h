@@ -104,6 +104,19 @@ static void ssd1306_init(i2c_inst_t *i2c) {
 
 static void ssd1306_clear() { memset(ssd1306_buf, 0, sizeof(ssd1306_buf)); }
 
+// CRC-16 of the framebuffer: a cheap "what did I write" fingerprint that the
+// POST/render path reports over UART. Proves the write path/content (not that
+// pixels actually lit -- pair with INA260 current and/or a camera for that).
+static uint16_t ssd1306_buf_crc() {
+  uint16_t crc = 0xFFFF;
+  for (size_t i = 0; i < sizeof(ssd1306_buf); ++i) {
+    crc ^= ssd1306_buf[i];
+    for (int b = 0; b < 8; ++b)
+      crc = (crc & 1) ? (uint16_t)((crc >> 1) ^ 0xA001) : (uint16_t)(crc >> 1);
+  }
+  return crc;
+}
+
 // Draw a string at column x (pixels) on the given text row (page, 0..7).
 static void ssd1306_draw_string(int x, int page, const char *s) {
   if (page < 0 || page >= SSD1306_PAGES) return;

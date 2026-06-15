@@ -40,6 +40,7 @@ target_link_libraries(blink pico_stdlib)
 target_link_libraries(blink
         hardware_clocks
         hardware_i2c
+        hardware_adc
         )
 
 pico_add_extra_outputs(blink)

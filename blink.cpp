@@ -6,6 +6,7 @@
 
 #include "pico/stdlib.h"
 #include "hardware/i2c.h"
+#include "hardware/adc.h"
 #include "ssd1306_min.h"
 #include <cstdint>
 #include <stdio.h>
@@ -45,6 +46,29 @@ void scan_i2c_bus() {
   printf("I2C scan done\n");
 }
 
+// Power-On Self-Test: emit a single structured line so an AI/operator can read
+// the board's physical state as text over the existing UART evidence path
+// (no extra hardware). All integer milli-units to avoid float printf.
+//   vsys_mv: system supply, ADC3 (GP29 = VSYS/3 on the Pico)
+//   temp_mc: internal temperature sensor (ADC4), milli-Celsius
+//   vbus:    USB power present, GP24 sense
+//   i2c_oled: SSD1306 (0x3C) detected by the scan
+void run_post() {
+  adc_init();
+  adc_gpio_init(29);
+  adc_select_input(3);
+  uint32_t vsys_mv = (uint32_t)adc_read() * 9900u / 4095u; // 3.3V ref * 3 divider
+  adc_set_temp_sensor_enabled(true);
+  adc_select_input(4);
+  uint32_t vtemp_mv = (uint32_t)adc_read() * 3300u / 4095u;
+  int temp_mc = 27000 - (int)(vtemp_mv - 706) * 581; // ~ -1/1.721 mV per deg
+  gpio_init(24);
+  gpio_set_dir(24, GPIO_IN);
+  int vbus = gpio_get(24);
+  printf("POST fw=blink-i2c-oled vsys_mv=%u temp_mc=%d vbus=%d i2c_oled=%d\n",
+         (unsigned)vsys_mv, temp_mc, vbus, oled_present ? 1 : 0);
+}
+
 // Render the static labels plus a live blink counter on the OLED.
 void oled_render(uint blink_cycles) {
   char count_line[16];
@@ -56,7 +80,7 @@ void oled_render(uint blink_cycles) {
   ssd1306_draw_string(0, 4, "ADDR 3C FOUND");
   ssd1306_draw_string(0, 6, count_line);
   ssd1306_show(i2c0);
-  printf("OLED updated\n");
+  printf("OLED updated fbcrc=0x%04X\n", ssd1306_buf_crc());
 }
 
 int main() {
@@ -65,6 +89,7 @@ int main() {
   gpio_set_dir(LED_PIN, GPIO_OUT);
   init_i2c();
   scan_i2c_bus();
+  run_post();
 
   if (oled_present) {
     ssd1306_init(i2c0);

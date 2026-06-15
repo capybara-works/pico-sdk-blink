@@ -39,8 +39,12 @@ Wokwiシミュレータを使用したハードウェア・ソフトウェア連
     2.  シリアル出力 "I2C scan start" を待機する。
     3.  シリアル出力 "I2C device: 0x3C" を待機する。
     4.  シリアル出力 "I2C scan done" を待機する。
-    5.  シリアル出力 "LED on" / "LED off" を待機する。
+    5.  シリアル出力 "POST " を待機する（起動時自己診断行の出力確認）。
+    6.  シリアル出力 "LED on" / "LED off" を待機する。
 *   **合格基準**: 上記ステップがタイムアウト（10000ms）内に全て成功すること。
+*   **補足**: POST行は `POST fw=... vsys_mv=... temp_mc=... vbus=... i2c_oled=...` 形式。
+    Wokwiは電源/ADCを模擬しないため `vsys_mv`/`temp_mc`/`vbus` は非物理値になり、
+    シナリオは行の存在のみを判定する。これらの値が意味を持つのは実機(HIL)。
 
 ## 4. CI/CD検証 (System Verification)
 GitHub Actions (`.github/workflows/ci.yml`) 上で以下のプロセスが正常に完了することを以て、システム全体の健全性を保証する。

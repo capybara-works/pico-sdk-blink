@@ -6,5 +6,6 @@ steps:
   - wait-serial: 'I2C scan start'
   - wait-serial: 'I2C device: 0x3C'
   - wait-serial: 'I2C scan done'
+  - wait-serial: 'POST '
   - wait-serial: 'LED on'
   - wait-serial: 'LED off'
