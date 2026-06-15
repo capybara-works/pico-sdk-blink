@@ -49,17 +49,22 @@ void scan_i2c_bus() {
 // Power-On Self-Test: emit a single structured line so an AI/operator can read
 // the board's physical state as text over the existing UART evidence path
 // (no extra hardware). All integer milli-units to avoid float printf.
-//   vsys_mv: system supply, ADC3 (GP29 = VSYS/3 on the Pico)
-//   temp_mc: internal temperature sensor (ADC4), milli-Celsius
-//   vbus:    USB power present, GP24 sense
-//   i2c_oled: SSD1306 (0x3C) detected by the scan
+//   vsys_mv: system supply, ADC3 (GP29 = VSYS/3 on a genuine Pico). NOTE:
+//            board-dependent -- on the current RP2040 board GP29 does not carry
+//            the VSYS/3 divider, so this field reads ~1/3 of reality and is
+//            unreliable here. Precise supply measurement is INA260's job (L3).
+//   temp_mc: internal temperature sensor (ADC4), milli-Celsius (verified ~29C)
+//   vbus:    USB power present, GP24 sense (verified)
+//   i2c_oled: SSD1306 (0x3C) detected by the scan (verified)
 void run_post() {
   adc_init();
   adc_gpio_init(29);
   adc_select_input(3);
+  (void)adc_read(); // discard first conversion after mux switch (settling)
   uint32_t vsys_mv = (uint32_t)adc_read() * 9900u / 4095u; // 3.3V ref * 3 divider
   adc_set_temp_sensor_enabled(true);
   adc_select_input(4);
+  (void)adc_read(); // discard first conversion after mux switch (settling)
   uint32_t vtemp_mv = (uint32_t)adc_read() * 3300u / 4095u;
   int temp_mc = 27000 - (int)(vtemp_mv - 706) * 581; // ~ -1/1.721 mV per deg
   gpio_init(24);
