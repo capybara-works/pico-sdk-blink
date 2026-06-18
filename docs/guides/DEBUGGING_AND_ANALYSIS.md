@@ -71,3 +71,32 @@ RP2040 の DBGPAUSE によるタイマー凍結（core1がhaltしたまま）を
 
 ### 4.1 セクションヘッダ情報の確認
 `blink.elf` に対して `objdump -h` を実行することで、メモリレイアウト（各セクションの配置アドレスとサイズ）を確認できます。これは、スタックオーバーフローやメモリ不足の調査に役立ちます。
+
+## 5. リアルタイムプロット (Embedder Monitor) の落とし穴
+
+ファームウェアは Teleplot 形式のテレメトリを UART に出力します
+（例: `>vsys:<ms>:4.980§V`, `>die_temp:<ms>:25.26§°C`, `>led:<ms>:1`）。
+`sample_and_report()`（`blink.cpp`）が毎サイクル送出します。
+
+### 5.1 「Channels (0) / no serial data received」になる(2026-06-18 確認)
+
+**症状**: ファームは明らかにTeleplot行を流しているのに、プロット側は
+`Channels (0)` のまま、または `No serial data received yet` と表示される。
+
+**原因**: 同じポート (`/dev/cu.usbmodem14202`, CMSIS-DAP の CDC UART) を
+**シリアルモニタが既に占有**している。モニタとプロットは1本のCDCストリームを
+取り合うため、後発のプロットにバイトが届かない。`plotStatus` が `Channels (0)` で
+かつ `serialReadHistory` がモニタ "connected" + 大量バッファ + DISCONNECT/CONNECT
+の往復を示していれば、これは**2リーダー競合**であり、パース/正規表現の問題ではない。
+
+**対処（実績あり）**:
+1. `plot_start` の後に OpenOCD でターゲットをリセットする:
+   `openocd -f interface/cmsis-dap.cfg -c "transport select swd; adapter speed 1000" -f target/rp2040.cfg -c "init; reset run; exit"`
+   リブート直後のバースト出力が最新サブスクライバ（プロット）に再バインドし、
+   チャネルが即座に出現する。
+2. もしくは**プロットを先に**起動してからモニタを開く（プロットが先にバインド）。
+
+**補足**: このTeleplot形式に `transform_regex` は不要。バイトさえ届けば
+既定の `>channel:..:value` パースで通る。`plotStop(export_csv=...)` で
+`timestamp_ms/channel/value/unit` 形式のCSVを書き出せる
+（サンプル: `evidence/latest/plot_telemetry.csv`）。

@@ -8,6 +8,7 @@
 #include "hardware/i2c.h"
 #include "hardware/adc.h"
 #include "ssd1306_min.h"
+#include <cmath>
 #include <cstdint>
 #include <stdio.h>
 
@@ -31,8 +32,13 @@ void scan_i2c_bus() {
   bool found = false;
 
   for (uint8_t addr = 0x08; addr <= 0x77; ++addr) {
+    // Write probe (0-length): the standard presence test. Write-only devices
+    // like the SSD1306 ACK their address on a WRITE but NACK a READ, so the
+    // previous i2c_read probe could miss a healthy display. A device that ACKs
+    // the address returns the number of bytes written (>= 0); absent/NACK
+    // returns a negative error.
     uint8_t probe = 0;
-    int ret = i2c_read_timeout_us(i2c0, addr, &probe, 1, false, 5000);
+    int ret = i2c_write_timeout_us(i2c0, addr, &probe, 1, false, 5000);
     if (ret >= 0) {
       printf("I2C device: 0x%02X\n", addr);
       found = true;
@@ -69,20 +75,33 @@ static uint32_t adc_avg(int input, int discard, int samples) {
   return acc / (uint32_t)samples;
 }
 
-void run_post() {
-  adc_init();
-  adc_gpio_init(29);
-  adc_set_temp_sensor_enabled(true);
+// Sample the live board sensors (VSYS estimate, die temperature, VBUS).
+// Emits a human-readable POST line plus Teleplot lines (prefixed '>') so the
+// values can be streamed into a real-time plot without extra hardware.
+void sample_and_report() {
   uint32_t gp29_raw = adc_avg(3, 16, 256);             // GP29 = VSYS/3 (high-Z)
   uint32_t gp29_adc_mv = gp29_raw * 3300u / 4095u;     // voltage at the ADC pin
   uint32_t vsys_est_mv = gp29_adc_mv * 3u;             // x3 divider -> VSYS
   uint32_t vtemp_mv = adc_avg(4, 16, 64) * 3300u / 4095u;
   int temp_mc = 27000 - (int)(vtemp_mv - 706) * 581;   // ~ -1/1.721 mV per deg
-  gpio_init(24);
-  gpio_set_dir(24, GPIO_IN);
   int vbus = gpio_get(24);
   printf("POST fw=blink-i2c-oled gp29_raw=%u gp29_adc_mv=%u vsys_est_mv=%u temp_mc=%d vbus=%d i2c_oled=%d\n",
          (unsigned)gp29_raw, (unsigned)gp29_adc_mv, (unsigned)vsys_est_mv, temp_mc, vbus, oled_present ? 1 : 0);
+
+  // Teleplot telemetry: convert milli-units to engineering units for the plot.
+  uint32_t now_ms = to_ms_since_boot(get_absolute_time());
+  printf(">vsys:%lu:%.3f\xC2\xA7V\r\n", (unsigned long)now_ms, vsys_est_mv / 1000.0);
+  printf(">die_temp:%lu:%.2f\xC2\xA7\xC2\xB0\x43\r\n", (unsigned long)now_ms, temp_mc / 1000.0);
+  printf(">vbus:%lu:%d\r\n", (unsigned long)now_ms, vbus);
+}
+
+void run_post() {
+  adc_init();
+  adc_gpio_init(29);
+  adc_set_temp_sensor_enabled(true);
+  gpio_init(24);
+  gpio_set_dir(24, GPIO_IN);
+  sample_and_report();
 }
 
 // Render the static labels plus a live blink counter on the OLED.
@@ -113,17 +132,33 @@ int main() {
   }
 
   uint blink_cycles = 0;
+  double phase = 0.0;
+  // Sweep the phasor in fine sub-steps so the XY plot draws a smooth, moving
+  // circle/Lissajous. Each blink half-cycle (250 ms) is split into 10 x 25 ms
+  // steps. wave_x=cos, wave_y=sin -> a rotating unit circle in XY mode.
+  auto emit_wave = [&]() {
+    phase += 0.20;                       // ~0.2 rad per 25 ms step
+    if (phase > 6.28318530718) phase -= 6.28318530718;
+    uint32_t now = to_ms_since_boot(get_absolute_time());
+    printf(">wave_x:%lu:%.4f\r\n", (unsigned long)now, cos(phase));
+    printf(">wave_y:%lu:%.4f\r\n", (unsigned long)now, sin(phase * 2.0)); // 2:1 Lissajous
+  };
+  auto blink_half = [&](int level) {
+    gpio_put(LED_PIN, level);
+    printf(level ? "LED on\n" : "LED off\n");
+    printf(">led:%lu:%d\r\n", (unsigned long)to_ms_since_boot(get_absolute_time()), level);
+    for (int i = 0; i < 10; ++i) { emit_wave(); sleep_ms(25); }
+  };
+
   while (true) {
-    gpio_put(LED_PIN, 1);
-    printf("LED on\n");
-    sleep_ms(250);
-    gpio_put(LED_PIN, 0);
-    printf("LED off\n");
-    sleep_ms(250);
+    blink_half(1);
+    blink_half(0);
     ++blink_cycles;
     if (oled_present) {
       oled_render(blink_cycles);
     }
+    // Re-sample VSYS / temperature / VBUS every cycle so the plot stays live.
+    sample_and_report();
     if (blink_cycles % 8 == 0) {
       scan_i2c_bus();
     }
