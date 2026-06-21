@@ -36,7 +36,49 @@ else
     REASON="expected UART patterns not found; see evidence/latest/uart.log"
 fi
 
-write_result_json "${RESULT_JSON}" "uart" "${STATUS}" "${REASON}" "evidence/latest/uart.log"
+ANALYSIS_JSON="$(python3 - "${UART_LOG}" <<'PYEOF'
+import json
+import re
+import sys
+
+log_path = sys.argv[1]
+try:
+    with open(log_path, errors="ignore") as f:
+        lines = f.readlines()
+except OSError:
+    lines = []
+
+def count(pattern):
+    return sum(1 for line in lines if pattern in line)
+
+bad_re = re.compile(r"(i2c_oled=0|I2C no devices|lockup|HardFault|panic|abort|FAIL|Error)")
+observations = {
+    "lines": len(lines),
+    "led_on": count("LED on"),
+    "led_off": count("LED off"),
+    "post_i2c_oled_ok": sum(1 for line in lines if "POST " in line and "i2c_oled=1" in line),
+    "oled_updates": count("OLED updated"),
+    "i2c_0x3c_seen": count("I2C device: 0x3C"),
+    "bad_markers": sum(1 for line in lines if bad_re.search(line)),
+}
+
+if observations["post_i2c_oled_ok"] and observations["oled_updates"] and observations["bad_markers"] == 0:
+    health_hint = "oled_i2c_ok"
+elif observations["led_on"] and observations["led_off"]:
+    health_hint = "led_uart_ok_oled_unproven"
+elif observations["lines"]:
+    health_hint = "uart_active_patterns_missing"
+else:
+    health_hint = "uart_silent"
+
+print(json.dumps({
+    "observations": observations,
+    "health_hint": health_hint,
+}, separators=(",", ":")))
+PYEOF
+)"
+
+write_result_json "${RESULT_JSON}" "uart" "${STATUS}" "${REASON}" "evidence/latest/uart.log" "${ANALYSIS_JSON}"
 
 echo "== uart: ${STATUS} (log: evidence/latest/uart.log) =="
 [ "${STATUS}" = "pass" ]

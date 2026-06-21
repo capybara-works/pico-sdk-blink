@@ -16,8 +16,14 @@ description: >-
 
 ## Start a gdb server and attach
 
-OpenOCD listens on :3333 (core0) and :3334 (core1). Managed gdb:
-`/Users/mitokouki/.embedder/tools/gdb/.../arm-none-eabi-gdb-py3`.
+Prefer the repository's gated snapshot first:
+
+```sh
+PICO_HARDWARE=1 scripts/gdb_snapshot.sh
+```
+
+OpenOCD listens on :3333 (core0) and :3334 (core1). Raw OpenOCD/GDB commands
+are manual fallback notes and require explicit hardware approval.
 
 ```sh
 openocd -f interface/cmsis-dap.cfg -c "transport select swd; adapter speed 1000" -f target/rp2040.cfg -c "init" &
@@ -59,6 +65,8 @@ backtrace               # scan_i2c_bus <- main
   `flash` => running normally; `sram` => RAM code.
 - **Macros aren't symbols**: `print SSD1306_I2C_ADDR` fails (it's a `#define`). Use the
   literal value or compare against `addr` directly.
+- **Hardware gate**: do not self-enable `PICO_HARDWARE=1` as an agent; hardware
+  touching commands need explicit user intent.
 - **Probe contention**: the script-bridge OpenOCD can fail to launch while a serial
   monitor holds the port. Run OpenOCD via the shell tool with `disconnects_serial: true`,
   or stop the monitor/plot first.

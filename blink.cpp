@@ -32,11 +32,9 @@ void scan_i2c_bus() {
   bool found = false;
 
   for (uint8_t addr = 0x08; addr <= 0x77; ++addr) {
-    // Write probe (0-length): the standard presence test. Write-only devices
-    // like the SSD1306 ACK their address on a WRITE but NACK a READ, so the
-    // previous i2c_read probe could miss a healthy display. A device that ACKs
-    // the address returns the number of bytes written (>= 0); absent/NACK
-    // returns a negative error.
+    // Write probe: SSD1306 ACKs its address on WRITE but NACKs READ, so the
+    // previous i2c_read probe could miss a healthy display. The harmless
+    // single-byte probe returns the number of bytes written (>= 0) when ACKed.
     uint8_t probe = 0;
     int ret = i2c_write_timeout_us(i2c0, addr, &probe, 1, false, 5000);
     if (ret >= 0) {

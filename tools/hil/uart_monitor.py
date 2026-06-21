@@ -49,13 +49,32 @@ if __name__ == "__main__":
     lines = monitor_uart(port, duration=duration)
     
     if lines:
-        # Check for expected patterns
+        # Check for expected patterns. Keep pass/fail tied to the historical
+        # LED contract, but report richer firmware health hints for operators.
         has_led_on = any("LED on" in line for line in lines)
         has_led_off = any("LED off" in line for line in lines)
+        has_post_i2c_oled = any("POST " in line and "i2c_oled=1" in line for line in lines)
+        has_oled_update = any("OLED updated" in line for line in lines)
+        has_i2c_oled_addr = any("I2C device: 0x3C" in line for line in lines)
+        bad_markers = [
+            line for line in lines
+            if any(marker in line for marker in (
+                "i2c_oled=0",
+                "I2C no devices",
+                "lockup",
+                "HardFault",
+                "panic",
+                "abort",
+            ))
+        ]
         
         print(f"\nPattern Analysis:")
         print(f"  'LED on' found:  {has_led_on}")
         print(f"  'LED off' found: {has_led_off}")
+        print(f"  POST i2c_oled=1 found: {has_post_i2c_oled}")
+        print(f"  OLED update found:      {has_oled_update}")
+        print(f"  I2C 0x3C seen:          {has_i2c_oled_addr}")
+        print(f"  health bad markers:     {len(bad_markers)}")
         
         if has_led_on and has_led_off:
             print("\n✅ UART test PASSED - Expected patterns detected")

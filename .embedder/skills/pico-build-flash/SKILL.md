@@ -14,42 +14,41 @@ description: >-
 
 # Build & flash the Pico (RP2040 + CMSIS-DAP)
 
-Known-good toolchain and commands for this project. Use these verbatim.
+Known-good workflow for this project. Prefer the repository scripts because
+they preserve evidence and enforce the hardware safety gates. Treat raw
+OpenOCD/CMake commands below as manual fallback notes only.
 
 ## Environment
 
-- `PICO_SDK_PATH=/Users/mitokouki/pico-sdk` (required; build fails to configure without it).
-- ARM GCC at `/Applications/ArmGNUToolchain/14.2.rel1/...`, CMake, OpenOCD all on PATH.
-- Probe: Raspberry Pi Debug Probe (CMSIS-DAP) on `/dev/cu.usbmodem14202`.
+- `PICO_SDK_PATH` must point at the Pico SDK (this rig has used `/Users/mitokouki/pico-sdk`).
+- ARM GCC, CMake, OpenOCD all on PATH.
+- Probe: Raspberry Pi Debug Probe (CMSIS-DAP). UART port is local state:
+  use `PICO_UART_PORT` or `config/hardware.local.yaml`, not hard-coded paths.
 - Build dir: `build/`. Targets: `build/blink.elf`, `build/blink.uf2`, `build/blink.bin`.
 
-## Configure (first time / after CMakeLists change)
+## Build with evidence
 
 ```sh
-PICO_SDK_PATH=/Users/mitokouki/pico-sdk cmake -S . -B build
+scripts/build.sh
 ```
 
-## Build
+Expected: build + CTest pass, and optional Wokwi runs when `WOKWI_CLI_TOKEN` is set.
+
+## Flash (OpenOCD + SWD)
+
+Hardware actions require explicit human intent. Use:
 
 ```sh
-PICO_SDK_PATH=/Users/mitokouki/pico-sdk cmake --build build -j4
+PICO_HARDWARE=1 scripts/flash.sh
 ```
 
-Expected: `[100%] Built target blink`. Check size with `arm-none-eabi-size build/blink.elf`
-(baseline ~30 KB text / ~2.5 KB bss).
-
-## Flash (OpenOCD + SWD) and capture boot serial
-
-Prefer the `flash` tool so boot logs are captured from the first byte. Command:
+Then capture UART through the gated wrapper:
 
 ```sh
-openocd -f interface/cmsis-dap.cfg \
-  -c "transport select swd; adapter speed 1000" \
-  -f target/rp2040.cfg \
-  -c "program build/blink.elf verify reset exit"
+PICO_HARDWARE=1 scripts/capture_uart.sh
 ```
 
-Monitor port `/dev/cu.usbmodem14202` @ 115200. Expected boot lines:
+Expected boot lines:
 `I2C scan ...`, `POST fw=blink-i2c-oled ... i2c_oled=<0|1>`, then `LED on`/`LED off`.
 
 ## Caveats
@@ -60,3 +59,5 @@ Monitor port `/dev/cu.usbmodem14202` @ 115200. Expected boot lines:
   the USB device. Run with the `flash` tool or shell `disconnects_serial: true`.
 - `scripts/build.sh`, `scripts/flash.sh`, `scripts/verify_all.sh` wrap these with
   evidence logging; real-hardware steps need `PICO_HARDWARE=1`.
+- Do not self-enable `PICO_HARDWARE=1` as an agent. Ask or rely on an explicit
+  user-provided command context.

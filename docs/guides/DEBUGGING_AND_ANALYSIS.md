@@ -58,7 +58,41 @@ PC/LR/SP/xPSR とシンボル解決済みバックトレースを取得できま
 *   `flash`: 通常のコード実行中
 *   `sram`: RAM実行コード
 
-### 3.2 静的解析との連携 (Crash/Hang Analysis Workflow)
+### 3.2 実機が止まったように見える時の初動
+
+LED/OLED が点かない、またはファームが動いていないように見える場合は、
+再フラッシュや配線変更の前に、次の順で証拠を取ります。
+
+1. UARTを10秒程度取得する:
+   ```bash
+   PICO_HARDWARE=1 PICO_UART_PORT=/dev/cu.usbmodemXXXX scripts/capture_uart.sh 10
+   ```
+   `evidence/latest/uart_result.json` の `observations` を見る。
+   `led_on` / `led_off` が増えていればファームは生きている。
+   `post_i2c_oled_ok` と `oled_updates` が増え、`bad_markers=0` なら
+   ファーム側のOLED/I2C経路は正常とみなせる。
+2. UARTが無音、または1バイト程度しか出ない場合は、書き込みではなくDebug Probeで
+   ターゲットを再起動し、直後のPOSTを取り直す:
+   ```bash
+   PICO_HARDWARE=1 scripts/reset_target.sh
+   PICO_HARDWARE=1 PICO_UART_PORT=/dev/cu.usbmodemXXXX scripts/capture_uart.sh 10
+   ```
+   OpenOCDが `lockup` / `double fault` を出しても、再起動後のUARTで
+   `health_hint=oled_i2c_ok` まで戻れば、まず一過性のターゲット停止として扱う。
+3. UARTは動くが `i2c_oled=0` / `I2C no devices` が出る場合は、
+   ファームや再フラッシュより先に [HARDWARE_SETUP.md](HARDWARE_SETUP.md) の
+   I2C/OLED切り分けを使う。MCU側レジスタが正常ならオフチップ配線/給電を見る。
+4. より深く見る必要がある場合だけGDBスナップショットを取る:
+   ```bash
+   PICO_HARDWARE=1 scripts/gdb_snapshot.sh
+   ```
+   `pc_region=flash`, `fault.exception_number=0`, `target_resumed=true` が
+   通常動作中の目安。GDBは短時間core0をhaltするため、取得後のUART再確認まで行う。
+
+この順序を守ると、見た目だけで「実機が死んだ」「OLED配線が悪い」
+「ファームを書き直すべき」と早合点することを避けられます。
+
+### 3.3 静的解析との連携 (Crash/Hang Analysis Workflow)
 PCアドレスしか分からない場合でも、`blink.S.dis` と組み合わせて原因を特定できます。
 
 実例（2026-06-12, `docs/reports/AGENT_LAB_PHASE1_REPORT.md`）:
@@ -83,15 +117,15 @@ RP2040 の DBGPAUSE によるタイマー凍結（core1がhaltしたまま）を
 **症状**: ファームは明らかにTeleplot行を流しているのに、プロット側は
 `Channels (0)` のまま、または `No serial data received yet` と表示される。
 
-**原因**: 同じポート (`/dev/cu.usbmodem14202`, CMSIS-DAP の CDC UART) を
+**原因**: 同じポート (例: `/dev/cu.usbmodemXXXX`, CMSIS-DAP の CDC UART) を
 **シリアルモニタが既に占有**している。モニタとプロットは1本のCDCストリームを
 取り合うため、後発のプロットにバイトが届かない。`plotStatus` が `Channels (0)` で
 かつ `serialReadHistory` がモニタ "connected" + 大量バッファ + DISCONNECT/CONNECT
 の往復を示していれば、これは**2リーダー競合**であり、パース/正規表現の問題ではない。
 
 **対処（実績あり）**:
-1. `plot_start` の後に OpenOCD でターゲットをリセットする:
-   `openocd -f interface/cmsis-dap.cfg -c "transport select swd; adapter speed 1000" -f target/rp2040.cfg -c "init; reset run; exit"`
+1. `plot_start` の後にゲート付きユーティリティでターゲットをリセットする:
+   `PICO_HARDWARE=1 scripts/plot_rebind.sh`
    リブート直後のバースト出力が最新サブスクライバ（プロット）に再バインドし、
    チャネルが即座に出現する。
 2. もしくは**プロットを先に**起動してからモニタを開く（プロットが先にバインド）。

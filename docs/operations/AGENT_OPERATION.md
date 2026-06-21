@@ -57,6 +57,11 @@ skip / stub / fail をそのまま報告すること。skipを「成功」と言
   `PICO_LOGIC_ANALYZER` より優先される。
 - フラッシュ・リセット・レジスタ読み出しは `scripts/` の入口経由で行う。
 - 配線変更や電源操作はAIが指示だけで完結させず、人間が物理確認する。
+- 実機が「動いていないように見える」報告では、配線変更や再フラッシュの前に
+  `scripts/capture_uart.sh 10` の `uart_result.json` を読む。
+  `health_hint=oled_i2c_ok` ならファーム/LED/OLED経路はログ上正常として扱い、
+  無音なら `scripts/reset_target.sh` → UART再取得 → 必要時のみ `scripts/gdb_snapshot.sh`
+  の順で切り分ける。
 - ゲート未許可、必要ツール未導入、ポート未設定など実行前提がない場合は skip。
   `PICO_HARDWARE=1` で実行を開始した後の接続失敗・書き込み失敗・パターン不一致は fail。
   skipを回避するための偽装(ダミーポート指定など)をしてはいけない。

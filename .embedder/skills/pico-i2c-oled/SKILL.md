@@ -24,14 +24,15 @@ wiring or tool-contention, not firmware or the MCU.
 ## Known-good configuration
 
 - **MCU**: RP2040 (Raspberry Pi Pico H). UART stdio @ 115200.
-- **Probe**: Raspberry Pi Debug Probe (CMSIS-DAP), `/dev/cu.usbmodem14202`.
+- **Probe**: Raspberry Pi Debug Probe (CMSIS-DAP). UART port is local state:
+  use `PICO_UART_PORT` or `config/hardware.local.yaml`.
 - **I2C0**: GP4 (pin 6) = SDA, GP5 (pin 7) = SCL. SSD1306 @ `0x3C`.
 - **OLED power**: VCC -> 3V3 (pin 36), NOT VBUS (pin 40 = phantom-power trap). GND common.
-- **Logic analyzer**: fx2lafw via sigrok, device `fx2lafw:conn=20.2`.
+- **Logic analyzer**: fx2lafw via sigrok; `conn` is local state and may change.
   - D0 = SCL/GP5, D1 = SDA/GP4, D2 = UART TX/GP0.
-- **Toolchain**: ARM GCC + CMake, `PICO_SDK_PATH=/Users/mitokouki/pico-sdk`.
-  Build: `PICO_SDK_PATH=... cmake --build build -j4`. Flash via OpenOCD:
-  `openocd -f interface/cmsis-dap.cfg -c "transport select swd; adapter speed 1000" -f target/rp2040.cfg -c "program build/blink.elf verify reset exit"`.
+- **Toolchain**: ARM GCC + CMake, `PICO_SDK_PATH` pointing at the Pico SDK.
+  Build with `scripts/build.sh`. Hardware actions use gated wrappers such as
+  `PICO_HARDWARE=1 scripts/flash.sh` and must not be self-enabled by an agent.
 
 ## When to invoke
 
@@ -67,7 +68,8 @@ plot gets no bytes. It is NOT a parsing/regex problem.
 
 - Tell: `plotStatus` = `Channels (0)` while `serialReadHistory` shows the
   monitor "connected" with thousands of buffered lines + DISCONNECT/CONNECT churn.
-- Fix: start the plot, then run `scripts/plot_rebind.sh` (resets the target so
+- Fix: start the plot, then run `PICO_HARDWARE=1 scripts/plot_rebind.sh`
+  (resets the target so
   the boot burst rebinds to the plot). Or start the plot BEFORE any monitor.
 - The Teleplot format (`>vsys:<ms>:4.980§V`, `>led:<ms>:1`) needs NO custom
   transform_regex — default `>channel:..:value` parsing works once bytes arrive.
