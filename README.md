@@ -63,6 +63,9 @@ scripts/fetch_ci_firmware.sh           # → artifacts/latest/firmware/<run_id>/
 ロジックアナライザ実測は `PICO_LOGIC_UART=1` / `PICO_LOGIC_I2C=1`
 または全capture用の `PICO_LOGIC_ANALYZER=1` が明示された場合のみ実行されます。
 未指定なら各ステップは `skip` / `stub` を証拠として記録します(偽の成功にはなりません)。
+実機のPico物理ピン、OLED端子、Debug Probe、ロジックアナライザの対応は
+[docs/guides/HARDWARE_SETUP.md](docs/guides/HARDWARE_SETUP.md) の
+「現在の題材ファームの正配線」を基準にしてください。
 
 **結果の読み方:** `verification.md` は最終要約であり、一次証拠は
 `build.log` や `*_result.json` などの個別ファイルです。
@@ -84,6 +87,22 @@ CIの `firmware` artifact は `scripts/fetch_ci_firmware.sh` で
 GitHub CLIを手動で使う場合、複数remoteがある作業ツリーでは参照先の推測が
 ずれることがあります。Actions確認時は `-R capybara-works/pico-sdk-blink`
 または `GH_REPO=capybara-works/pico-sdk-blink` を明示してください。
+
+### OLED診断ログ
+
+OLEDまわりは、内部フレームバッファ更新と実際のI2C送信を分けて記録します。
+`OLED_RENDER ... fbcrc=...` はPico内部で「何を書こうとしたか」の証跡であり、
+実画面が点灯した証拠ではありません。SSD1306が受け取ったかは
+`OLED_PROBE ack=1`、`OLED_CMD` / `OLED_CMD2`、`OLED_PAGE`、
+`OLED_SHOW result=ok pages_ok=8 pages_fail=0` を見ます。
+
+`OLED_I2C_ERROR`、`OLED_SHOW result=fail`、`OLED_RECOVER result=fail` が出る場合は、
+まず `evidence/latest/uart_result.json` の `oled_i2c_errors`、`oled_i2c_retries`、
+`oled_i2c_retry_fail`、`oled_probe_ack`、`oled_probe_nack` を確認してください。
+ページ転送は100kHzで約11.6msかかるため、ドライバのI2C timeoutは50msにしています。
+全白・全黒・通常表示・既知パターン確認用の
+診断関数は `ssd1306_min.h` の `OLED_TEST_*` として用意していますが、
+全白モード(`OLED_TEST_ALL_ON`)は通常ループでは実行しません。
 
 ## 💡 コンセプト (Concept)
 
@@ -205,9 +224,12 @@ DevContainer用の事前ビルド済みイメージは、`.github/workflows/devc
 
 1.  VS Codeでプロジェクトを開く。
 2.  `diagram.json` を開くか、コマンドパレット (F1) から **"Wokwi: Start Simulator"** を選択。
-3.  Serial Monitor に `I2C device: 0x3C` と `LED on` / `LED off` が出力されることを確認。
+3.  Serial Monitor に `I2C device: 0x3C`、`OLED_SHOW result=ok pages_ok=8 pages_fail=0`、
+    `LED on` / `LED off` が出力されることを確認。
 
 `scripts/test_wokwi.sh` / CIの既定シナリオは `blink_i2c.test.yaml` です。
+このシナリオはOLED検出だけでなく、`OLED_INIT`、`OLED_RECOVER`、`OLED_SHOW`、
+`OLED_RENDER` の成功ログも待機します。
 `blink.test.yaml` は実機HILでも使う最小UARTログシナリオとして維持しています。
 
 ## 🔧 実機テスト (Hardware-in-the-Loop)

@@ -32,15 +32,20 @@ Wokwiシミュレータを使用したハードウェア・ソフトウェア連
 
 ### 3.2 シナリオテスト: Wokwi I2C題材
 *   **テストID**: IT-002
-*   **目的**: Wokwi上の仮想SSD1306 OLEDがI2Cデバイスとして検出され、LED制御ログも継続して出力されることを確認する。
+*   **目的**: Wokwi上の仮想SSD1306 OLEDがI2Cデバイスとして検出され、初期化・復旧・ページ送信ログが成功し、LED制御ログも継続して出力されることを確認する。
 *   **定義ファイル**: `blink_i2c.test.yaml`
 *   **手順**:
     1.  シミュレーションを開始する。
     2.  シリアル出力 "I2C scan start" を待機する。
     3.  シリアル出力 "I2C device: 0x3C" を待機する。
-    4.  シリアル出力 "I2C scan done" を待機する。
-    5.  シリアル出力 "POST " を待機する（起動時自己診断行の出力確認）。
-    6.  シリアル出力 "LED on" / "LED off" を待機する。
+    4.  シリアル出力 "OLED_PROBE phase=initial addr=0x3C ret=2 ack=1" を待機する。
+    5.  シリアル出力 "I2C scan done" を待機する。
+    6.  シリアル出力 "POST " を待機する（起動時自己診断行の出力確認）。
+    7.  シリアル出力 "OLED_INIT result=ok" を待機する。
+    8.  シリアル出力 "OLED_RECOVER result=ok" を待機する。
+    9.  シリアル出力 "OLED_SHOW result=ok pages_ok=8 pages_fail=0" を待機する。
+    10. シリアル出力 "OLED_RENDER result=ok" を待機する。
+    11. シリアル出力 "LED on" / "LED off" を待機する。
 *   **合格基準**: 上記ステップがタイムアウト（10000ms）内に全て成功すること。
 *   **補足**: POST行は `POST fw=... gp29_raw=... gp29_adc_mv=... vsys_est_mv=... temp_mc=... vbus=... i2c_oled=...` 形式
     (raw / ADC pin電圧 / VSYS推定 を名前で分離)。Wokwiは電源/ADCを模擬しないため

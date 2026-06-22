@@ -1,11 +1,12 @@
 """I2C/OLED fast triage for the pico-sdk-blink RP2040 rig.
 
 WHY THIS EXISTS
-  "I2C no devices" / i2c_oled=0 / all-NACK on this rig is almost always a
-  PHYSICAL wiring fault (esp. the GP5/SCL tap working loose after a rewire),
-  NOT firmware or the MCU. Confirmed by PHASE2_OLED_LOGIC_BRINGUP_REPORT.md
-  and a 2026-06-18 debug session. Wokwi always passes (ideal power/pull-ups),
-  so sim-passes-but-hardware-fails => suspect wiring/power.
+  "I2C no devices" / i2c_oled=0 / all-NACK on this rig has repeatedly been
+  OFF-CHIP rather than firmware or MCU-side configuration. Previous cases were
+  wiring/tap related; a later OLED whiteout->silence case showed the same logs
+  can also point at OLED power, module pull-ups, input protection, or controller
+  state/failure. Wokwi passes with ideal power/pull-ups, so
+  sim-passes-but-hardware-fails => check the electrical path beyond the Pico.
 
 WHAT IT CHECKS (MCU side, via OpenOCD/SWD; target halted)
   1. GP4/GP5 muxed to I2C (GPIOx_CTRL FUNCSEL == 3)
@@ -15,8 +16,9 @@ WHAT IT CHECKS (MCU side, via OpenOCD/SWD; target halted)
 
 If 1-3 are all OK but the OLED still NACKs, the fault is OFF-CHIP:
   -> run the analyzer continuity check (drive GP4/GP5, both D0 AND D1 must
-     show edges on fx2lafw; a silent line = open tap, RESEAT it), and
-  -> verify OLED VCC is on 3V3 (pin 36), NOT VBUS (phantom power).
+     show edges on fx2lafw; a silent line means that analyzer channel is not
+     seeing the intended signal), and
+  -> verify OLED VCC/GND and the module-side SDA/SCL pull-up/controller path.
 
 Known-good map: GP4(pin6)=SDA, GP5(pin7)=SCL; analyzer D0=SCL, D1=SDA.
 """
@@ -68,7 +70,7 @@ if ok:
     print("VERDICT: MCU side HEALTHY (pins muxed, pull-ups on, bus idles HIGH).")
     print("  If the OLED still NACKs, the fault is OFF-CHIP:")
     print("  1) Analyzer continuity: drive GP4/GP5, BOTH D0 and D1 must toggle.")
-    print("     A silent line (usually D0/SCL) = open tap -> RESEAT it.")
-    print("  2) OLED VCC must be on 3V3 (pin36), NOT VBUS (phantom power).")
+    print("     A silent channel means the analyzer is not seeing the intended line.")
+    print("  2) Check OLED VCC/GND and the module-side SDA/SCL pull-up/controller path.")
 else:
     print("VERDICT: MCU-side anomaly flagged above (see '!!'). Fix that first.")

@@ -5,7 +5,12 @@ author: capybara-works
 steps:
   - wait-serial: 'I2C scan start'
   - wait-serial: 'I2C device: 0x3C'
+  - wait-serial: 'OLED_PROBE phase=initial addr=0x3C ret=2 ack=1'
   - wait-serial: 'I2C scan done'
   - wait-serial: 'POST '
+  - wait-serial: 'OLED_INIT result=ok'
+  - wait-serial: 'OLED_RECOVER result=ok'
+  - wait-serial: 'OLED_SHOW result=ok pages_ok=8 pages_fail=0'
+  - wait-serial: 'OLED_RENDER result=ok'
   - wait-serial: 'LED on'
   - wait-serial: 'LED off'

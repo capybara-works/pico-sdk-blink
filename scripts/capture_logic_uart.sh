@@ -84,13 +84,15 @@ PYEOF
 }
 
 echo "== scripts/capture_logic_uart.sh: capturing ${DURATION_MS}ms via ${DRIVER_SPEC} =="
+: > "${DECODE_TXT}"
+: > "${TEXT_TXT}"
 if sigrok-cli \
     --driver "${DRIVER_SPEC}" \
     --config "samplerate=${SAMPLE_RATE}" \
     --time "${DURATION_MS}ms" \
     --channels "D${CH_UART_TX}=TX" \
     --protocol-decoders "uart:rx=TX:baudrate=${BAUDRATE}" \
-    --protocol-decoder-annotations uart 2>&1 | tee "${DECODE_TXT}"; then
+    --protocol-decoder-annotations uart > "${DECODE_TXT}" 2>&1; then
     if EXTRA_JSON="$(parse_uart_decode)"; then
         STATUS="pass"
         REASON=""
@@ -103,6 +105,12 @@ else
     STATUS="fail"
     REASON="sigrok-cli UART capture failed (logic analyzer not connected?)"
     EXTRA_JSON=""
+    : > "${TEXT_TXT}"
+fi
+
+if [ -s "${TEXT_TXT}" ]; then
+    echo "Decoded UART text preview:"
+    sed -n '1,12p' "${TEXT_TXT}"
 fi
 
 write_result_json "${RESULT_JSON}" "logic_uart" "${STATUS}" "${REASON}" \

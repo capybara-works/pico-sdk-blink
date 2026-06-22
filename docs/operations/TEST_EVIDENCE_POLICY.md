@@ -12,7 +12,7 @@
 | Wokwiログ | `scripts/build.sh` / `scripts/test_wokwi.sh` / `scripts/record_wokwi_ci_result.sh` | `evidence/latest/wokwi.log` |
 | 結果JSON (`*_result.json`) | 証拠付き入口 (`scripts/build.sh`, `scripts/verify_all.sh`, 実機/観測wrapper等) | `evidence/latest/` |
 | UARTログ | `scripts/capture_uart.sh` / `scripts/run_hil.sh` | `evidence/latest/uart.log`, `hil.log` |
-| UARTヘルス観測値 | `scripts/capture_uart.sh` | `evidence/latest/uart_result.json` (`observations`, `health_hint`) |
+| UARTヘルス観測値 | `scripts/capture_uart.sh` | `evidence/latest/uart_result.json` (`observations`, `health_hint`, `health_note`) |
 | GDBスナップショット | `scripts/gdb_snapshot.sh` | `evidence/latest/gdb_snapshot.json` |
 | ロジックアナライザのUARTデコード結果 | `scripts/capture_logic_uart.sh` | `evidence/latest/logic_uart_decode.txt`, `evidence/latest/logic_uart_text.txt` |
 | ロジックアナライザのI2Cデコード結果 | `scripts/capture_logic_i2c.sh` | `evidence/latest/logic_i2c_decode.txt` |
@@ -68,7 +68,7 @@
 |---|---|
 | Build | `scripts/build.sh` が `scripts/build_firmware.sh` を実行し、`build_result.json` を生成 |
 | CTest | `scripts/build.sh` が `scripts/test_ctest.sh` を実行し、`ctest_result.json` を生成 |
-| Wokwi | `scripts/build.sh` では `scripts/test_wokwi.sh` が既定で `blink_i2c.test.yaml` を実行し、`wokwi_result.json` を生成。`scripts/ci_phase1_smoke.sh` は既定でtokenを抑制してskipを許容し、CIの `test-on-wokwi` jobでは `scripts/record_wokwi_ci_result.sh` が action 結果を `evidence-with-wokwi` artifact に統合 |
-| Flash / HIL / UART / GDB | `PICO_HARDWARE=1` のときのみ実機で実行。UARTはLED on/offの歴史的pass条件に加え、OLED/POST/I2Cの観測値を `uart_result.json` に残す |
+| Wokwi | `scripts/build.sh` では `scripts/test_wokwi.sh` が既定で `blink_i2c.test.yaml` を実行し、`wokwi_result.json` を生成。シナリオはSSD1306 `0x3C` ACKに加えて `OLED_INIT`、`OLED_RECOVER`、`OLED_SHOW`、`OLED_RENDER` の成功ログを待つ。`scripts/ci_phase1_smoke.sh` は既定でtokenを抑制してskipを許容し、CIの `test-on-wokwi` jobでは `scripts/record_wokwi_ci_result.sh` が action 結果を `evidence-with-wokwi` artifact に統合 |
+| Flash / HIL / UART / GDB | `PICO_HARDWARE=1` のときのみ実機で実行。UARTはLED on/offの歴史的pass条件に加え、OLED/POST/I2Cの観測値を `uart_result.json` に残す。OLEDは `oled_probe_ack/nack`、`oled_show_ok/fail`、`oled_i2c_errors`、`oled_i2c_retries`、`oled_recover_ok/fail` を集計し、`fbcrc` だけを実表示証拠として扱わない |
 | HILシナリオ | 実機HILは `blink.test.yaml` を使う。現状の共通stepは `wait-serial` |
-| Logic Analyzer | `PICO_LOGIC_UART=1` / `PICO_LOGIC_I2C=1`、または全capture用の `PICO_LOGIC_ANALYZER=1` かつ `sigrok-cli` 利用可能時のみ実測。それ以外はstub。UARTは `LED on/off` デコード、I2Cはprotocol decode注釈を証拠化 |
+| Logic Analyzer | `PICO_LOGIC_UART=1` / `PICO_LOGIC_I2C=1`、または全capture用の `PICO_LOGIC_ANALYZER=1` かつ `sigrok-cli` 利用可能時のみ実測。それ以外はstub。UARTは `LED on/off` デコード、I2Cはprotocol decode注釈に加えてSSD1306 `0x3C` ACKをpass条件として証拠化 |

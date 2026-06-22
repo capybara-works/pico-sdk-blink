@@ -4,9 +4,10 @@
 # Captures the raw digital channels and reports per-channel transition counts
 # and idle level. This is the first-pass triage when an I2C/UART decode fails:
 # it shows which probe wire is actually carrying signal, independent of any
-# protocol decoder. For example, "SDA active but SCL idle-low with zero
-# transitions" pinpoints a disconnected SCL tap (I2C SCL+SDA must toggle
-# together).
+# protocol decoder. For example, "SDA active but the configured SCL channel is
+# idle-low with zero transitions" means the analyzer is not seeing SCL on that
+# configured channel. That can be a loose tap, a channel-map mismatch, a failed
+# analyzer input, or a genuine off-board electrical fault.
 #
 # It intentionally does NOT write a *_result.json and is not part of
 # verify_all.sh or the verification summary: activity counts are a debugging
@@ -101,7 +102,7 @@ for ch in sorted(total, key=lambda c: int(c[1:])):
     state = "ACTIVE" if trans[ch] > 2 else ("IDLE-HIGH" if ones[ch] > t * 0.5 else "IDLE-LOW")
     print(f"{ch:<9}{labels.get(ch, ''):<9}{trans[ch]:>12}{100 * ones[ch] / t:>7.1f}  {state}")
 print()
-print("Hint: I2C SCL+SDA must toggle together. SDA active + SCL idle-low/0 transitions = SCL tap not connected.")
+print("Hint: I2C SCL+SDA normally toggle together. If SDA is active but the configured SCL channel is idle-low/0 transitions, the analyzer is not seeing SCL on that channel; check channel mapping, probe input, and the off-board SCL path.")
 PYEOF
 
 echo "== probe: done (saved evidence/latest/logic_activity.txt) =="

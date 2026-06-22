@@ -89,7 +89,7 @@
 ## 4. シミュレータ連携テスト
 ### 4.1 Wokwi 自動テスト (Automated Wokwi Test)
 *   **テストID**: ENV-008
-*   **目的**: Wokwi CLI を用いて、仮想SSD1306 OLEDのI2C検出とUARTログ出力の機能テストが自動実行できることを確認する。
+*   **目的**: Wokwi CLI を用いて、仮想SSD1306 OLEDのI2C検出、初期化、ページ送信、UARTログ出力の機能テストが自動実行できることを確認する。
 *   **手順**:
     1.  (CI) GitHub Actions の "Test on Wokwi" ジョブが成功することを確認する。
     2.  (Local) `WOKWI_CLI_TOKEN` を設定し、`scripts/build.sh` を実行する。

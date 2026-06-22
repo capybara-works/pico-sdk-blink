@@ -18,6 +18,8 @@
 #   evidence/latest/logic_i2c_decode.txt
 #   evidence/latest/logic_i2c_result.json
 # Exit code: 0 = pass or stub, 1 = fail
+# pass means the expected SSD1306 address (0x3C) ACKed. A valid decode with
+# only NACKs is real evidence, but it is still a failed OLED/I2C check.
 
 set -u -o pipefail
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/common.sh"
@@ -64,19 +66,94 @@ if sigrok-cli \
     --channels "D${CH_SCL}=SCL,D${CH_SDA}=SDA" \
     --protocol-decoders "i2c:scl=SCL:sda=SDA" \
     --protocol-decoder-annotations i2c 2>&1 | tee "${DECODE_TXT}"; then
-    if grep -Eq '^i2c-[0-9]+: (Start|Address|Data|ACK|NACK|Stop)' "${DECODE_TXT}"; then
-        STATUS="pass"
-        REASON=""
-    else
-        STATUS="fail"
-        REASON="no I2C decode annotations captured; check wiring, pull-ups, channel mapping, and target activity"
-    fi
+    ANALYSIS_TSV="$(python3 - "${DECODE_TXT}" <<'PYEOF'
+import json
+import re
+import sys
+
+decode_path = sys.argv[1]
+try:
+    with open(decode_path, errors="ignore") as f:
+        lines = [line.strip() for line in f]
+except OSError:
+    lines = []
+
+annotation_re = re.compile(r"^i2c-\d+: (Start|Address|Data|ACK|NACK|Stop)")
+addr_re = re.compile(r"^i2c-\d+: Address write: ([0-9A-Fa-f]{2})$")
+result_re = re.compile(r"^i2c-\d+: (ACK|NACK)$")
+
+transactions = []
+pending = None
+has_annotations = False
+for line in lines:
+    if annotation_re.search(line):
+        has_annotations = True
+    addr_match = addr_re.search(line)
+    if addr_match:
+        pending = {"address": int(addr_match.group(1), 16), "result": None}
+        transactions.append(pending)
+        continue
+    result_match = result_re.search(line)
+    if result_match and pending is not None and pending["result"] is None:
+        pending["result"] = result_match.group(1)
+        pending = None
+
+address_count = len(transactions)
+ack_count = sum(1 for tx in transactions if tx["result"] == "ACK")
+nack_count = sum(1 for tx in transactions if tx["result"] == "NACK")
+ssd1306_seen = sum(1 for tx in transactions if tx["address"] == 0x3C)
+ssd1306_ack = sum(1 for tx in transactions if tx["address"] == 0x3C and tx["result"] == "ACK")
+ssd1306_nack = sum(1 for tx in transactions if tx["address"] == 0x3C and tx["result"] == "NACK")
+
+observations = {
+    "annotations": int(has_annotations),
+    "address_writes": address_count,
+    "ack": ack_count,
+    "nack": nack_count,
+    "ssd1306_0x3c_seen": ssd1306_seen,
+    "ssd1306_0x3c_ack": ssd1306_ack,
+    "ssd1306_0x3c_nack": ssd1306_nack,
+}
+
+if ssd1306_ack:
+    status = "pass"
+    reason = ""
+    health_hint = "ssd1306_i2c_ack_ok"
+elif not has_annotations:
+    status = "fail"
+    reason = "no I2C decode annotations captured; check wiring, pull-ups, channel mapping, and target activity"
+    health_hint = "i2c_decode_absent"
+elif ssd1306_seen:
+    status = "fail"
+    reason = "SSD1306 address 0x3C was probed but NACKed; OLED is not responding"
+    health_hint = "ssd1306_i2c_nack"
+elif ack_count:
+    status = "fail"
+    reason = "I2C activity and ACKs were captured, but SSD1306 address 0x3C did not ACK"
+    health_hint = "i2c_active_other_device"
+else:
+    status = "fail"
+    reason = "I2C address scan captured but all observed addresses NACKed"
+    health_hint = "i2c_active_all_nack"
+
+print(status)
+print(reason)
+print(json.dumps({
+    "observations": observations,
+    "health_hint": health_hint,
+}, separators=(",", ":")))
+PYEOF
+)"
+    STATUS="$(printf '%s\n' "${ANALYSIS_TSV}" | sed -n '1p')"
+    REASON="$(printf '%s\n' "${ANALYSIS_TSV}" | sed -n '2p')"
+    ANALYSIS_JSON="$(printf '%s\n' "${ANALYSIS_TSV}" | sed -n '3p')"
 else
     STATUS="fail"
     REASON="sigrok-cli capture failed (logic analyzer not connected?)"
+    ANALYSIS_JSON=""
 fi
 
-write_result_json "${RESULT_JSON}" "logic_i2c" "${STATUS}" "${REASON}" "evidence/latest/logic_i2c_decode.txt"
+write_result_json "${RESULT_JSON}" "logic_i2c" "${STATUS}" "${REASON}" "evidence/latest/logic_i2c_decode.txt" "${ANALYSIS_JSON:-}"
 
 if [ -n "${REASON}" ]; then
     echo "Reason: ${REASON}"
